@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import ChannelList from '@/components/chat/ChannelList';
@@ -205,7 +204,6 @@ const Chat = () => {
     setMessages([]);
     
     setTimeout(() => {
-      // If general channel is selected, display the provided examples
       if (channel.id === "channel1") {
         setMessages(generateExampleMessages());
       } else {
@@ -217,7 +215,6 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    // Load general channel by default
     handleSelectChannel(channels[0]);
   }, []);
 
@@ -233,7 +230,7 @@ const Chat = () => {
         id: "ex1",
         content: "Bun venit în canalul general al platformei iFlows! Aici puteți discuta despre orice subiect legat de proiectele noastre.",
         sender: users[0],
-        timestamp: new Date(new Date().getTime() - 86400000 * 5), // 5 days ago
+        timestamp: new Date(new Date().getTime() - 86400000 * 5),
         isRead: true,
         mentions: [],
         documentRefs: []
@@ -242,7 +239,7 @@ const Chat = () => {
         id: "ex2",
         content: "Am actualizat documentația pentru modulul de chat. Puteți găsi toate informațiile în secțiunea Documentație.",
         sender: users[1],
-        timestamp: new Date(new Date().getTime() - 86400000 * 4), // 4 days ago
+        timestamp: new Date(new Date().getTime() - 86400000 * 4),
         isRead: true,
         mentions: [],
         documentRefs: []
@@ -251,7 +248,7 @@ const Chat = () => {
         id: "ex3",
         content: "@Maria Popescu, am verificat oferta #OF123 și totul pare în regulă. Putem trimite către client?",
         sender: users[2],
-        timestamp: new Date(new Date().getTime() - 86400000 * 3), // 3 days ago
+        timestamp: new Date(new Date().getTime() - 86400000 * 3),
         isRead: true,
         mentions: ["Maria Popescu"],
         documentRefs: ["OF123"]
@@ -260,7 +257,7 @@ const Chat = () => {
         id: "ex4",
         content: "@Ion Vasilescu, da, oferta este gata. Am adăugat și discount-ul discutat. Te rog să o trimiți astăzi către client.",
         sender: users[1],
-        timestamp: new Date(new Date().getTime() - 86400000 * 3 + 3600000), // 3 days ago + 1 hour
+        timestamp: new Date(new Date().getTime() - 86400000 * 3 + 3600000),
         isRead: true,
         mentions: ["Ion Vasilescu"],
         documentRefs: [],
@@ -272,7 +269,7 @@ const Chat = () => {
         id: "ex5",
         content: "Am actualizat stocul pentru produsul #PROD123. Acum avem 50 de unități disponibile.",
         sender: users[3],
-        timestamp: new Date(new Date().getTime() - 86400000 * 2), // 2 days ago
+        timestamp: new Date(new Date().getTime() - 86400000 * 2),
         isRead: true,
         mentions: [],
         documentRefs: ["PROD123"],
@@ -290,7 +287,7 @@ const Chat = () => {
         id: "ex6",
         content: "@Adrian Ionescu, te rog să verifici comanda #CMD456 și să confirmi că produsele sunt disponibile pentru livrare până vineri.",
         sender: users[1],
-        timestamp: new Date(new Date().getTime() - 86400000), // 1 day ago
+        timestamp: new Date(new Date().getTime() - 86400000),
         isRead: true,
         mentions: ["Adrian Ionescu"],
         documentRefs: ["CMD456"],
@@ -299,7 +296,7 @@ const Chat = () => {
         id: "ex7",
         content: "@Elena Dumitrescu, te rog să soliciți la furnizor 20 de unități #PROD123 pentru comanda #CMD456.",
         sender: users[0],
-        timestamp: new Date(new Date().getTime() - 43200000), // 12 hours ago
+        timestamp: new Date(new Date().getTime() - 43200000),
         isRead: true,
         mentions: ["Elena Dumitrescu"],
         documentRefs: ["PROD123", "CMD456"]
@@ -308,7 +305,7 @@ const Chat = () => {
         id: "ex8",
         content: "@Adrian Ionescu Am verificat comanda #CMD456 și toate produsele sunt disponibile. Putem livra până vineri fără probleme.",
         sender: users[3],
-        timestamp: new Date(new Date().getTime() - 21600000), // 6 hours ago
+        timestamp: new Date(new Date().getTime() - 21600000),
         isRead: true,
         mentions: ["Adrian Ionescu"],
         documentRefs: ["CMD456"],
@@ -320,10 +317,19 @@ const Chat = () => {
         id: "ex9",
         content: "Echipa, am programat o ședință pentru discutarea noilor funcționalități ale platformei. Vă rog să fiți disponibili mâine la ora 10:00.",
         sender: users[0],
-        timestamp: new Date(new Date().getTime() - 10800000), // 3 hours ago
+        timestamp: new Date(new Date().getTime() - 10800000),
         isRead: true,
         mentions: [],
         documentRefs: [],
+        attachments: [
+          {
+            id: "attachment_meeting",
+            name: "agenda_sedinta.pdf",
+            type: "application/pdf",
+            size: 245000,
+            url: "#"
+          }
+        ],
         reactions: {
           "👍": {
             emoji: "👍",
@@ -341,7 +347,7 @@ const Chat = () => {
         id: "ex10",
         content: "@Ion Vasilescu, te rog să pregătești raportul de vânzări pentru ședința de mâine.",
         sender: users[0],
-        timestamp: new Date(new Date().getTime() - 7200000), // 2 hours ago
+        timestamp: new Date(new Date().getTime() - 7200000),
         isRead: true,
         mentions: ["Ion Vasilescu"],
         documentRefs: [],
@@ -351,7 +357,7 @@ const Chat = () => {
         id: "ex11",
         content: "Am creat task-ul și voi avea raportul gata până mâine dimineață.",
         sender: users[2],
-        timestamp: new Date(new Date().getTime() - 5400000), // 1.5 hours ago
+        timestamp: new Date(new Date().getTime() - 5400000),
         isRead: true,
         mentions: [],
         documentRefs: [],
@@ -363,7 +369,7 @@ const Chat = () => {
         id: "ex12",
         content: "Am adăugat 20 de unități de #PROD123 în comandă. @Maria Popescu poți să verifici și să confirmi?",
         sender: users[3],
-        timestamp: new Date(new Date().getTime() - 3600000), // 1 hour ago
+        timestamp: new Date(new Date().getTime() - 3600000),
         isRead: true,
         mentions: ["Maria Popescu"],
         documentRefs: ["PROD123"],
@@ -790,7 +796,6 @@ const Chat = () => {
   );
 };
 
-// Handle functions that were referenced but not implemented
 const handleCreateChannel = () => {
   toast.info("Funcționalitate de creare canale", {
     description: "Va fi disponibilă în curând."
