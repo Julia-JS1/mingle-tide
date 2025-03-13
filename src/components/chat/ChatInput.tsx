@@ -1,8 +1,7 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { 
   Send, 
   PaperclipIcon, 
@@ -75,13 +74,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   }, [message]);
   
-  // Track cursor position for mentions and document references
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newMessage = e.target.value;
     setMessage(newMessage);
     setCurrentCursorPosition(e.target.selectionStart);
     
-    // Check for mention trigger
     const mentionTriggerPosition = newMessage.lastIndexOf('@', currentCursorPosition);
     const isTriggeredForMention = 
       mentionTriggerPosition !== -1 && 
@@ -97,7 +94,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
       setShowMentionDropdown(false);
     }
     
-    // Check for document reference trigger
     const docTriggerPosition = newMessage.lastIndexOf('#', currentCursorPosition);
     const isTriggeredForDoc = 
       docTriggerPosition !== -1 && 
@@ -115,13 +111,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
   
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Send on Enter without shift
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
     
-    // Escape to close dropdowns
     if (e.key === 'Escape') {
       setShowMentionDropdown(false);
       setShowDocumentDropdown(false);
@@ -170,10 +164,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
       const newMessage = `${beforeMention}@${user.name} ${afterMention}`;
       setMessage(newMessage);
       
-      // Set cursor position after the inserted mention
       setTimeout(() => {
         if (textareaRef.current) {
-          const newCursorPosition = mentionTriggerPosition + user.name.length + 2; // +2 for @ and space
+          const newCursorPosition = mentionTriggerPosition + user.name.length + 2;
           textareaRef.current.focus();
           textareaRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
           setCurrentCursorPosition(newCursorPosition);
@@ -193,10 +186,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
       const newMessage = `${beforeDoc}#${doc.id} ${afterDoc}`;
       setMessage(newMessage);
       
-      // Set cursor position after the inserted document reference
       setTimeout(() => {
         if (textareaRef.current) {
-          const newCursorPosition = docTriggerPosition + doc.id.length + 2; // +2 for # and space
+          const newCursorPosition = docTriggerPosition + doc.id.length + 2;
           textareaRef.current.focus();
           textareaRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
           setCurrentCursorPosition(newCursorPosition);
@@ -221,7 +213,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
   
-  // Filter users and documents based on input
   const filteredUsers = availableUsers.filter(user => 
     user.name.toLowerCase().includes(mentionFilter.toLowerCase())
   );
@@ -231,7 +222,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
     doc.title.toLowerCase().includes(documentFilter.toLowerCase())
   );
   
-  // Get file icon based on type
   const getFileIcon = (type: string) => {
     if (type.startsWith('image/')) return <ImageIcon className="h-4 w-4" />;
     if (type.includes('video')) return <VideoIcon className="h-4 w-4" />;
@@ -241,7 +231,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <div className="p-3">
-      {/* Reply to message */}
       {replyToMessage && (
         <div className="mb-2 flex items-center justify-between rounded-md bg-muted/50 backdrop-blur-sm p-2 text-xs border border-muted shadow-sm">
           <div className="flex items-center gap-2">
@@ -255,7 +244,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
         </div>
       )}
       
-      {/* Attached files preview */}
       {files.length > 0 && (
         <div className="mb-2 flex flex-wrap gap-2">
           {files.map((file, index) => (
@@ -279,7 +267,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
         </div>
       )}
       
-      {/* Message input area */}
       <div
         className="relative flex items-end gap-2 bg-muted/30 p-2 rounded-xl border border-muted/50"
         onDragOver={(e) => e.preventDefault()}
@@ -295,7 +282,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
           disabled={isLoading}
         />
         
-        {/* Input actions */}
         <div className="absolute bottom-3 right-3 flex items-center gap-1">
           <TooltipProvider>
             <Tooltip>
@@ -388,7 +374,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
           </TooltipProvider>
         </div>
         
-        {/* Send button */}
         <Button 
           type="button"
           size="icon"
@@ -399,7 +384,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
           <Send className="h-4 w-4 text-white" />
         </Button>
 
-        {/* Hidden file input */}
         <input
           type="file"
           ref={fileInputRef}
@@ -409,7 +393,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
         />
       </div>
       
-      {/* Mention dropdown */}
       {showMentionDropdown && (
         <div className="absolute bottom-full left-4 mb-2 w-60 max-h-48 overflow-y-auto rounded-lg border bg-card/95 backdrop-blur-sm shadow-lg z-10">
           <div className="p-1">
@@ -445,7 +428,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
         </div>
       )}
       
-      {/* Document dropdown */}
       {showDocumentDropdown && (
         <div className="absolute bottom-full left-4 mb-2 w-60 max-h-48 overflow-y-auto rounded-lg border bg-card/95 backdrop-blur-sm shadow-lg z-10">
           <div className="p-1">
@@ -474,7 +456,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
         </div>
       )}
       
-      {/* Emoji picker */}
       {showEmojiPicker && (
         <div className="absolute bottom-full right-4 mb-2 p-2 w-64 max-h-48 overflow-y-auto rounded-lg border bg-card/95 backdrop-blur-sm shadow-lg z-10">
           <div className="grid grid-cols-8 gap-1">

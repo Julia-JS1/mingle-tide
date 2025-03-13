@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect, useRef } from 'react';
-import { TooltipProvider } from '@radix-ui/react-tooltip';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import ChannelList from '@/components/chat/ChannelList';
 import ChatMessage from '@/components/chat/ChatMessage';
 import ChatInput from '@/components/chat/ChatInput';
@@ -640,7 +641,7 @@ const Chat = () => {
   };
 
   return (
-    <TooltipProvider delayDuration={0}>
+    <TooltipProvider>
       <div className="h-screen flex flex-col">
         <div 
           className="flex-grow flex overflow-hidden relative"
