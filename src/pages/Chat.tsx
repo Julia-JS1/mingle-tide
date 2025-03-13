@@ -378,7 +378,7 @@ const Chat = () => {
       )
     );
     
-    toast.success("Reacție adăugată!");
+    toast.success(`Reacție ${emoji} adăugată la mesajul lui ${messages.find(msg => msg.id === messageId)?.sender.name}!`);
   };
 
   const handleReply = (messageId: string) => {

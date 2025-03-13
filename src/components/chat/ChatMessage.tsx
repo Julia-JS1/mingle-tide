@@ -4,6 +4,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
 import { formatDistanceToNow } from 'date-fns';
 import { ro } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
@@ -21,7 +22,10 @@ import {
   Forward, 
   Eye,
   Heart,
-  Smile
+  Smile,
+  Target,
+  Share,
+  BookmarkPlus
 } from 'lucide-react';
 
 export interface Attachment {
@@ -98,6 +102,7 @@ const ChatMessage: React.FC<MessageProps> = ({
   onMarkUnread,
 }) => {
   const [showActions, setShowActions] = useState(true); // Always show actions for better visibility
+  const [showReactionOptions, setShowReactionOptions] = useState(false);
 
   // Parse and format message content to highlight mentions and document references
   const renderContent = () => {
@@ -246,218 +251,136 @@ const ChatMessage: React.FC<MessageProps> = ({
         )}
       </div>
 
-      {/* Quick Reaction Buttons - NEW Always Visible */}
-      <div 
-        className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} top-1/2 -translate-y-1/2
-          flex items-center gap-1 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm p-1 rounded-lg shadow-md opacity-100 transition-opacity`}
-      >
-        <Button 
-          size="icon" 
-          variant="ghost" 
-          className="h-7 w-7 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary"
-          onClick={() => handleReaction("👍")}
-        >
-          <span className="text-lg">👍</span>
-        </Button>
-        <Button 
-          size="icon" 
-          variant="ghost" 
-          className="h-7 w-7 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary"
-          onClick={() => handleReaction("❤️")}
-        >
-          <span className="text-lg">❤️</span>
-        </Button>
-        <Button 
-          size="icon" 
-          variant="ghost" 
-          className="h-7 w-7 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary"
-          onClick={() => handleReaction("🎉")}
-        >
-          <span className="text-lg">🎉</span>
-        </Button>
+      {/* NEW HOVER CARD FOR REACTIONS - matches the design in the image */}
+      <div className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} bottom-0 translate-y-1/2
+          flex items-center bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg shadow-md opacity-100 transition-opacity z-10`}>
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              className="text-xs px-3 py-1.5 h-auto"
+            >
+              Add reaction...
+            </Button>
+          </HoverCardTrigger>
+          <HoverCardContent className="p-1 w-auto bg-white border shadow-xl rounded-full flex items-center gap-1">
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              className="h-10 w-10 rounded-full hover:bg-slate-100"
+              onClick={() => handleReaction("👍")}
+            >
+              <Target className="h-5 w-5" />
+            </Button>
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              className="h-10 w-10 rounded-full hover:bg-slate-100"
+              onClick={() => handleReaction("😊")}
+            >
+              <Smile className="h-5 w-5" />
+            </Button>
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              className="h-10 w-10 rounded-full hover:bg-slate-100"
+              onClick={() => onReply?.(id)}
+            >
+              <MessageSquare className="h-5 w-5" />
+            </Button>
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              className="h-10 w-10 rounded-full hover:bg-slate-100"
+              onClick={() => onForward?.(id)}
+            >
+              <Forward className="h-5 w-5" />
+            </Button>
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              className="h-10 w-10 rounded-full hover:bg-slate-100"
+              onClick={() => onCopyLink?.(id)}
+            >
+              <BookmarkPlus className="h-5 w-5" />
+            </Button>
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              className="h-10 w-10 rounded-full hover:bg-slate-100"
+              onClick={() => {
+                if (onLink && documentRefs.length > 0) {
+                  onLink(id, documentRefs[0]);
+                }
+              }}
+            >
+              <Link className="h-5 w-5" />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-10 w-10 rounded-full hover:bg-slate-100"
+                >
+                  <MoreVertical className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {isOwn && (
+                  <>
+                    <DropdownMenuItem onClick={() => onEdit?.(id)}>
+                      <Edit className="mr-2 h-4 w-4" />
+                      <span>Editează</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onDelete?.(id)}>
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      <span>Șterge</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+                <DropdownMenuItem onClick={() => onRemind?.(id)}>
+                  <Clock className="mr-2 h-4 w-4" />
+                  <span>Amintește-mi</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onMarkUnread?.(id)}>
+                  <Eye className="mr-2 h-4 w-4" />
+                  <span>Marchează necitit</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </HoverCardContent>
+        </HoverCard>
       </div>
 
-      {/* Message actions - now always visible for better discoverability */}
-      <div 
-        className={`absolute ${isOwn ? 'left-2 -translate-x-full' : 'right-2 translate-x-full'} top-1/2 -translate-y-1/2
-          flex flex-col items-center gap-1 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-1 rounded-lg shadow-md
-          ${showActions ? 'opacity-100' : 'opacity-0 pointer-events-none'} transition-opacity`}
-      >
+      {/* Task creation button - made more visible and always showing when task phrases detected */}
+      {hasTaskTrigger && (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button 
                 size="icon" 
-                variant="ghost" 
-                className="h-8 w-8 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors"
-                onClick={() => {
-                  if (onReply) {
-                    onReply(id);
-                    toast.info("Răspunzi la acest mesaj");
-                  }
-                }}
-              >
-                <MessageSquare className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Răspunde</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-        {/* Larger, more obvious reaction button */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              size="icon" 
-              variant="outline"
-              className="h-8 w-8 rounded-full border-2 border-iflows-primary/30 bg-iflows-primary/5 text-iflows-primary hover:bg-iflows-primary/20 hover:border-iflows-primary transition-colors animate-pulse-slow"
-            >
-              <Smile className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align={isOwn ? "start" : "end"} className="p-2 grid grid-cols-4 gap-1 w-48">
-            {commonReactions.map(emoji => (
-              <Button 
-                key={emoji} 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-lg hover:bg-iflows-primary/10 hover:scale-110 transition-all"
-                onClick={() => handleReaction(emoji)}
-              >
-                {emoji}
-              </Button>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* Create task button - made more visible and always showing when task phrases detected */}
-        {hasTaskTrigger && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  size="icon" 
-                  variant={taskCreated ? "secondary" : "default"}
-                  className={`h-8 w-8 rounded-full transition-colors ${
+                variant={taskCreated ? "secondary" : "default"}
+                className={`absolute top-0 ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} -translate-y-1/2
+                  h-8 w-8 rounded-full transition-colors ${
                     taskCreated 
                       ? "bg-green-600 text-white hover:bg-green-700" 
                       : "bg-iflows-primary text-white hover:bg-iflows-secondary animate-pulse-slow"
                   }`}
-                  onClick={handleCreateTask}
-                  disabled={taskCreated}
-                >
-                  <CheckSquare className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{taskCreated ? "Sarcină creată" : "Crează sarcină"}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
-
-        {/* Document linking button (conditionally shown) */}
-        {documentRefs.length > 0 && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  size="icon" 
-                  variant="ghost" 
-                  className="h-8 w-8 rounded-full text-iflows-primary hover:bg-iflows-primary/10 transition-colors"
-                  onClick={() => {
-                    if (onLink) {
-                      onLink(id, documentRefs[0]);
-                      toast.info(`Mesaj asociat cu documentul #${documentRefs[0]}`);
-                    }
-                  }}
-                >
-                  <Link className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Asociază cu document</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
-
-        {/* More options dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              size="icon" 
-              variant="ghost" 
-              className="h-8 w-8 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors"
-            >
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align={isOwn ? "start" : "end"} className="w-48">
-            {isOwn && (
-              <>
-                <DropdownMenuItem onClick={() => {
-                  if (onEdit) {
-                    onEdit(id);
-                    toast.info("Editezi mesajul");
-                  }
-                }}>
-                  <Edit className="mr-2 h-4 w-4" />
-                  <span>Editează</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {
-                  if (onDelete) {
-                    onDelete(id);
-                    toast.success("Mesaj șters");
-                  }
-                }}>
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  <span>Șterge</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-              </>
-            )}
-            <DropdownMenuItem onClick={() => {
-              if (onCopyLink) {
-                onCopyLink(id);
-                toast.success("Link copiat în clipboard!");
-              }
-            }}>
-              <Link className="mr-2 h-4 w-4" />
-              <span>Copiază link</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {
-              if (onRemind) {
-                onRemind(id);
-                toast.success("Vei primi o notificare pentru acest mesaj");
-              }
-            }}>
-              <Clock className="mr-2 h-4 w-4" />
-              <span>Amintește-mi</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {
-              if (onForward) {
-                onForward(id);
-                toast.info("Selectează unde vrei să redirecționezi mesajul");
-              }
-            }}>
-              <Forward className="mr-2 h-4 w-4" />
-              <span>Redirecționează</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {
-              if (onMarkUnread) {
-                onMarkUnread(id);
-                toast.success("Mesaj marcat ca necitit");
-              }
-            }}>
-              <Eye className="mr-2 h-4 w-4" />
-              <span>Marchează necitit</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+                onClick={handleCreateTask}
+                disabled={taskCreated}
+              >
+                <CheckSquare className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{taskCreated ? "Sarcină creată" : "Crează sarcină"}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
     </div>
   );
 };
