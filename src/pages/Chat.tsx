@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import { TooltipProvider } from '@radix-ui/react-tooltip';
 import ChannelList from '@/components/chat/ChannelList';
 import ChatMessage from '@/components/chat/ChatMessage';
 import ChatInput from '@/components/chat/ChatInput';
 import ChannelManagementDrawer from '@/components/chat/ChannelManagementDrawer';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageSquare, Bell, BellOff, Pin, Info, Search, Settings, Hash, Users, Plus, Archive } from 'lucide-react';
+import { MessageSquare, Bell, Pin, Info, Search, Hash, Settings, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ro } from 'date-fns/locale';
@@ -642,7 +640,7 @@ const Chat = () => {
   };
 
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={0}>
       <div className="h-screen flex flex-col">
         <div 
           className="flex-grow flex overflow-hidden relative"
