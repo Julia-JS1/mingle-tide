@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import ChannelList from '@/components/chat/ChannelList';
@@ -10,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { ro } from 'date-fns/locale';
 
 interface ChatMessageType {
   id: string;
@@ -579,7 +580,7 @@ const Chat = () => {
     
     const message = messages.find(msg => msg.id === messageId);
     if (message) {
-      toast.success(`Sarcină creată din mesajul: "${message.content.substring(0, 30)}..."`, {
+      toast.success("Sarcină creată cu succes!", {
         description: "Sarcina a fost adăugată în lista ta de activități."
       });
     }
@@ -803,3 +804,4 @@ const Chat = () => {
 };
 
 export default Chat;
+
