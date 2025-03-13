@@ -13,8 +13,10 @@ import {
   CheckSquare,
   Plus,
   MessageCircleReply,
+  Smile,
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 export interface Attachment {
   id: string;
@@ -99,6 +101,9 @@ const ChatMessage: React.FC<MessageProps> = ({
 }) => {
   const [showActions, setShowActions] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [showReactions, setShowReactions] = useState(false);
+
+  const commonReactions = ["👍", "❤️", "😊", "😂", "👏", "🎉", "🙏", "🔥"];
 
   const renderContent = () => {
     let formattedContent = content;
@@ -163,7 +168,7 @@ const ChatMessage: React.FC<MessageProps> = ({
     phrase => content.toLowerCase().includes(phrase.toLowerCase())
   );
 
-  const isAvailabilityConfirmation = content.includes("toate produsele sunt disponibile");
+  const isAvailabilityConfirmation = content.toLowerCase().includes("toate produsele sunt disponibile");
 
   const hasMention = mentions.length > 0;
   const hasDocRef = documentRefs.length > 0;
@@ -173,8 +178,14 @@ const ChatMessage: React.FC<MessageProps> = ({
   return (
     <div 
       className={`group relative flex gap-3 py-3 transition-all duration-200 ${isOwn ? 'justify-end' : 'justify-start'} message-animation`}
-      onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
+      onMouseEnter={() => {
+        setShowActions(true);
+        setShowReactions(!isOwn);
+      }}
+      onMouseLeave={() => {
+        setShowActions(false);
+        setShowReactions(false);
+      }}
     >
       {!isOwn && (
         <div className="flex-shrink-0 mt-1">
@@ -291,6 +302,22 @@ const ChatMessage: React.FC<MessageProps> = ({
           onMarkUnread={onMarkUnread || (() => {})}
           onBookmark={onBookmark || (() => {})}
         />
+      )}
+
+      {!isOwn && showReactions && (
+        <div className="absolute -top-[40px] left-12 z-50">
+          <div className="bg-white dark:bg-slate-800 rounded-full shadow-md p-1.5 flex items-center space-x-1 border border-slate-200 dark:border-slate-700">
+            {commonReactions.map(emoji => (
+              <button
+                key={emoji}
+                className="hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full p-1.5 transition-colors"
+                onClick={() => handleReaction(emoji)}
+              >
+                <span className="text-lg">{emoji}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       )}
 
       <TooltipProvider delayDuration={0}>
