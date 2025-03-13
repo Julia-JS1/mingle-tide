@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, X, ChevronDown, ChevronUp, MoreVertical } from 'lucide-react';
+import { MessageSquare, X, ChevronDown, ChevronUp, MoreVertical, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -215,13 +214,13 @@ const MiniChat: React.FC<MiniChatProps> = ({
       "Când putem programa o întâlnire pentru a discuta despre acest proiect?",
       "Am actualizat datele în sistem.",
       "Clientul a solicitat o ofertă pentru 10 bucăți.",
-      "Poți să verifici facturile din ultima lună?",
+      "@Adrian Ionescu, te rog să verifici comanda #CMD456 și să confirmi că produsele sunt disponibile pentru livrare până vineri.",
       "Am transmis comanda către furnizor.",
-      "Stocul este insuficient pentru această comandă.",
+      "@Elena Dumitrescu, te rog să soliciți la furnizor 20 de unități #PROD123 pentru comanda #CMD456.",
       "Documentele au fost semnate și trimise.",
       "Trebuie să stabilim o strategie pentru noul proiect.",
       "Clienții sunt mulțumiți de serviciile noastre.",
-      "Poți să pregătești raportul pentru ședința de mâine?",
+      "@Ion Vasilescu, te rog să pregătești raportul de vânzări pentru ședința de mâine.",
       "Am primit confirmarea de livrare.",
       "Statusul comenzii a fost actualizat.",
       "Trebuie să contactăm clientul pentru mai multe detalii.",

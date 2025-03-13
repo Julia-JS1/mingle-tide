@@ -12,6 +12,7 @@ import {
   MessageSquare, 
   PaperclipIcon, 
   CheckSquare,
+  Plus,
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -98,26 +99,29 @@ const ChatMessage: React.FC<MessageProps> = ({
   const renderContent = () => {
     let formattedContent = content;
     
+    // Process mentions (make them blue as in the screenshot)
     mentions.forEach(mention => {
       formattedContent = formattedContent.replace(
         new RegExp(`@${mention}\\b`, 'g'),
-        `<span class="text-iflows-primary font-medium">@${mention}</span>`
+        `<span class="bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400 px-1 py-0.5 rounded font-medium">@${mention}</span>`
       );
     });
 
+    // Process document references (make them purple with background as in the screenshot)
     documentRefs.forEach(docRef => {
       formattedContent = formattedContent.replace(
         new RegExp(`#${docRef}\\b`, 'g'),
-        `<span class="bg-iflows-primary/20 text-iflows-primary font-medium rounded px-1 py-0.5 cursor-pointer hover:underline">#${docRef}</span>`
+        `<span class="bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-400 px-1 py-0.5 rounded font-medium">#${docRef}</span>`
       );
     });
 
-    const taskTriggerPhrases = ["te rog să", "îmi poți", "poți să", "ai putea să"];
+    // Check for task trigger phrases and format them
+    const taskTriggerPhrases = ["te rog să", "îmi poți", "poți să", "ai putea să", "solicită"];
     taskTriggerPhrases.forEach(phrase => {
       if (content.toLowerCase().includes(phrase.toLowerCase())) {
         formattedContent = formattedContent.replace(
           new RegExp(`(${phrase})`, 'gi'),
-          `<span class="text-iflows-primary font-medium">$1</span>`
+          `<span class="font-medium text-slate-700 dark:text-slate-300">$1</span>`
         );
       }
     });
@@ -147,9 +151,15 @@ const ChatMessage: React.FC<MessageProps> = ({
     }
   };
 
-  const hasTaskTrigger = ["te rog să", "îmi poți", "poți să", "ai putea să"].some(
+  const hasTaskTrigger = ["te rog să", "îmi poți", "poți să", "ai putea să", "solicită"].some(
     phrase => content.toLowerCase().includes(phrase.toLowerCase())
   );
+
+  const hasMention = mentions.length > 0;
+  const hasDocRef = documentRefs.length > 0;
+  
+  // Determine if we should show the create task button based on the screenshot content
+  const shouldShowCreateTaskButton = (hasMention || hasDocRef || hasTaskTrigger) && !taskCreated;
 
   return (
     <div 
@@ -183,8 +193,8 @@ const ChatMessage: React.FC<MessageProps> = ({
         <div 
           className={`mt-1 rounded-lg px-4 py-2.5 shadow-sm
             ${isOwn 
-              ? 'bg-slate-200 dark:bg-slate-800 text-foreground' 
-              : 'bg-muted/70 backdrop-blur-sm text-foreground'
+              ? 'bg-blue-50 dark:bg-blue-900/20 text-foreground' 
+              : 'bg-white dark:bg-slate-800/70 text-foreground shadow-sm border border-slate-200 dark:border-slate-700/50'
             }`}
         >
           {renderContent()}
@@ -203,8 +213,7 @@ const ChatMessage: React.FC<MessageProps> = ({
               {attachments.map((file) => (
                 <div 
                   key={file.id}
-                  className={`flex items-center gap-2 rounded-md p-2 text-sm
-                    ${isOwn ? 'bg-white/60 dark:bg-slate-700/60' : 'bg-white/60 dark:bg-slate-800/60'}`}
+                  className={`flex items-center gap-2 rounded-md p-2 text-sm bg-slate-100 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600/50`}
                 >
                   <PaperclipIcon className="h-4 w-4" />
                   <span className="flex-1 truncate">{file.name}</span>
@@ -215,15 +224,15 @@ const ChatMessage: React.FC<MessageProps> = ({
           )}
         </div>
 
-        {hasTaskTrigger && !taskCreated && (
-          <div className="mt-2">
+        {shouldShowCreateTaskButton && !taskCreated && (
+          <div className="mt-1">
             <Button 
               size="sm"
               variant="outline"
-              className="bg-iflows-primary/10 text-iflows-primary hover:bg-iflows-primary/20 border-iflows-primary/20"
+              className="bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700"
               onClick={handleCreateTask}
             >
-              <CheckSquare className="mr-1.5 h-3.5 w-3.5" />
+              <Plus className="mr-1.5 h-3.5 w-3.5" />
               Creează sarcină
             </Button>
           </div>
@@ -266,7 +275,7 @@ const ChatMessage: React.FC<MessageProps> = ({
       )}
 
       <TooltipProvider delayDuration={0}>
-        {hasTaskTrigger && (
+        {hasTaskTrigger && !taskCreated && (
           <Tooltip>
             <TooltipTrigger asChild>
               <Button 
@@ -276,7 +285,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                   h-8 w-8 rounded-full transition-colors ${
                     taskCreated 
                       ? "bg-green-600 text-white hover:bg-green-700" 
-                      : "bg-iflows-primary text-white hover:bg-iflows-secondary animate-pulse-slow"
+                      : "bg-blue-600 text-white hover:bg-blue-700"
                   }`}
                 onClick={handleCreateTask}
                 disabled={taskCreated}
