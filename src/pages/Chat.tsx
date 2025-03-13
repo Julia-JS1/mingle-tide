@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import ChannelList from '@/components/chat/ChannelList';
@@ -237,16 +236,16 @@ const Chat = () => {
     const now = new Date();
 
     for (let i = 0; i < count; i++) {
-      const randomMessage = getRandomMessage(i, now);
+      const randomMessage = getRandomMessage(i, now, count);
       mockMessages.push(randomMessage);
     }
 
     return mockMessages;
   };
 
-  const getRandomMessage = (index: number, now: Date): ChatMessageType => {
+  const getRandomMessage = (index: number, now: Date, totalCount: number): ChatMessageType => {
     const sender = users[Math.floor(Math.random() * users.length)];
-    const timestamp = new Date(now.getTime() - (count - index) * 3 * 60000);
+    const timestamp = new Date(now.getTime() - (totalCount - index) * 3 * 60000);
     
     const messageTemplates = [
       "Bună, cum pot să te ajut?",
@@ -333,7 +332,6 @@ const Chat = () => {
     
     setMessages(prev => [...prev, newMessage]);
     
-    // Extract potential task
     if (content.includes('@') && content.toLowerCase().includes('sarcină')) {
       const mentionMatch = content.match(/@(\w+)/);
       if (mentionMatch && mentionMatch[1]) {
@@ -405,16 +403,8 @@ const Chat = () => {
     toast.success(`Mesajul a fost asociat cu documentul #${documentId}`);
   };
 
-  const handleEditMessage = (messageId: string, newContent: string) => {
-    setMessages(prev => 
-      prev.map(msg => 
-        msg.id === messageId 
-          ? { ...msg, content: newContent, edited: true }
-          : msg
-      )
-    );
-    
-    toast.success("Mesaj editat cu succes");
+  const handleEditMessage = (messageId: string) => {
+    toast.info("Editezi mesajul");
   };
 
   const handleDeleteMessage = (messageId: string) => {
@@ -423,7 +413,6 @@ const Chat = () => {
   };
 
   const handleCopyLink = (messageId: string) => {
-    // Simulate copying link to clipboard
     toast.success("Link copiat în clipboard");
   };
 
