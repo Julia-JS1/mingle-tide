@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -113,27 +114,29 @@ const ChannelList: React.FC<ChannelListProps> = ({
 
   return (
     <div className={cn("flex h-full flex-col", className)}>
-      <div className="p-3">
+      <div className="p-4">
         <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-4 w-4 text-muted-foreground" />
+          </div>
           <Input
             placeholder="Caută în chat..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-9"
+            className="pl-9 h-10 bg-muted/50 border-0 rounded-lg focus:ring-2 focus:ring-iflows-primary/20 focus:border-0"
           />
         </div>
       </div>
       
-      <ScrollArea className="flex-1">
-        <div className="p-2">
+      <ScrollArea className="flex-1 px-2">
+        <div className="pb-4">
           <div className="mb-4">
             <div 
-              className="flex items-center justify-between px-2 py-1 cursor-pointer"
+              className="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-muted/50 rounded-md transition-colors"
               onClick={() => setShowChannels(!showChannels)}
             >
               <div className="flex items-center text-sm font-medium">
-                {showChannels ? <ChevronDown className="h-4 w-4 mr-1" /> : <ChevronRight className="h-4 w-4 mr-1" />}
+                {showChannels ? <ChevronDown className="h-4 w-4 mr-1.5 text-iflows-primary" /> : <ChevronRight className="h-4 w-4 mr-1.5 text-iflows-primary" />}
                 Canale
               </div>
               {isAdmin && (
@@ -144,7 +147,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6 rounded-full"
+                          className="h-7 w-7 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary"
                           onClick={(e) => {
                             e.stopPropagation();
                             onCreateChannel?.();
@@ -165,7 +168,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6 rounded-full"
+                          className="h-7 w-7 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary"
                           onClick={(e) => {
                             e.stopPropagation();
                             onManageChannels?.();
@@ -184,7 +187,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
             </div>
             
             {showChannels && (
-              <div className="mt-1 space-y-0.5">
+              <div className="mt-1 space-y-0.5 pl-2">
                 {pinnedChannels.length > 0 && (
                   <div className="mb-2">
                     <div className="px-2 py-1 text-xs font-medium text-muted-foreground">
@@ -195,24 +198,27 @@ const ChannelList: React.FC<ChannelListProps> = ({
                       <button
                         key={channel.id}
                         className={cn(
-                          "w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm transition-colors",
+                          "w-full flex items-center justify-between px-2 py-2 rounded-md text-sm transition-all",
                           channel.id === selectedChannelId
-                            ? "bg-accent text-accent-foreground font-medium"
-                            : "hover:bg-muted"
+                            ? "bg-iflows-primary text-white font-medium shadow-sm"
+                            : "hover:bg-iflows-primary/10"
                         )}
                         onClick={() => onSelectChannel(channel)}
                       >
                         <div className="flex items-center overflow-hidden">
                           <div className="flex items-center min-w-0">
                             {channel.isPrivate ? (
-                              <Lock className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" />
+                              <Lock className={cn("h-3.5 w-3.5 mr-1.5 flex-shrink-0", 
+                                channel.id === selectedChannelId ? "text-white" : "text-muted-foreground")} />
                             ) : (
-                              <Hash className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" />
+                              <Hash className={cn("h-3.5 w-3.5 mr-1.5 flex-shrink-0", 
+                                channel.id === selectedChannelId ? "text-white" : "text-muted-foreground")} />
                             )}
                             <span className="truncate">{channel.name}</span>
                           </div>
                           
-                          <Pin className="h-3 w-3 ml-1.5 text-muted-foreground" />
+                          <Pin className={cn("h-3 w-3 ml-1.5", 
+                            channel.id === selectedChannelId ? "text-white/70" : "text-muted-foreground")} />
                         </div>
                         
                         {(channel.unreadCount > 0 || channel.mentions > 0) && (
@@ -246,18 +252,20 @@ const ChannelList: React.FC<ChannelListProps> = ({
                       <button
                         key={channel.id}
                         className={cn(
-                          "w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm transition-colors",
+                          "w-full flex items-center justify-between px-2 py-2 rounded-md text-sm transition-all",
                           channel.id === selectedChannelId
-                            ? "bg-accent text-accent-foreground font-medium"
-                            : "hover:bg-muted"
+                            ? "bg-iflows-primary text-white font-medium shadow-sm"
+                            : "hover:bg-iflows-primary/10"
                         )}
                         onClick={() => onSelectChannel(channel)}
                       >
                         <div className="flex items-center overflow-hidden">
                           {channel.isPrivate ? (
-                            <Lock className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" />
+                            <Lock className={cn("h-3.5 w-3.5 mr-1.5 flex-shrink-0", 
+                              channel.id === selectedChannelId ? "text-white" : "text-muted-foreground")} />
                           ) : (
-                            <Hash className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" />
+                            <Hash className={cn("h-3.5 w-3.5 mr-1.5 flex-shrink-0", 
+                              channel.id === selectedChannelId ? "text-white" : "text-muted-foreground")} />
                           )}
                           <span className="truncate">{channel.name}</span>
                         </div>
@@ -292,10 +300,10 @@ const ChannelList: React.FC<ChannelListProps> = ({
                       <button
                         key={channel.id}
                         className={cn(
-                          "w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm transition-colors text-muted-foreground",
+                          "w-full flex items-center justify-between px-2 py-2 rounded-md text-sm transition-all text-muted-foreground",
                           channel.id === selectedChannelId
-                            ? "bg-accent font-medium"
-                            : "hover:bg-muted"
+                            ? "bg-muted font-medium"
+                            : "hover:bg-muted/70"
                         )}
                         onClick={() => onSelectChannel(channel)}
                       >
@@ -321,11 +329,11 @@ const ChannelList: React.FC<ChannelListProps> = ({
           
           <div>
             <div 
-              className="flex items-center justify-between px-2 py-1 cursor-pointer"
+              className="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-muted/50 rounded-md transition-colors"
               onClick={() => setShowDirectMessages(!showDirectMessages)}
             >
               <div className="flex items-center text-sm font-medium">
-                {showDirectMessages ? <ChevronDown className="h-4 w-4 mr-1" /> : <ChevronRight className="h-4 w-4 mr-1" />}
+                {showDirectMessages ? <ChevronDown className="h-4 w-4 mr-1.5 text-iflows-primary" /> : <ChevronRight className="h-4 w-4 mr-1.5 text-iflows-primary" />}
                 Conversații directe
               </div>
               
@@ -335,7 +343,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6 rounded-full"
+                      className="h-7 w-7 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary"
                       onClick={(e) => {
                         e.stopPropagation();
                         // Add function to create new DM
@@ -352,7 +360,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
             </div>
             
             {showDirectMessages && (
-              <div className="mt-1 space-y-0.5">
+              <div className="mt-1 space-y-0.5 pl-2">
                 {filteredDirectMessages.map(dm => {
                   const partner = getDMPartnerInfo(dm);
                   
@@ -360,16 +368,16 @@ const ChannelList: React.FC<ChannelListProps> = ({
                     <button
                       key={dm.id}
                       className={cn(
-                        "w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm transition-colors",
+                        "w-full flex items-center justify-between px-2 py-2 rounded-md text-sm transition-all",
                         dm.id === selectedChannelId
-                          ? "bg-accent text-accent-foreground font-medium"
-                          : "hover:bg-muted"
+                          ? "bg-iflows-primary text-white font-medium shadow-sm"
+                          : "hover:bg-iflows-primary/10"
                       )}
                       onClick={() => onSelectChannel(dm)}
                     >
                       <div className="flex items-center overflow-hidden">
                         <div className="relative flex-shrink-0 mr-2">
-                          <div className="h-5 w-5 rounded-full overflow-hidden bg-muted">
+                          <div className="h-6 w-6 rounded-full overflow-hidden bg-muted border border-muted">
                             {partner?.avatar ? (
                               <img 
                                 src={partner.avatar} 
@@ -377,7 +385,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
                                 className="h-full w-full object-cover"
                               />
                             ) : (
-                              <User className="h-3 w-3 m-1" />
+                              <User className="h-3 w-3 m-1.5" />
                             )}
                           </div>
                           

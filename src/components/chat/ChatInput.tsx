@@ -240,16 +240,16 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="border-t bg-background p-3">
+    <div className="p-3">
       {/* Reply to message */}
       {replyToMessage && (
-        <div className="mb-2 flex items-center justify-between rounded bg-muted/50 p-2 text-xs">
+        <div className="mb-2 flex items-center justify-between rounded-md bg-muted/50 backdrop-blur-sm p-2 text-xs border border-muted shadow-sm">
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground">Răspuns către</span>
             <span className="font-medium">{replyToMessage.sender.name}</span>
             <span className="truncate max-w-[150px]">{replyToMessage.content}</span>
           </div>
-          <Button variant="ghost" size="icon" className="h-5 w-5" onClick={clearReplyTo}>
+          <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full hover:bg-muted" onClick={clearReplyTo}>
             <X className="h-3 w-3" />
           </Button>
         </div>
@@ -262,14 +262,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
             <Badge 
               key={index} 
               variant="secondary" 
-              className="flex items-center gap-1 pl-2 pr-1 py-1"
+              className="flex items-center gap-1 pl-2 pr-1 py-1 bg-muted/70 backdrop-blur-sm shadow-sm"
             >
               {getFileIcon(file.type)}
               <span className="truncate max-w-[100px]">{file.name}</span>
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="h-4 w-4 ml-1 text-muted-foreground hover:text-foreground"
+                className="h-4 w-4 ml-1 text-muted-foreground hover:text-foreground rounded-full"
                 onClick={() => removeFile(index)}
               >
                 <X className="h-3 w-3" />
@@ -281,7 +281,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       
       {/* Message input area */}
       <div
-        className="relative flex items-end gap-2"
+        className="relative flex items-end gap-2 bg-muted/30 p-2 rounded-xl border border-muted/50"
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleFileDrop}
       >
@@ -291,19 +291,19 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onChange={handleTextareaChange}
           onKeyDown={handleKeyDown}
           placeholder="Scrie un mesaj..."
-          className="min-h-[40px] max-h-[120px] pr-10 resize-none"
+          className="min-h-[40px] max-h-[120px] pr-10 resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
           disabled={isLoading}
         />
         
         {/* Input actions */}
-        <div className="absolute bottom-2 right-2 flex items-center gap-1">
+        <div className="absolute bottom-3 right-3 flex items-center gap-1">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  className="h-7 w-7 text-muted-foreground hover:text-primary"
+                  className="h-7 w-7 text-muted-foreground hover:text-iflows-primary hover:bg-iflows-primary/10 rounded-full transition-colors"
                   onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                 >
                   <Smile className="h-4 w-4" />
@@ -321,7 +321,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  className="h-7 w-7 text-muted-foreground hover:text-primary"
+                  className="h-7 w-7 text-muted-foreground hover:text-iflows-primary hover:bg-iflows-primary/10 rounded-full transition-colors"
                   onClick={handleFileClick}
                 >
                   <PaperclipIcon className="h-4 w-4" />
@@ -339,7 +339,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  className="h-7 w-7 text-muted-foreground hover:text-primary"
+                  className="h-7 w-7 text-muted-foreground hover:text-iflows-primary hover:bg-iflows-primary/10 rounded-full transition-colors"
                   onClick={() => {
                     setMessage(prev => prev + '@');
                     setTimeout(() => {
@@ -366,7 +366,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  className="h-7 w-7 text-muted-foreground hover:text-primary"
+                  className="h-7 w-7 text-muted-foreground hover:text-iflows-primary hover:bg-iflows-primary/10 rounded-full transition-colors"
                   onClick={() => {
                     setMessage(prev => prev + '#');
                     setTimeout(() => {
@@ -392,11 +392,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
         <Button 
           type="button"
           size="icon"
-          className="flex-shrink-0 bg-iflows-primary h-10 w-10 rounded-full hover:bg-iflows-secondary disabled:opacity-50"
+          className="flex-shrink-0 bg-gradient-to-r from-iflows-primary to-iflows-secondary h-10 w-10 rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100 disabled:shadow-md"
           onClick={handleSend}
           disabled={isLoading || (!message.trim() && files.length === 0)}
         >
-          <Send className="h-4 w-4" />
+          <Send className="h-4 w-4 text-white" />
         </Button>
 
         {/* Hidden file input */}
@@ -411,7 +411,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       
       {/* Mention dropdown */}
       {showMentionDropdown && (
-        <div className="absolute bottom-full left-4 mb-2 w-60 max-h-48 overflow-y-auto rounded-md border bg-popover shadow-md z-10">
+        <div className="absolute bottom-full left-4 mb-2 w-60 max-h-48 overflow-y-auto rounded-lg border bg-card/95 backdrop-blur-sm shadow-lg z-10">
           <div className="p-1">
             {filteredUsers.length === 0 ? (
               <div className="p-2 text-sm text-muted-foreground text-center">
@@ -421,10 +421,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
               filteredUsers.map(user => (
                 <div
                   key={user.id}
-                  className="flex items-center gap-2 px-2 py-1.5 rounded-sm hover:bg-accent cursor-pointer"
+                  className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer transition-colors"
                   onClick={() => insertMention(user)}
                 >
-                  <div className="h-6 w-6 rounded-full overflow-hidden bg-muted">
+                  <div className="h-6 w-6 rounded-full overflow-hidden bg-muted border border-muted shadow-sm">
                     {user.avatar ? (
                       <img 
                         src={user.avatar} 
@@ -447,7 +447,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       
       {/* Document dropdown */}
       {showDocumentDropdown && (
-        <div className="absolute bottom-full left-4 mb-2 w-60 max-h-48 overflow-y-auto rounded-md border bg-popover shadow-md z-10">
+        <div className="absolute bottom-full left-4 mb-2 w-60 max-h-48 overflow-y-auto rounded-lg border bg-card/95 backdrop-blur-sm shadow-lg z-10">
           <div className="p-1">
             {filteredDocuments.length === 0 ? (
               <div className="p-2 text-sm text-muted-foreground text-center">
@@ -457,10 +457,12 @@ const ChatInput: React.FC<ChatInputProps> = ({
               filteredDocuments.map(doc => (
                 <div
                   key={doc.id}
-                  className="flex items-center gap-2 px-2 py-1.5 rounded-sm hover:bg-accent cursor-pointer"
+                  className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer transition-colors"
                   onClick={() => insertDocumentReference(doc)}
                 >
-                  <Hash className="h-4 w-4 text-iflows-primary" />
+                  <div className="bg-iflows-primary/10 p-1 rounded-md">
+                    <Hash className="h-4 w-4 text-iflows-primary" />
+                  </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">{doc.id}</span>
                     <span className="text-xs text-muted-foreground">{doc.title}</span>
@@ -474,14 +476,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
       
       {/* Emoji picker */}
       {showEmojiPicker && (
-        <div className="absolute bottom-full right-4 mb-2 p-2 w-64 max-h-48 overflow-y-auto rounded-md border bg-popover shadow-md z-10">
+        <div className="absolute bottom-full right-4 mb-2 p-2 w-64 max-h-48 overflow-y-auto rounded-lg border bg-card/95 backdrop-blur-sm shadow-lg z-10">
           <div className="grid grid-cols-8 gap-1">
             {['😊', '😂', '👍', '👏', '❤️', '🎉', '🙏', '😍', 
               '🤔', '😎', '🔥', '✅', '❌', '⚠️', '🚀', '💯',
               '👀', '💪', '🤝', '👋', '🙌', '🤞', '👌', '🙄'].map(emoji => (
               <button
                 key={emoji}
-                className="h-8 w-8 flex items-center justify-center text-lg hover:bg-accent rounded cursor-pointer"
+                className="h-8 w-8 flex items-center justify-center text-lg hover:bg-accent hover:scale-110 rounded-md cursor-pointer transition-all"
                 onClick={() => insertEmoji(emoji)}
               >
                 {emoji}

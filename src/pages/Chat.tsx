@@ -432,7 +432,7 @@ const Chat = () => {
       <div className="h-screen flex flex-col">
         <div className="flex-grow flex overflow-hidden">
           {/* Sidebar */}
-          <div className="h-full w-64 border-r flex flex-col bg-background">
+          <div className="h-full w-64 border-r flex flex-col shadow-md bg-background/95 backdrop-blur-sm">
             <ChannelList
               currentUserId={currentUser.id}
               channels={channels}
@@ -446,24 +446,26 @@ const Chat = () => {
           </div>
 
           {/* Main chat area */}
-          <div className="flex-1 flex flex-col h-full">
+          <div className="flex-1 flex flex-col h-full bg-gradient-to-br from-background to-muted/30">
             {/* Channel header */}
-            <div className="flex items-center justify-between p-4 border-b">
+            <div className="flex items-center justify-between p-4 border-b bg-background/70 backdrop-blur-sm shadow-sm">
               <div className="flex items-center">
                 {selectedChannel?.type === 'channel' ? (
                   <>
-                    <Hash className="h-5 w-5 mr-2 text-muted-foreground" />
+                    <div className="bg-iflows-primary/10 p-1.5 rounded-md mr-3">
+                      <Hash className="h-5 w-5 text-iflows-primary" />
+                    </div>
                     <h2 className="text-lg font-medium">{selectedChannel?.name}</h2>
                     {selectedChannel?.isPrivate && (
-                      <div className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs">
+                      <div className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs font-medium">
                         Privat
                       </div>
                     )}
                   </>
                 ) : (
                   <div className="flex items-center">
-                    <div className="relative mr-2">
-                      <div className="h-8 w-8 rounded-full overflow-hidden">
+                    <div className="relative mr-3">
+                      <div className="h-9 w-9 rounded-full overflow-hidden shadow-sm border-2 border-background">
                         <img 
                           src={selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.avatar} 
                           alt={selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.name} 
@@ -471,7 +473,7 @@ const Chat = () => {
                         />
                       </div>
                       {selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.isOnline && (
-                        <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-green-500 border-2 border-background"></div>
+                        <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-background"></div>
                       )}
                     </div>
                     <h2 className="text-lg font-medium">
@@ -482,16 +484,16 @@ const Chat = () => {
               </div>
 
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors">
                   <Search className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors">
                   <Bell className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors">
                   <Pin className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors">
                   <Info className="h-4 w-4" />
                 </Button>
               </div>
@@ -502,17 +504,19 @@ const Chat = () => {
               {loading ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="flex flex-col items-center gap-2">
-                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-iflows-primary border-t-transparent"></div>
-                    <span className="text-muted-foreground">Se încarcă mesajele...</span>
+                    <div className="h-12 w-12 animate-spin rounded-full border-4 border-iflows-primary border-t-transparent"></div>
+                    <span className="text-muted-foreground mt-2 font-medium">Se încarcă mesajele...</span>
                   </div>
                 </div>
               ) : messages.length === 0 ? (
                 <div className="flex items-center justify-center h-full">
-                  <div className="flex flex-col items-center gap-4 text-center max-w-md">
-                    <MessageSquare className="h-16 w-16 text-muted-foreground opacity-30" />
-                    <h3 className="text-xl font-medium">Nicio conversație aici încă</h3>
-                    <p className="text-muted-foreground">
-                      Trimite primul mesaj pentru a începe o conversație în canalul {selectedChannel?.name}.
+                  <div className="flex flex-col items-center gap-6 text-center max-w-md">
+                    <div className="bg-iflows-primary/10 p-6 rounded-full">
+                      <MessageSquare className="h-16 w-16 text-iflows-primary opacity-80" />
+                    </div>
+                    <h3 className="text-2xl font-medium">Nicio conversație aici încă</h3>
+                    <p className="text-muted-foreground text-lg">
+                      Trimite primul mesaj pentru a începe o conversație în canalul <span className="font-medium text-foreground">{selectedChannel?.name}</span>.
                     </p>
                   </div>
                 </div>
@@ -533,7 +537,7 @@ const Chat = () => {
             </ScrollArea>
 
             {/* Input area */}
-            <div className="border-t">
+            <div className="border-t bg-background/80 backdrop-blur-sm shadow-[0_-2px_10px_rgba(0,0,0,0.03)]">
               <ChatInput
                 replyToMessage={replyTo ? {
                   id: replyTo.id,

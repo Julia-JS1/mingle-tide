@@ -135,13 +135,13 @@ const ChatMessage: React.FC<MessageProps> = ({
 
   return (
     <div 
-      className={`group relative flex gap-3 py-2 transition-all duration-200 ${isOwn ? 'justify-end' : 'justify-start'}`}
+      className={`group relative flex gap-3 py-3 transition-all duration-200 ${isOwn ? 'justify-end' : 'justify-start'} message-animation`}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
       {!isOwn && (
         <div className="flex-shrink-0 mt-1">
-          <Avatar>
+          <Avatar className="border-2 border-background shadow-sm">
             <img src={sender.avatar} alt={sender.name} className="aspect-square h-full w-full object-cover" />
           </Avatar>
         </div>
@@ -150,7 +150,7 @@ const ChatMessage: React.FC<MessageProps> = ({
       <div className={`max-w-[75%] flex flex-col ${isOwn ? 'items-end' : 'items-start'}`}>
         {/* Reply reference if this is a reply */}
         {replyTo && (
-          <div className={`mb-1 text-xs text-muted-foreground flex items-center gap-1 ${isOwn ? 'self-end' : 'self-start'}`}>
+          <div className={`mb-1 text-xs text-muted-foreground flex items-center gap-1 px-2 py-1 rounded-md bg-muted/50 ${isOwn ? 'self-end' : 'self-start'}`}>
             <MessageSquare className="h-3 w-3" />
             <span>Răspuns către <span className="font-medium">{replyToSender}</span>:</span>
             <span className="truncate max-w-[150px]">{replyToContent}</span>
@@ -166,10 +166,10 @@ const ChatMessage: React.FC<MessageProps> = ({
 
         {/* Message content */}
         <div 
-          className={`mt-1 rounded-lg px-4 py-2 message-animation
+          className={`mt-1 rounded-lg px-4 py-2.5 shadow-sm
             ${isOwn 
-              ? 'bg-iflows-primary text-white' 
-              : 'bg-muted text-foreground'
+              ? 'bg-gradient-to-r from-iflows-primary to-iflows-secondary text-white' 
+              : 'bg-muted/70 backdrop-blur-sm text-foreground'
             }`}
         >
           {renderContent()}
@@ -177,7 +177,7 @@ const ChatMessage: React.FC<MessageProps> = ({
           {/* Task created badge */}
           {taskCreated && (
             <div className="mt-2">
-              <Badge variant="outline" className="bg-iflows-primary/10 text-iflows-primary">
+              <Badge variant="outline" className="bg-iflows-primary/10 text-iflows-primary border-iflows-primary/20">
                 <CheckSquare className="mr-1 h-3 w-3" />
                 Sarcină creată
               </Badge>
@@ -209,7 +209,7 @@ const ChatMessage: React.FC<MessageProps> = ({
               <Badge 
                 key={emoji} 
                 variant="outline" 
-                className="bg-background/80 hover:bg-muted cursor-pointer transition-colors"
+                className="bg-background/80 hover:bg-muted cursor-pointer transition-colors shadow-sm"
                 onClick={() => onReact?.(id, emoji)}
               >
                 {emoji} {reaction.count}
@@ -231,7 +231,7 @@ const ChatMessage: React.FC<MessageProps> = ({
               <Button 
                 size="icon" 
                 variant="ghost" 
-                className="h-8 w-8 rounded-full"
+                className="h-8 w-8 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors"
                 onClick={() => onReply?.(id)}
               >
                 <MessageSquare className="h-4 w-4" />
@@ -249,7 +249,7 @@ const ChatMessage: React.FC<MessageProps> = ({
               <Button 
                 size="icon" 
                 variant="ghost" 
-                className="h-8 w-8 rounded-full"
+                className="h-8 w-8 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors"
                 onClick={() => onReact?.(id, "👍")}
               >
                 <ThumbsUp className="h-4 w-4" />
@@ -269,7 +269,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                 <Button 
                   size="icon" 
                   variant="ghost" 
-                  className="h-8 w-8 rounded-full text-iflows-primary"
+                  className="h-8 w-8 rounded-full text-iflows-primary hover:bg-iflows-primary/10 transition-colors"
                   onClick={() => onCreateTask?.(id)}
                 >
                   <CheckSquare className="h-4 w-4" />
@@ -290,7 +290,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                 <Button 
                   size="icon" 
                   variant="ghost" 
-                  className="h-8 w-8 rounded-full text-iflows-primary"
+                  className="h-8 w-8 rounded-full text-iflows-primary hover:bg-iflows-primary/10 transition-colors"
                   onClick={() => onLink?.(id, documentRefs[0])}
                 >
                   <PaperclipIcon className="h-4 w-4" />
@@ -309,7 +309,7 @@ const ChatMessage: React.FC<MessageProps> = ({
             <Button 
               size="icon" 
               variant="ghost" 
-              className="h-8 w-8 rounded-full"
+              className="h-8 w-8 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors"
             >
               <MoreVertical className="h-4 w-4" />
             </Button>
