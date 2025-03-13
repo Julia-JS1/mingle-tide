@@ -812,36 +812,4 @@ const Chat = () => {
   );
 };
 
-const handleCreateChannel = () => {
-  toast.info("Funcționalitate de creare canale", {
-    description: "Va fi disponibilă în curând."
-  });
-};
-
-const handleManageChannels = () => {
-  toast.info("Funcționalitate de gestionare canale", {
-    description: "Va fi disponibilă în curând."
-  });
-};
-
-const handleReply = (messageId: string) => {
-  toast.info("Răspunzi la mesajul cu ID-ul " + messageId);
-};
-
-const handleReaction = (messageId: string, emoji: string) => {
-  toast.success(`Reacție ${emoji} adăugată`);
-};
-
-const handleCreateTask = (messageId: string) => {
-  toast.success("Sarcină creată cu succes!");
-};
-
-const handleLinkToDocument = (messageId: string, docRef: string) => {
-  toast.success(`Mesajul a fost asociat cu documentul #${docRef}`);
-};
-
-const handleEditMessage = (messageId: string) => {
-  toast.info("Editare mesaj");
-};
-
-const handleDeleteMessage
+export default Chat;
