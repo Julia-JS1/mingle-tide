@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -67,6 +66,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const [mentionFilter, setMentionFilter] = useState('');
   const [documentFilter, setDocumentFilter] = useState('');
   const [currentCursorPosition, setCurrentCursorPosition] = useState(0);
+  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -132,6 +132,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       onSendMessage(message.trim(), files);
       setMessage('');
       setFiles([]);
+      setIsEmojiPickerOpen(false);
     }
   };
   
@@ -290,30 +291,28 @@ const ChatInput: React.FC<ChatInputProps> = ({
         
         <div className="absolute bottom-3 right-3 flex items-center gap-1">
           <TooltipProvider delayDuration={0}>
-            <Popover>
+            <Popover open={isEmojiPickerOpen} onOpenChange={setIsEmojiPickerOpen}>
               <PopoverTrigger asChild>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      className="h-7 w-7 text-muted-foreground hover:text-iflows-primary hover:bg-iflows-primary/10 rounded-full transition-colors"
-                    >
-                      <Smile className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top">
-                    <p>Adaugă emoji</p>
-                  </TooltipContent>
-                </Tooltip>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  className="h-7 w-7 text-muted-foreground hover:text-iflows-primary hover:bg-iflows-primary/10 rounded-full transition-colors"
+                  onClick={() => setIsEmojiPickerOpen(true)}
+                >
+                  <Smile className="h-4 w-4" />
+                </Button>
               </PopoverTrigger>
-              <PopoverContent align="end" className="w-60 p-2">
+              <PopoverContent align="end" className="w-60 p-2" sideOffset={5}>
                 <div className="grid grid-cols-8 gap-1">
                   {emojis.map(emoji => (
                     <button
                       key={emoji}
+                      type="button"
                       className="h-8 w-8 flex items-center justify-center text-lg hover:bg-accent hover:scale-110 rounded-md cursor-pointer transition-all"
-                      onClick={() => insertEmoji(emoji)}
+                      onClick={() => {
+                        insertEmoji(emoji);
+                        setIsEmojiPickerOpen(false);
+                      }}
                     >
                       {emoji}
                     </button>
