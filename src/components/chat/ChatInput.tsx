@@ -22,6 +22,11 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Badge } from '@/components/ui/badge';
 
 interface ChatInputProps {
@@ -57,7 +62,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
 }) => {
   const [message, setMessage] = useState('');
   const [files, setFiles] = useState<File[]>([]);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showMentionDropdown, setShowMentionDropdown] = useState(false);
   const [showDocumentDropdown, setShowDocumentDropdown] = useState(false);
   const [mentionFilter, setMentionFilter] = useState('');
@@ -120,7 +124,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (e.key === 'Escape') {
       setShowMentionDropdown(false);
       setShowDocumentDropdown(false);
-      setShowEmojiPicker(false);
     }
   };
   
@@ -129,7 +132,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
       onSendMessage(message.trim(), files);
       setMessage('');
       setFiles([]);
-      setShowEmojiPicker(false);
     }
   };
   
@@ -204,7 +206,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (textareaRef.current) {
       const newMessage = message + emoji;
       setMessage(newMessage);
-      setShowEmojiPicker(false);
       
       setTimeout(() => {
         if (textareaRef.current) {
@@ -229,6 +230,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (type.includes('audio')) return <MicIcon className="h-4 w-4" />;
     return <FileIcon className="h-4 w-4" />;
   };
+
+  const emojis = ['😊', '😂', '👍', '👏', '❤️', '🎉', '🙏', '😍', 
+                 '🤔', '😎', '🔥', '✅', '❌', '⚠️', '🚀', '💯',
+                 '👀', '💪', '🤝', '👋', '🙌', '🤞', '👌', '🙄'];
 
   return (
     <div className="p-3">
@@ -285,21 +290,37 @@ const ChatInput: React.FC<ChatInputProps> = ({
         
         <div className="absolute bottom-3 right-3 flex items-center gap-1">
           <TooltipProvider delayDuration={0}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  className="h-7 w-7 text-muted-foreground hover:text-iflows-primary hover:bg-iflows-primary/10 rounded-full transition-colors"
-                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                >
-                  <Smile className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <p>Adaugă emoji</p>
-              </TooltipContent>
-            </Tooltip>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-iflows-primary hover:bg-iflows-primary/10 rounded-full transition-colors"
+                    >
+                      <Smile className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p>Adaugă emoji</p>
+                  </TooltipContent>
+                </Tooltip>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-60 p-2">
+                <div className="grid grid-cols-8 gap-1">
+                  {emojis.map(emoji => (
+                    <button
+                      key={emoji}
+                      className="h-8 w-8 flex items-center justify-center text-lg hover:bg-accent hover:scale-110 rounded-md cursor-pointer transition-all"
+                      onClick={() => insertEmoji(emoji)}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
             
             <Tooltip>
               <TooltipTrigger asChild>
@@ -447,24 +468,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 </div>
               ))
             )}
-          </div>
-        </div>
-      )}
-      
-      {showEmojiPicker && (
-        <div className="absolute bottom-full right-4 mb-2 p-2 w-64 max-h-48 overflow-y-auto rounded-lg border bg-card/95 backdrop-blur-sm shadow-lg z-10">
-          <div className="grid grid-cols-8 gap-1">
-            {['😊', '😂', '👍', '👏', '❤️', '🎉', '🙏', '😍', 
-              '🤔', '😎', '🔥', '✅', '❌', '⚠️', '🚀', '💯',
-              '👀', '💪', '🤝', '👋', '🙌', '🤞', '👌', '🙄'].map(emoji => (
-              <button
-                key={emoji}
-                className="h-8 w-8 flex items-center justify-center text-lg hover:bg-accent hover:scale-110 rounded-md cursor-pointer transition-all"
-                onClick={() => insertEmoji(emoji)}
-              >
-                {emoji}
-              </button>
-            ))}
           </div>
         </div>
       )}
