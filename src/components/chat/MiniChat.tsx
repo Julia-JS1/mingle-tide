@@ -59,6 +59,7 @@ interface Message {
   mentions?: string[];
   documentRefs?: string[];
   taskCreated?: boolean;
+  hasReplies?: boolean;
 }
 
 interface MiniChatProps {
@@ -96,13 +97,24 @@ const MiniChat: React.FC<MiniChatProps> = ({
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const updateMessagesWithReplyStatus = (messages: Message[]): Message[] => {
+    return messages.map(message => {
+      const hasReplies = messages.some(m => m.replyTo === message.id);
+      return {
+        ...message,
+        hasReplies
+      };
+    });
+  };
+
   useEffect(() => {
     if (selectedChannel) {
       setLoading(true);
       
       const timer = setTimeout(() => {
         const randomMessages = generateMockMessages(selectedChannel, 8);
-        setMessages(randomMessages);
+        const messagesWithReplyStatus = updateMessagesWithReplyStatus(randomMessages);
+        setMessages(messagesWithReplyStatus);
         setLoading(false);
       }, 500);
       
@@ -259,7 +271,10 @@ const MiniChat: React.FC<MiniChatProps> = ({
       setReplyTo(null);
     }
     
-    setMessages(prev => [...prev, newMessage]);
+    setMessages(prev => {
+      const updatedMessages = [...prev, newMessage];
+      return updateMessagesWithReplyStatus(updatedMessages);
+    });
   };
 
   const extractMentions = (content: string): string[] => {
@@ -353,6 +368,24 @@ const MiniChat: React.FC<MiniChatProps> = ({
   const handleDelete = (messageId: string) => {
     setMessages(prev => prev.filter(msg => msg.id !== messageId));
     toast.success("Mesaj șters");
+  };
+
+  const handleScrollToReplies = (messageId: string) => {
+    const replyMessages = messages.filter(msg => msg.replyTo === messageId);
+    if (replyMessages.length > 0) {
+      const latestReply = replyMessages.reduce((latest, current) => 
+        current.timestamp > latest.timestamp ? current : latest
+      );
+      
+      const messageElement = document.getElementById(`message-${latestReply.id}`);
+      if (messageElement) {
+        messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        messageElement.classList.add('message-highlight');
+        setTimeout(() => messageElement.classList.remove('message-highlight'), 1500);
+      }
+      
+      toast.info(`Navigat la răspunsul lui ${latestReply.sender.name}`);
+    }
   };
 
   const clearReplyTo = () => setReplyTo(null);
@@ -498,22 +531,24 @@ const MiniChat: React.FC<MiniChatProps> = ({
                   </div>
                 ) : (
                   messages.map((message, index) => (
-                    <ChatMessage
-                      key={message.id}
-                      {...message}
-                      isOwn={message.sender.id === currentUser.id}
-                      isLatestMessage={index === messages.length - 1}
-                      onReply={handleReply}
-                      onReact={handleReaction}
-                      onCreateTask={handleCreateTask}
-                      onLink={handleLink}
-                      onCopyLink={handleCopyLink}
-                      onRemind={handleRemind}
-                      onForward={handleForward}
-                      onMarkUnread={handleMarkUnread}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                    />
+                    <div key={message.id} id={`message-${message.id}`}>
+                      <ChatMessage
+                        {...message}
+                        isOwn={message.sender.id === currentUser.id}
+                        isLatestMessage={index === messages.length - 1}
+                        onReply={handleReply}
+                        onReact={handleReaction}
+                        onCreateTask={handleCreateTask}
+                        onLink={handleLink}
+                        onCopyLink={handleCopyLink}
+                        onRemind={handleRemind}
+                        onForward={handleForward}
+                        onMarkUnread={handleMarkUnread}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        onScrollToReplies={handleScrollToReplies}
+                      />
+                    </div>
                   ))
                 )}
                 <div ref={messagesEndRef} />

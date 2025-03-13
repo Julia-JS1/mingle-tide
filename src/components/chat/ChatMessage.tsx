@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -13,6 +12,7 @@ import {
   PaperclipIcon, 
   CheckSquare,
   Plus,
+  MessageCircleReply,
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -51,6 +51,7 @@ export interface MessageProps {
   documentRefs?: string[];
   taskCreated?: boolean;
   isLatestMessage?: boolean;
+  hasReplies?: boolean;
   onReply?: (messageId: string) => void;
   onReact?: (messageId: string, emoji: string) => void;
   onCreateTask?: (messageId: string) => void;
@@ -62,6 +63,7 @@ export interface MessageProps {
   onForward?: (messageId: string) => void;
   onMarkUnread?: (messageId: string) => void;
   onBookmark?: (messageId: string) => void;
+  onScrollToReplies?: (messageId: string) => void;
 }
 
 const ChatMessage: React.FC<MessageProps> = ({
@@ -81,6 +83,7 @@ const ChatMessage: React.FC<MessageProps> = ({
   documentRefs = [],
   taskCreated = false,
   isLatestMessage = true,
+  hasReplies = false,
   onReply,
   onReact,
   onCreateTask,
@@ -92,6 +95,7 @@ const ChatMessage: React.FC<MessageProps> = ({
   onForward,
   onMarkUnread,
   onBookmark,
+  onScrollToReplies,
 }) => {
   const [showActions, setShowActions] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -99,7 +103,6 @@ const ChatMessage: React.FC<MessageProps> = ({
   const renderContent = () => {
     let formattedContent = content;
     
-    // Process mentions (make them blue as in the screenshot)
     mentions.forEach(mention => {
       formattedContent = formattedContent.replace(
         new RegExp(`@${mention}\\b`, 'g'),
@@ -107,7 +110,6 @@ const ChatMessage: React.FC<MessageProps> = ({
       );
     });
 
-    // Process document references (make them purple with background as in the screenshot)
     documentRefs.forEach(docRef => {
       formattedContent = formattedContent.replace(
         new RegExp(`#${docRef}\\b`, 'g'),
@@ -115,7 +117,6 @@ const ChatMessage: React.FC<MessageProps> = ({
       );
     });
 
-    // Check for task trigger phrases and format them
     const taskTriggerPhrases = ["te rog să", "îmi poți", "poți să", "ai putea să", "solicită"];
     taskTriggerPhrases.forEach(phrase => {
       if (content.toLowerCase().includes(phrase.toLowerCase())) {
@@ -141,7 +142,7 @@ const ChatMessage: React.FC<MessageProps> = ({
   const handleCreateTask = () => {
     setIsTaskModalOpen(true);
   };
-  
+
   const handleTaskSave = (taskData: TaskData) => {
     if (onCreateTask) {
       onCreateTask(id);
@@ -151,17 +152,22 @@ const ChatMessage: React.FC<MessageProps> = ({
     }
   };
 
+  const handleScrollToReplies = () => {
+    if (onScrollToReplies) {
+      onScrollToReplies(id);
+      toast.info("Navigare la răspunsuri");
+    }
+  };
+
   const hasTaskTrigger = ["te rog să", "îmi poți", "poți să", "ai putea să", "solicită"].some(
     phrase => content.toLowerCase().includes(phrase.toLowerCase())
   );
 
-  // Check if the message contains "toate produsele sunt disponibile" - this one should not show the task button
   const isAvailabilityConfirmation = content.includes("toate produsele sunt disponibile");
 
   const hasMention = mentions.length > 0;
   const hasDocRef = documentRefs.length > 0;
   
-  // Only show the create task button if it's not the availability confirmation message
   const shouldShowCreateTaskButton = (hasMention || hasDocRef || hasTaskTrigger) && !taskCreated && !isAvailabilityConfirmation;
 
   return (
@@ -241,9 +247,9 @@ const ChatMessage: React.FC<MessageProps> = ({
           </div>
         )}
 
-        {Object.keys(reactions).length > 0 && (
-          <div className="mt-1 flex flex-wrap gap-1">
-            {Object.entries(reactions).map(([emoji, reaction]) => (
+        <div className="mt-1 flex flex-wrap gap-1">
+          {Object.keys(reactions).length > 0 && (
+            Object.entries(reactions).map(([emoji, reaction]) => (
               <Badge 
                 key={emoji} 
                 variant="outline" 
@@ -252,9 +258,19 @@ const ChatMessage: React.FC<MessageProps> = ({
               >
                 {emoji} {reaction.count}
               </Badge>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+          
+          {hasReplies && (
+            <Badge 
+              variant="outline" 
+              className="reaction-badge bg-white dark:bg-slate-800 hover:bg-muted shadow-sm cursor-pointer"
+              onClick={handleScrollToReplies}
+            >
+              <MessageCircleReply className="h-3 w-3 mr-1" /> 1
+            </Badge>
+          )}
+        </div>
       </div>
 
       {showActions && (
