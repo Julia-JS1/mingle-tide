@@ -155,11 +155,14 @@ const ChatMessage: React.FC<MessageProps> = ({
     phrase => content.toLowerCase().includes(phrase.toLowerCase())
   );
 
+  // Check if the message contains "toate produsele sunt disponibile" - this one should not show the task button
+  const isAvailabilityConfirmation = content.includes("toate produsele sunt disponibile");
+
   const hasMention = mentions.length > 0;
   const hasDocRef = documentRefs.length > 0;
   
-  // Determine if we should show the create task button based on the screenshot content
-  const shouldShowCreateTaskButton = (hasMention || hasDocRef || hasTaskTrigger) && !taskCreated;
+  // Only show the create task button if it's not the availability confirmation message
+  const shouldShowCreateTaskButton = (hasMention || hasDocRef || hasTaskTrigger) && !taskCreated && !isAvailabilityConfirmation;
 
   return (
     <div 
@@ -229,7 +232,7 @@ const ChatMessage: React.FC<MessageProps> = ({
             <Button 
               size="sm"
               variant="outline"
-              className="bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700"
+              className="bg-purple-100 hover:bg-purple-200 border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-800/30 dark:text-purple-300 dark:hover:bg-purple-800/50"
               onClick={handleCreateTask}
             >
               <Plus className="mr-1.5 h-3.5 w-3.5" />
@@ -275,7 +278,7 @@ const ChatMessage: React.FC<MessageProps> = ({
       )}
 
       <TooltipProvider delayDuration={0}>
-        {hasTaskTrigger && !taskCreated && (
+        {hasTaskTrigger && !taskCreated && !isAvailabilityConfirmation && (
           <Tooltip>
             <TooltipTrigger asChild>
               <Button 
@@ -285,7 +288,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                   h-8 w-8 rounded-full transition-colors ${
                     taskCreated 
                       ? "bg-green-600 text-white hover:bg-green-700" 
-                      : "bg-blue-600 text-white hover:bg-blue-700"
+                      : "bg-purple-600 text-white hover:bg-purple-700"
                   }`}
                 onClick={handleCreateTask}
                 disabled={taskCreated}
