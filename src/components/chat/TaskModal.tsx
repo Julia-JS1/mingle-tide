@@ -72,14 +72,19 @@ const TaskModal: React.FC<TaskModalProps> = ({
           <div className="grid gap-2">
             <Label htmlFor="title" className="flex items-center gap-2">
               <FileTextIcon className="h-4 w-4 text-muted-foreground" />
-              Titlu
+              Titlu <span className="text-red-500">*</span>
             </Label>
             <Input
               id="title"
               value={taskData.title}
               onChange={(e) => setTaskData({ ...taskData, title: e.target.value })}
               placeholder="Adaugă un titlu pentru sarcină"
+              required
+              className={!taskData.title.trim() ? "border-red-300 focus-visible:ring-red-500" : ""}
             />
+            {!taskData.title.trim() && (
+              <p className="text-xs text-red-500 mt-1">Titlul este obligatoriu</p>
+            )}
           </div>
 
           <div className="grid gap-2">
