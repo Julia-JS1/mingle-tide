@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import ChannelList from '@/components/chat/ChannelList';
@@ -10,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ro } from 'date-fns/locale';
+import TaskModal, { TaskData } from '@/components/chat/TaskModal';
 
 interface ChatMessageType {
   id: string;
@@ -197,9 +199,279 @@ const Chat = () => {
   const [loading, setLoading] = useState(false);
   const [replyTo, setReplyTo] = useState<ChatMessageType | null>(null);
   const [isManageChannelsOpen, setIsManageChannelsOpen] = useState(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [taskMessage, setTaskMessage] = useState("");
+  const [taskMentionedUser, setTaskMentionedUser] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // ... keep existing code (handleSelectChannel, useEffects, generateExampleMessages, generateMockMessages, getRandomMessage, handleSendMessage, handleReaction, handleReply, handleCreateTask, handleLinkToDocument, handleEditMessage, handleDeleteMessage, handleCopyLink, handleRemind, handleForward, handleMarkUnread, handleCreateChannel, handleManageChannels, handleBookmark)
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      setLoading(true);
+      setTimeout(() => {
+        const exampleMessages = generateExampleMessages(15);
+        setMessages(exampleMessages);
+        setLoading(false);
+      }, 1000);
+    };
+
+    fetchMessages();
+  }, [selectedChannel]);
+
+  const handleSelectChannel = (channel: any) => {
+    setSelectedChannel(channel);
+    setReplyTo(null);
+  };
+
+  const generateExampleMessages = (count: number): ChatMessageType[] => {
+    return generateMockMessages(count);
+  };
+
+  const generateMockMessages = (count: number): ChatMessageType[] => {
+    const mockMessages: ChatMessageType[] = [];
+    const now = new Date();
+
+    for (let i = 0; i < count; i++) {
+      const randomMessage = getRandomMessage(i, now);
+      mockMessages.push(randomMessage);
+    }
+
+    return mockMessages;
+  };
+
+  const getRandomMessage = (index: number, now: Date): ChatMessageType => {
+    const sender = users[Math.floor(Math.random() * users.length)];
+    const timestamp = new Date(now.getTime() - (count - index) * 3 * 60000);
+    
+    const messageTemplates = [
+      "Bună, cum pot să te ajut?",
+      "Am verificat documentul, totul este în regulă.",
+      "Trebuie să trimitem oferta astăzi.",
+      "Când putem programa o întâlnire pentru a discuta despre acest proiect?",
+      "Am actualizat datele în sistem.",
+      "Clientul a solicitat o ofertă pentru 10 bucăți.",
+      "Poți să verifici facturile din ultima lună?",
+      "Am transmis comanda către furnizor.",
+      "Stocul este insuficient pentru această comandă.",
+      "Documentele au fost semnate și trimise.",
+    ];
+    
+    const content = messageTemplates[Math.floor(Math.random() * messageTemplates.length)];
+    
+    const mentions: string[] = [];
+    const documentRefs: string[] = [];
+    
+    if (Math.random() > 0.7) {
+      const randomUser = users.find(u => u.id !== sender.id);
+      if (randomUser) {
+        mentions.push(randomUser.name);
+      }
+    }
+    
+    if (Math.random() > 0.7) {
+      const randomDoc = documents[Math.floor(Math.random() * documents.length)];
+      documentRefs.push(randomDoc.id);
+    }
+    
+    return {
+      id: `msg-${Date.now()}-${index}`,
+      content,
+      sender,
+      timestamp,
+      isRead: Math.random() > 0.3,
+      mentions,
+      documentRefs,
+      edited: Math.random() > 0.8,
+      attachments: Math.random() > 0.8 ? [{
+        id: `attach-${index}`,
+        name: `document-${index}.pdf`,
+        type: 'application/pdf',
+        size: Math.floor(Math.random() * 1000000),
+        url: '#'
+      }] : undefined,
+      reactions: Math.random() > 0.7 ? {
+        '👍': {
+          emoji: '👍',
+          count: Math.floor(Math.random() * 3) + 1,
+          users: [users[0].id]
+        }
+      } : undefined
+    };
+  };
+
+  const handleSendMessage = (content: string, attachments: File[]) => {
+    if (!content.trim() && attachments.length === 0) return;
+    
+    const newMessage: ChatMessageType = {
+      id: `msg-${Date.now()}`,
+      content: content.trim(),
+      sender: currentUser,
+      timestamp: new Date(),
+      isRead: true,
+      mentions: [],
+      documentRefs: [],
+      attachments: attachments.map((file, index) => ({
+        id: `attach-${Date.now()}-${index}`,
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        url: '#'
+      }))
+    };
+    
+    if (replyTo) {
+      newMessage.replyTo = replyTo.id;
+      newMessage.replyToContent = replyTo.content;
+      newMessage.replyToSender = replyTo.sender.name;
+      setReplyTo(null);
+    }
+    
+    setMessages(prev => [...prev, newMessage]);
+    
+    // Extract potential task
+    if (content.includes('@') && content.toLowerCase().includes('sarcină')) {
+      const mentionMatch = content.match(/@(\w+)/);
+      if (mentionMatch && mentionMatch[1]) {
+        setTaskMessage(content);
+        setTaskMentionedUser(mentionMatch[1]);
+        setIsTaskModalOpen(true);
+      }
+    }
+  };
+
+  const handleReaction = (messageId: string, emoji: string) => {
+    setMessages(prev => 
+      prev.map(msg => 
+        msg.id === messageId 
+          ? {
+              ...msg,
+              reactions: {
+                ...msg.reactions,
+                [emoji]: {
+                  emoji,
+                  count: msg.reactions?.[emoji] 
+                    ? msg.reactions[emoji].count + 1 
+                    : 1,
+                  users: [
+                    ...(msg.reactions?.[emoji]?.users || []),
+                    currentUser.id
+                  ]
+                }
+              }
+            }
+          : msg
+      )
+    );
+    
+    toast.success(`Ai reacționat cu ${emoji} la mesaj`);
+  };
+
+  const handleReply = (messageId: string) => {
+    const messageToReply = messages.find(msg => msg.id === messageId);
+    if (messageToReply) {
+      setReplyTo(messageToReply);
+    }
+  };
+
+  const handleCreateTask = (messageId: string) => {
+    const message = messages.find(msg => msg.id === messageId);
+    if (message) {
+      setTaskMessage(message.content);
+      setTaskMentionedUser(message.mentions[0] || "");
+      setIsTaskModalOpen(true);
+    }
+  };
+
+  const handleSaveTask = (taskData: TaskData) => {
+    toast.success("Sarcină creată cu succes!", {
+      description: `Sarcina "${taskData.title}" a fost asignată lui ${taskData.assignee || "nimeni"}`
+    });
+    
+    setMessages(prev => 
+      prev.map(msg => 
+        msg.content === taskMessage
+          ? { ...msg, taskCreated: true }
+          : msg
+      )
+    );
+  };
+
+  const handleLinkToDocument = (messageId: string, documentId: string) => {
+    toast.success(`Mesajul a fost asociat cu documentul #${documentId}`);
+  };
+
+  const handleEditMessage = (messageId: string, newContent: string) => {
+    setMessages(prev => 
+      prev.map(msg => 
+        msg.id === messageId 
+          ? { ...msg, content: newContent, edited: true }
+          : msg
+      )
+    );
+    
+    toast.success("Mesaj editat cu succes");
+  };
+
+  const handleDeleteMessage = (messageId: string) => {
+    setMessages(prev => prev.filter(msg => msg.id !== messageId));
+    toast.success("Mesaj șters cu succes");
+  };
+
+  const handleCopyLink = (messageId: string) => {
+    // Simulate copying link to clipboard
+    toast.success("Link copiat în clipboard");
+  };
+
+  const handleRemind = (messageId: string) => {
+    toast.success("Vei primi o notificare pentru acest mesaj peste 1 oră");
+  };
+
+  const handleForward = (messageId: string) => {
+    toast.info("Selectează unde vrei să redirecționezi mesajul");
+  };
+
+  const handleMarkUnread = (messageId: string) => {
+    setMessages(prev => 
+      prev.map(msg => 
+        msg.id === messageId 
+          ? { ...msg, isRead: false }
+          : msg
+      )
+    );
+    
+    toast.success("Mesaj marcat ca necitit");
+  };
+
+  const handleBookmark = (messageId: string) => {
+    toast.success("Mesaj salvat în favorite");
+  };
+
+  const handleCreateChannel = (channelData: any) => {
+    const newChannel = {
+      id: `channel-${Date.now()}`,
+      name: channelData.name,
+      type: "channel" as const,
+      isPrivate: channelData.isPrivate,
+      isPinned: false,
+      isArchived: false,
+      unreadCount: 0,
+      mentions: 0
+    };
+    
+    channels.push(newChannel);
+    setSelectedChannel(newChannel);
+    
+    toast.success(`Canal nou creat: #${channelData.name}`);
+  };
+
+  const handleManageChannels = () => {
+    setIsManageChannelsOpen(true);
+  };
 
   return (
     <TooltipProvider>
@@ -369,6 +641,14 @@ const Chat = () => {
         onClose={() => setIsManageChannelsOpen(false)}
         channels={channels}
         isAdmin={currentUser.isAdmin}
+      />
+      
+      <TaskModal
+        isOpen={isTaskModalOpen}
+        onClose={() => setIsTaskModalOpen(false)}
+        onSave={handleSaveTask}
+        messageContent={taskMessage}
+        mentionedUser={taskMentionedUser}
       />
     </TooltipProvider>
   );
