@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 interface Channel {
   id: string;
@@ -149,116 +150,198 @@ const ChannelManagementDrawer: React.FC<ChannelManagementDrawerProps> = ({
   const archivedChannels = filteredChannels.filter(channel => channel.isArchived);
 
   return (
-    <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="h-[85vh] max-h-[85vh]">
-        <DrawerHeader>
-          <DrawerTitle className="text-xl">Gestionare canale</DrawerTitle>
-          <DrawerDescription>
-            Gestionează canalele de comunicare din platformă
-          </DrawerDescription>
-        </DrawerHeader>
-        
-        <div className="p-4">
-          <div className="mb-4">
-            <Input
-              placeholder="Caută canale..."
-              value={searchQuery}
-              onChange={handleSearch}
-              className="bg-muted/50"
-            />
-          </div>
+    <TooltipProvider>
+      <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <DrawerContent className="h-[85vh] max-h-[85vh]">
+          <DrawerHeader>
+            <DrawerTitle className="text-xl">Gestionare canale</DrawerTitle>
+            <DrawerDescription>
+              Gestionează canalele de comunicare din platformă
+            </DrawerDescription>
+          </DrawerHeader>
           
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-sm font-medium mb-2 flex items-center">
-                <Hash className="h-4 w-4 mr-1" />
-                Canale active
-              </h3>
-              <Separator className="mb-3" />
-              
-              {activeChannels.length === 0 ? (
-                <div className="text-center text-muted-foreground py-4">
-                  Nu există canale active{searchQuery ? ' care să corespundă căutării' : ''}
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {activeChannels.map(channel => (
-                    <div 
-                      key={channel.id}
-                      className="flex items-center justify-between rounded-md p-2 hover:bg-muted/50 group transition-colors"
-                    >
-                      {editingChannel?.id === channel.id ? (
-                        <div className="flex-1 flex items-center space-x-2">
-                          {channel.isPrivate ? (
-                            <Lock className="h-4 w-4 text-muted-foreground" />
-                          ) : (
-                            <Hash className="h-4 w-4 text-muted-foreground" />
-                          )}
-                          <Input
-                            value={editName}
-                            onChange={(e) => setEditName(e.target.value)}
-                            className="h-8"
-                            autoFocus
-                          />
-                          <div className="space-x-1">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={saveEdit}
-                              className="h-8"
-                            >
-                              Salvează
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={cancelEdit}
-                              className="h-8"
-                            >
-                              Anulează
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="flex items-center space-x-2">
+          <div className="p-4">
+            <div className="mb-4">
+              <Input
+                placeholder="Caută canale..."
+                value={searchQuery}
+                onChange={handleSearch}
+                className="bg-muted/50"
+              />
+            </div>
+            
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-sm font-medium mb-2 flex items-center">
+                  <Hash className="h-4 w-4 mr-1" />
+                  Canale active
+                </h3>
+                <Separator className="mb-3" />
+                
+                {activeChannels.length === 0 ? (
+                  <div className="text-center text-muted-foreground py-4">
+                    Nu există canale active{searchQuery ? ' care să corespundă căutării' : ''}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {activeChannels.map(channel => (
+                      <div 
+                        key={channel.id}
+                        className="flex items-center justify-between rounded-md p-2 hover:bg-muted/50 group transition-colors"
+                      >
+                        {editingChannel?.id === channel.id ? (
+                          <div className="flex-1 flex items-center space-x-2">
                             {channel.isPrivate ? (
                               <Lock className="h-4 w-4 text-muted-foreground" />
                             ) : (
                               <Hash className="h-4 w-4 text-muted-foreground" />
                             )}
-                            <span className="font-medium">{channel.name}</span>
-                            {channel.isPinned && (
-                              <Pin className="h-3 w-3 text-muted-foreground" />
-                            )}
-                            {channel.isPrivate && (
-                              <Badge variant="outline" className="text-xs">Privat</Badge>
-                            )}
+                            <Input
+                              value={editName}
+                              onChange={(e) => setEditName(e.target.value)}
+                              className="h-8"
+                              autoFocus
+                            />
+                            <div className="space-x-1">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={saveEdit}
+                                className="h-8"
+                              >
+                                Salvează
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={cancelEdit}
+                                className="h-8"
+                              >
+                                Anulează
+                              </Button>
+                            </div>
                           </div>
-                          
+                        ) : (
+                          <>
+                            <div className="flex items-center space-x-2">
+                              {channel.isPrivate ? (
+                                <Lock className="h-4 w-4 text-muted-foreground" />
+                              ) : (
+                                <Hash className="h-4 w-4 text-muted-foreground" />
+                              )}
+                              <span className="font-medium">{channel.name}</span>
+                              {channel.isPinned && (
+                                <Pin className="h-3 w-3 text-muted-foreground" />
+                              )}
+                              {channel.isPrivate && (
+                                <Badge variant="outline" className="text-xs">Privat</Badge>
+                              )}
+                            </div>
+                            
+                            <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              {isAdmin && (
+                                <>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        className="h-8 w-8"
+                                        onClick={() => startEditing(channel)}
+                                      >
+                                        <Settings className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Editează canal</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                  
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        className="h-8 w-8"
+                                        onClick={() => handlePin(channel)}
+                                      >
+                                        {channel.isPinned ? (
+                                          <PinOff className="h-4 w-4" />
+                                        ) : (
+                                          <Pin className="h-4 w-4" />
+                                        )}
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>{channel.isPinned ? 'Dezancorează canal' : 'Ancorează canal'}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                  
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        className="h-8 w-8"
+                                        onClick={() => handleArchive(channel)}
+                                      >
+                                        <Archive className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Arhivează canal</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                  
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                        onClick={() => handleDelete(channel)}
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Șterge canal</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </>
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              {archivedChannels.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-medium mb-2 flex items-center">
+                    <Archive className="h-4 w-4 mr-1" />
+                    Canale arhivate
+                  </h3>
+                  <Separator className="mb-3" />
+                  
+                  <div className="space-y-2">
+                    {archivedChannels.map(channel => (
+                      <div 
+                        key={channel.id}
+                        className="flex items-center justify-between rounded-md p-2 hover:bg-muted/50 group transition-colors text-muted-foreground"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <Hash className="h-4 w-4" />
+                          <span>{channel.name}</span>
+                        </div>
+                        
+                        {isAdmin && (
                           <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            {isAdmin && (
-                              <>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="h-8 w-8"
-                                  onClick={() => startEditing(channel)}
-                                >
-                                  <Settings className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="h-8 w-8"
-                                  onClick={() => handlePin(channel)}
-                                >
-                                  {channel.isPinned ? (
-                                    <PinOff className="h-4 w-4" />
-                                  ) : (
-                                    <Pin className="h-4 w-4" />
-                                  )}
-                                </Button>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
                                 <Button
                                   size="icon"
                                   variant="ghost"
@@ -267,6 +350,14 @@ const ChannelManagementDrawer: React.FC<ChannelManagementDrawerProps> = ({
                                 >
                                   <Archive className="h-4 w-4" />
                                 </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Dezarhivează canal</p>
+                              </TooltipContent>
+                            </Tooltip>
+                            
+                            <Tooltip>
+                              <TooltipTrigger asChild>
                                 <Button
                                   size="icon"
                                   variant="ghost"
@@ -275,71 +366,29 @@ const ChannelManagementDrawer: React.FC<ChannelManagementDrawerProps> = ({
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
-                              </>
-                            )}
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Șterge canal</p>
+                              </TooltipContent>
+                            </Tooltip>
                           </div>
-                        </>
-                      )}
-                    </div>
-                  ))}
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
-            
-            {archivedChannels.length > 0 && (
-              <div>
-                <h3 className="text-sm font-medium mb-2 flex items-center">
-                  <Archive className="h-4 w-4 mr-1" />
-                  Canale arhivate
-                </h3>
-                <Separator className="mb-3" />
-                
-                <div className="space-y-2">
-                  {archivedChannels.map(channel => (
-                    <div 
-                      key={channel.id}
-                      className="flex items-center justify-between rounded-md p-2 hover:bg-muted/50 group transition-colors text-muted-foreground"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <Hash className="h-4 w-4" />
-                        <span>{channel.name}</span>
-                      </div>
-                      
-                      {isAdmin && (
-                        <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-8 w-8"
-                            onClick={() => handleArchive(channel)}
-                          >
-                            <Archive className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                            onClick={() => handleDelete(channel)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
-        </div>
-        
-        <DrawerFooter>
-          <DrawerClose asChild>
-            <Button variant="outline">Închide</Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+          
+          <DrawerFooter>
+            <DrawerClose asChild>
+              <Button variant="outline">Închide</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    </TooltipProvider>
   );
 };
 
