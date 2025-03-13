@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import ChannelList from '@/components/chat/ChannelList';
@@ -62,7 +63,7 @@ const Chat = () => {
     },
     {
       id: "channel2",
-      name: "ui-team",
+      name: "vanzari",
       type: "channel" as const,
       isPrivate: false,
       isPinned: true,
@@ -72,7 +73,7 @@ const Chat = () => {
     },
     {
       id: "channel3",
-      name: "marketing",
+      name: "productie",
       type: "channel" as const,
       isPrivate: false,
       isPinned: false,
@@ -82,7 +83,7 @@ const Chat = () => {
     },
     {
       id: "channel4",
-      name: "dev-backend",
+      name: "marketing",
       type: "channel" as const,
       isPrivate: true,
       isPinned: false,
@@ -92,7 +93,7 @@ const Chat = () => {
     },
     {
       id: "channel5",
-      name: "old-projects",
+      name: "financiar",
       type: "channel" as const,
       isPrivate: false,
       isPinned: false,
