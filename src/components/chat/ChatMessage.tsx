@@ -64,6 +64,7 @@ export interface MessageProps {
   mentions?: string[];
   documentRefs?: string[];
   taskCreated?: boolean;
+  isLatestMessage?: boolean;
   onReply?: (messageId: string) => void;
   onReact?: (messageId: string, emoji: string) => void;
   onCreateTask?: (messageId: string) => void;
@@ -93,6 +94,7 @@ const ChatMessage: React.FC<MessageProps> = ({
   mentions = [],
   documentRefs = [],
   taskCreated = false,
+  isLatestMessage = false,
   onReply,
   onReact,
   onCreateTask,
@@ -262,7 +264,8 @@ const ChatMessage: React.FC<MessageProps> = ({
           )}
         </div>
 
-        {showActions && (
+        {/* Only show action buttons for the latest message */}
+        {showActions && isLatestMessage && (
           <div 
             className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} top-1/2 -translate-y-1/2
               opacity-100 transition-opacity z-10`}
