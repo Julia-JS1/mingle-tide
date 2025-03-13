@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ChannelModal, { ChannelData } from './ChannelModal';
+import ChannelManagementDrawer from './ChannelManagementDrawer';
 import { toast } from 'sonner';
 
 interface Channel {
@@ -73,6 +74,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
   const [showChannels, setShowChannels] = useState(true);
   const [showDirectMessages, setShowDirectMessages] = useState(true);
   const [isChannelModalOpen, setIsChannelModalOpen] = useState(false);
+  const [isManageChannelsOpen, setIsManageChannelsOpen] = useState(false);
   
   const sampleUsers = [
     { id: "1", name: "Ana Popescu" },
@@ -129,6 +131,14 @@ const ChannelList: React.FC<ChannelListProps> = ({
       toast.success(`Canal nou creat: ${channelData.name}`);
       console.info("Create channel", channelData);
     }
+  };
+
+  const handleManageChannels = () => {
+    setIsManageChannelsOpen(true);
+    if (onManageChannels) {
+      onManageChannels();
+    }
+    console.info("Manage channels");
   };
 
   return (
@@ -190,7 +200,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
                           className="h-7 w-7 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary"
                           onClick={(e) => {
                             e.stopPropagation();
-                            onManageChannels?.();
+                            handleManageChannels();
                           }}
                         >
                           <Settings className="h-3.5 w-3.5" />
@@ -452,6 +462,13 @@ const ChannelList: React.FC<ChannelListProps> = ({
         onClose={() => setIsChannelModalOpen(false)}
         onSave={handleCreateChannel}
         availableUsers={sampleUsers}
+      />
+      
+      <ChannelManagementDrawer
+        isOpen={isManageChannelsOpen}
+        onClose={() => setIsManageChannelsOpen(false)}
+        channels={channels}
+        isAdmin={isAdmin}
       />
     </div>
   );

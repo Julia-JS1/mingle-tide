@@ -3,6 +3,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import ChannelList from '@/components/chat/ChannelList';
 import ChatMessage from '@/components/chat/ChatMessage';
 import ChatInput from '@/components/chat/ChatInput';
+import ChannelManagementDrawer from '@/components/chat/ChannelManagementDrawer';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageSquare, Bell, BellOff, Pin, Info, Search, Settings, Hash, Users, Plus, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -197,6 +198,7 @@ const Chat = () => {
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const [loading, setLoading] = useState(false);
   const [replyTo, setReplyTo] = useState<ChatMessageType | null>(null);
+  const [isManageChannelsOpen, setIsManageChannelsOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleSelectChannel = (channel: any) => {
@@ -631,7 +633,8 @@ const Chat = () => {
   };
 
   const handleManageChannels = () => {
-    console.log("Manage channels");
+    setIsManageChannelsOpen(true);
+    console.info("Manage channels");
   };
 
   const handleBookmark = (messageId: string) => {
@@ -799,9 +802,15 @@ const Chat = () => {
           </div>
         </div>
       </div>
+      
+      <ChannelManagementDrawer
+        isOpen={isManageChannelsOpen}
+        onClose={() => setIsManageChannelsOpen(false)}
+        channels={channels}
+        isAdmin={currentUser.isAdmin}
+      />
     </TooltipProvider>
   );
 };
 
 export default Chat;
-
