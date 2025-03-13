@@ -71,6 +71,7 @@ export interface MessageProps {
   onRemind?: (messageId: string) => void;
   onForward?: (messageId: string) => void;
   onMarkUnread?: (messageId: string) => void;
+  onBookmark?: (messageId: string) => void;
 }
 
 const ChatMessage: React.FC<MessageProps> = ({
@@ -99,14 +100,13 @@ const ChatMessage: React.FC<MessageProps> = ({
   onRemind,
   onForward,
   onMarkUnread,
+  onBookmark,
 }) => {
-  const [showActions, setShowActions] = useState(true); // Always show actions for better visibility
+  const [showActions, setShowActions] = useState(true);
 
-  // Parse and format message content to highlight mentions and document references
   const renderContent = () => {
     let formattedContent = content;
     
-    // Process mentions
     mentions.forEach(mention => {
       formattedContent = formattedContent.replace(
         new RegExp(`@${mention}\\b`, 'g'),
@@ -114,7 +114,6 @@ const ChatMessage: React.FC<MessageProps> = ({
       );
     });
 
-    // Process document references with improved visibility
     documentRefs.forEach(docRef => {
       formattedContent = formattedContent.replace(
         new RegExp(`#${docRef}\\b`, 'g'),
@@ -122,7 +121,6 @@ const ChatMessage: React.FC<MessageProps> = ({
       );
     });
 
-    // If this is a potential task, highlight the task trigger phrases
     const taskTriggerPhrases = ["te rog să", "îmi poți", "poți să", "ai putea să"];
     taskTriggerPhrases.forEach(phrase => {
       if (content.toLowerCase().includes(phrase.toLowerCase())) {
@@ -136,10 +134,8 @@ const ChatMessage: React.FC<MessageProps> = ({
     return <div dangerouslySetInnerHTML={{ __html: formattedContent }} />;
   };
 
-  // Format message time
   const formattedTime = formatDistanceToNow(timestamp, { addSuffix: true, locale: ro });
 
-  // Helper function for handling reactions with visual feedback
   const handleReaction = (emoji: string) => {
     if (onReact) {
       onReact(id, emoji);
@@ -147,7 +143,6 @@ const ChatMessage: React.FC<MessageProps> = ({
     }
   };
 
-  // Helper function for task creation with visual feedback
   const handleCreateTask = () => {
     if (onCreateTask) {
       onCreateTask(id);
@@ -155,19 +150,17 @@ const ChatMessage: React.FC<MessageProps> = ({
     }
   };
 
-  // Check if this message contains task trigger phrases
   const hasTaskTrigger = ["te rog să", "îmi poți", "poți să", "ai putea să"].some(
     phrase => content.toLowerCase().includes(phrase.toLowerCase())
   );
 
-  // Common reaction emojis
   const commonReactions = ["👍", "❤️", "😊", "😂", "👏", "🎉", "🙏", "🔥"];
 
   return (
     <div 
       className={`group relative flex gap-3 py-3 transition-all duration-200 ${isOwn ? 'justify-end' : 'justify-start'} message-animation`}
       onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(true)} // Keep actions visible even on mouse leave
+      onMouseLeave={() => setShowActions(true)}
     >
       {!isOwn && (
         <div className="flex-shrink-0 mt-1">
@@ -178,7 +171,6 @@ const ChatMessage: React.FC<MessageProps> = ({
       )}
 
       <div className={`max-w-[75%] flex flex-col ${isOwn ? 'items-end' : 'items-start'}`}>
-        {/* Reply reference if this is a reply */}
         {replyTo && (
           <div className={`mb-1 text-xs text-muted-foreground flex items-center gap-1 px-2 py-1 rounded-md bg-muted/50 ${isOwn ? 'self-end' : 'self-start'}`}>
             <MessageSquare className="h-3 w-3" />
@@ -187,14 +179,12 @@ const ChatMessage: React.FC<MessageProps> = ({
           </div>
         )}
 
-        {/* Message header */}
         <div className={`flex items-center gap-2 text-sm ${isOwn ? 'flex-row-reverse' : ''}`}>
           {!isOwn && <span className="font-medium">{sender.name}</span>}
           <span className="text-xs text-muted-foreground">{formattedTime}</span>
           {edited && <span className="text-xs text-muted-foreground">(editat)</span>}
         </div>
 
-        {/* Message content - using a more visible color scheme for own messages */}
         <div 
           className={`mt-1 rounded-lg px-4 py-2.5 shadow-sm
             ${isOwn 
@@ -204,7 +194,6 @@ const ChatMessage: React.FC<MessageProps> = ({
         >
           {renderContent()}
           
-          {/* Task created badge */}
           {taskCreated && (
             <div className="mt-2">
               <Badge variant="outline" className="bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800/30">
@@ -214,7 +203,6 @@ const ChatMessage: React.FC<MessageProps> = ({
             </div>
           )}
 
-          {/* Attachments */}
           {attachments.length > 0 && (
             <div className="mt-2 space-y-1">
               {attachments.map((file) => (
@@ -232,7 +220,6 @@ const ChatMessage: React.FC<MessageProps> = ({
           )}
         </div>
 
-        {/* Reactions - improved visibility */}
         {Object.keys(reactions).length > 0 && (
           <div className="mt-1 flex flex-wrap gap-1">
             {Object.entries(reactions).map(([emoji, reaction]) => (
@@ -249,7 +236,6 @@ const ChatMessage: React.FC<MessageProps> = ({
         )}
       </div>
 
-      {/* FIXED HOVER CARD FOR REACTIONS */}
       <div 
         className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} bottom-0 translate-y-1/2
           opacity-0 group-hover:opacity-100 transition-opacity z-10`}
@@ -395,7 +381,6 @@ const ChatMessage: React.FC<MessageProps> = ({
         </div>
       </div>
 
-      {/* Task creation button - made more visible and always showing when task phrases detected */}
       {hasTaskTrigger && (
         <TooltipProvider>
           <Tooltip>

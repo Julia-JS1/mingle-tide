@@ -454,6 +454,10 @@ const Chat = () => {
     console.log("Manage channels");
   };
 
+  const handleBookmark = (messageId: string) => {
+    toast.success("Mesajul a fost salvat în favoritele tale");
+  };
+
   return (
     <TooltipProvider>
       <div className="h-screen flex flex-col">
@@ -557,6 +561,7 @@ const Chat = () => {
                       onRemind={handleRemind}
                       onForward={handleForward}
                       onMarkUnread={handleMarkUnread}
+                      onBookmark={handleBookmark}
                     />
                   ))}
                 </div>
