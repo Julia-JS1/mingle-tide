@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -233,7 +232,6 @@ const ChatMessage: React.FC<MessageProps> = ({
             )}
           </div>
 
-          {/* Add Create Task button below message for task triggers */}
           {hasTaskTrigger && !taskCreated && (
             <div className="mt-2">
               <Button 
@@ -264,7 +262,6 @@ const ChatMessage: React.FC<MessageProps> = ({
           )}
         </div>
 
-        {/* Only show action buttons for the latest message */}
         {showActions && isLatestMessage && (
           <div 
             className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} top-1/2 -translate-y-1/2
@@ -283,7 +280,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                       <ThumbsUp className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent side="left">
                     <p>Apreciez</p>
                   </TooltipContent>
                 </Tooltip>
@@ -299,7 +296,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                       <MessageSquare className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent side="left">
                     <p>Răspunde</p>
                   </TooltipContent>
                 </Tooltip>
@@ -315,7 +312,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                       <Forward className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent side="left">
                     <p>Redirecționează</p>
                   </TooltipContent>
                 </Tooltip>
@@ -331,7 +328,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                       <BookmarkPlus className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent side="left">
                     <p>Salvează</p>
                   </TooltipContent>
                 </Tooltip>
@@ -347,7 +344,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                       <CheckSquare className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent side="left">
                     <p>Creează sarcină</p>
                   </TooltipContent>
                 </Tooltip>
@@ -365,7 +362,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                         </Button>
                       </DropdownMenuTrigger>
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent side="left">
                       <p>Mai multe</p>
                     </TooltipContent>
                   </Tooltip>
@@ -450,7 +447,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                   <CheckSquare className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>
+              <TooltipContent side="left">
                 <p>{taskCreated ? "Sarcină creată" : "Creează sarcină"}</p>
               </TooltipContent>
             </Tooltip>
