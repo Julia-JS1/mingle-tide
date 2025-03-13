@@ -20,18 +20,50 @@ const ChatLauncher: React.FC<ChatLauncherProps> = ({ currentUser }) => {
       id: "channel1",
       name: "general",
       type: "channel" as const,
-      unreadCount: 3
+      isPrivate: false,
+      unreadCount: 3,
+      members: [
+        {
+          id: "user1",
+          name: "Adrian Ionescu",
+          avatar: "https://i.pravatar.cc/150?img=1",
+        },
+        {
+          id: "user2",
+          name: "Maria Popescu",
+          avatar: "https://i.pravatar.cc/150?img=5",
+        },
+        {
+          id: "user3",
+          name: "Ion Vasilescu",
+          avatar: "https://i.pravatar.cc/150?img=3",
+        }
+      ]
     },
     {
       id: "channel2",
       name: "ui-team",
       type: "channel" as const,
-      unreadCount: 0
+      isPrivate: true,
+      unreadCount: 0,
+      members: [
+        {
+          id: "user1",
+          name: "Adrian Ionescu",
+          avatar: "https://i.pravatar.cc/150?img=1",
+        },
+        {
+          id: "user2",
+          name: "Maria Popescu",
+          avatar: "https://i.pravatar.cc/150?img=5",
+        }
+      ]
     },
     {
       id: "channel3",
       name: "marketing",
       type: "channel" as const,
+      isPrivate: false,
       unreadCount: 5
     }
   ];

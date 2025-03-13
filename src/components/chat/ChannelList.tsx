@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { 
@@ -12,10 +13,12 @@ import {
   Settings, 
   User, 
   Lock, 
+  Unlock,
   ChevronRight,
   ChevronDown,
   Pin,
-  Archive
+  Archive,
+  Users
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ChannelModal, { ChannelData } from './ChannelModal';
@@ -31,6 +34,11 @@ interface Channel {
   isArchived: boolean;
   unreadCount: number;
   mentions: number;
+  members?: Array<{
+    id: string;
+    name: string;
+    avatar: string;
+  }>;
 }
 
 interface DirectMessage {
@@ -87,7 +95,33 @@ const ChannelList: React.FC<ChannelListProps> = ({
     { id: "5", name: "Maria Stan" },
   ];
   
-  const filteredChannels = channels
+  const channelsWithMembers = channels.map(channel => {
+    if (channel.isPrivate && !channel.members) {
+      return {
+        ...channel,
+        members: [
+          {
+            id: "user1",
+            name: "Adrian Ionescu",
+            avatar: "https://i.pravatar.cc/150?img=1",
+          },
+          {
+            id: "user2",
+            name: "Maria Popescu",
+            avatar: "https://i.pravatar.cc/150?img=5",
+          },
+          {
+            id: "user4",
+            name: "Elena Dumitrescu",
+            avatar: "https://i.pravatar.cc/150?img=4",
+          }
+        ]
+      };
+    }
+    return channel;
+  });
+  
+  const filteredChannels = channelsWithMembers
     .filter(channel => 
       !searchQuery || 
       channel.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -174,6 +208,126 @@ const ChannelList: React.FC<ChannelListProps> = ({
     }
   };
 
+  const renderChannelIcon = (channel: Channel, isSelected: boolean) => {
+    if (channel.isPrivate) {
+      return <Lock className={cn("h-3.5 w-3.5 mr-1.5 flex-shrink-0", 
+        isSelected ? "text-white" : "text-muted-foreground")} />;
+    } else {
+      return <Hash className={cn("h-3.5 w-3.5 mr-1.5 flex-shrink-0", 
+        isSelected ? "text-white" : "text-muted-foreground")} />;
+    }
+  };
+
+  const renderChannelStatus = (channel: Channel, isSelected: boolean) => {
+    if (!channel.isPrivate) {
+      return (
+        <span className={cn("text-xs px-1.5 py-0.5 rounded-sm ml-1.5", 
+          isSelected ? "bg-white/20 text-white" : "bg-muted text-muted-foreground")}>
+          Public
+        </span>
+      );
+    }
+    
+    return (
+      <span className={cn("text-xs px-1.5 py-0.5 rounded-sm ml-1.5 flex items-center", 
+        isSelected ? "bg-white/20 text-white" : "bg-muted text-muted-foreground")}>
+        <Lock className="h-2.5 w-2.5 mr-0.5" />
+        Privat
+      </span>
+    );
+  };
+
+  const renderChannelMembers = (channel: Channel, isSelected: boolean) => {
+    if (!channel.isPrivate || !channel.members || channel.members.length === 0) {
+      return null;
+    }
+    
+    const visibleMembers = channel.members.slice(0, 3);
+    const extraMembersCount = channel.members.length - visibleMembers.length;
+    
+    return (
+      <div className="flex -space-x-2 ml-auto mr-2">
+        {visibleMembers.map((member, index) => (
+          <Tooltip key={member.id}>
+            <TooltipTrigger asChild>
+              <Avatar className="h-5 w-5 border border-background">
+                <AvatarImage src={member.avatar} alt={member.name} />
+                <AvatarFallback className="text-[8px]">
+                  {member.name.split(' ').map(part => part[0]).join('')}
+                </AvatarFallback>
+              </Avatar>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p className="text-xs">{member.name}</p>
+            </TooltipContent>
+          </Tooltip>
+        ))}
+        
+        {extraMembersCount > 0 && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className={cn(
+                "flex items-center justify-center h-5 w-5 rounded-full text-[8px] font-medium border border-background",
+                isSelected ? "bg-white/30 text-white" : "bg-muted text-muted-foreground"
+              )}>
+                +{extraMembersCount}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p className="text-xs">{extraMembersCount} membri în plus</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
+      </div>
+    );
+  };
+
+  const renderChannel = (channel: Channel) => {
+    const isSelected = channel.id === selectedChannelId;
+    
+    return (
+      <button
+        key={channel.id}
+        className={cn(
+          "w-full flex items-center justify-between px-2 py-2 rounded-md text-sm transition-all",
+          isSelected
+            ? "bg-iflows-primary text-white font-medium shadow-sm"
+            : "hover:bg-iflows-primary/10"
+        )}
+        onClick={() => onSelectChannel(channel)}
+      >
+        <div className="flex items-center overflow-hidden flex-grow min-w-0">
+          <div className="flex items-center min-w-0 flex-shrink-0">
+            {renderChannelIcon(channel, isSelected)}
+            <span className="truncate">{channel.name}</span>
+            {renderChannelStatus(channel, isSelected)}
+            {channel.isPinned && (
+              <Pin className={cn("h-3 w-3 ml-1.5", 
+                isSelected ? "text-white/70" : "text-muted-foreground")} />
+            )}
+          </div>
+        </div>
+        
+        {renderChannelMembers(channel, isSelected)}
+        
+        {(channel.unreadCount > 0 || channel.mentions > 0) && (
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {channel.mentions > 0 && (
+              <Badge variant="destructive" className="px-1 min-w-5 h-5 flex items-center justify-center">
+                {channel.mentions}
+              </Badge>
+            )}
+            {channel.unreadCount > 0 && channel.mentions === 0 && (
+              <Badge variant="secondary" className="px-1 min-w-5 h-5 flex items-center justify-center">
+                {channel.unreadCount}
+              </Badge>
+            )}
+          </div>
+        )}
+      </button>
+    );
+  };
+
   return (
     <div className={cn("flex h-full flex-col", className)}>
       <div className="p-4">
@@ -256,49 +410,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
                       Canale ancorate
                     </div>
                     
-                    {pinnedChannels.map(channel => (
-                      <button
-                        key={channel.id}
-                        className={cn(
-                          "w-full flex items-center justify-between px-2 py-2 rounded-md text-sm transition-all",
-                          channel.id === selectedChannelId
-                            ? "bg-iflows-primary text-white font-medium shadow-sm"
-                            : "hover:bg-iflows-primary/10"
-                        )}
-                        onClick={() => onSelectChannel(channel)}
-                      >
-                        <div className="flex items-center overflow-hidden">
-                          <div className="flex items-center min-w-0">
-                            {channel.isPrivate ? (
-                              <Lock className={cn("h-3.5 w-3.5 mr-1.5 flex-shrink-0", 
-                                channel.id === selectedChannelId ? "text-white" : "text-muted-foreground")} />
-                            ) : (
-                              <Hash className={cn("h-3.5 w-3.5 mr-1.5 flex-shrink-0", 
-                                channel.id === selectedChannelId ? "text-white" : "text-muted-foreground")} />
-                            )}
-                            <span className="truncate">{channel.name}</span>
-                          </div>
-                          
-                          <Pin className={cn("h-3 w-3 ml-1.5", 
-                            channel.id === selectedChannelId ? "text-white/70" : "text-muted-foreground")} />
-                        </div>
-                        
-                        {(channel.unreadCount > 0 || channel.mentions > 0) && (
-                          <div className="flex items-center gap-1">
-                            {channel.mentions > 0 && (
-                              <Badge variant="destructive" className="px-1 min-w-5 h-5 flex items-center justify-center">
-                                {channel.mentions}
-                              </Badge>
-                            )}
-                            {channel.unreadCount > 0 && channel.mentions === 0 && (
-                              <Badge variant="secondary" className="px-1 min-w-5 h-5 flex items-center justify-center">
-                                {channel.unreadCount}
-                              </Badge>
-                            )}
-                          </div>
-                        )}
-                      </button>
-                    ))}
+                    {pinnedChannels.map(channel => renderChannel(channel))}
                   </div>
                 )}
                 
@@ -310,44 +422,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
                       </div>
                     )}
                     
-                    {unpinnedChannels.map(channel => (
-                      <button
-                        key={channel.id}
-                        className={cn(
-                          "w-full flex items-center justify-between px-2 py-2 rounded-md text-sm transition-all",
-                          channel.id === selectedChannelId
-                            ? "bg-iflows-primary text-white font-medium shadow-sm"
-                            : "hover:bg-iflows-primary/10"
-                        )}
-                        onClick={() => onSelectChannel(channel)}
-                      >
-                        <div className="flex items-center overflow-hidden">
-                          {channel.isPrivate ? (
-                            <Lock className={cn("h-3.5 w-3.5 mr-1.5 flex-shrink-0", 
-                              channel.id === selectedChannelId ? "text-white" : "text-muted-foreground")} />
-                          ) : (
-                            <Hash className={cn("h-3.5 w-3.5 mr-1.5 flex-shrink-0", 
-                              channel.id === selectedChannelId ? "text-white" : "text-muted-foreground")} />
-                          )}
-                          <span className="truncate">{channel.name}</span>
-                        </div>
-                        
-                        {(channel.unreadCount > 0 || channel.mentions > 0) && (
-                          <div className="flex items-center gap-1">
-                            {channel.mentions > 0 && (
-                              <Badge variant="destructive" className="px-1 min-w-5 h-5 flex items-center justify-center">
-                                {channel.mentions}
-                              </Badge>
-                            )}
-                            {channel.unreadCount > 0 && channel.mentions === 0 && (
-                              <Badge variant="secondary" className="px-1 min-w-5 h-5 flex items-center justify-center">
-                                {channel.unreadCount}
-                              </Badge>
-                            )}
-                          </div>
-                        )}
-                      </button>
-                    ))}
+                    {unpinnedChannels.map(channel => renderChannel(channel))}
                   </div>
                 )}
                 
@@ -358,23 +433,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
                       Canale arhivate
                     </div>
                     
-                    {archivedChannels.map(channel => (
-                      <button
-                        key={channel.id}
-                        className={cn(
-                          "w-full flex items-center justify-between px-2 py-2 rounded-md text-sm transition-all text-muted-foreground",
-                          channel.id === selectedChannelId
-                            ? "bg-muted font-medium"
-                            : "hover:bg-muted/70"
-                        )}
-                        onClick={() => onSelectChannel(channel)}
-                      >
-                        <div className="flex items-center overflow-hidden">
-                          <Hash className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" />
-                          <span className="truncate">{channel.name}</span>
-                        </div>
-                      </button>
-                    ))}
+                    {archivedChannels.map(channel => renderChannel(channel))}
                   </div>
                 )}
                 
@@ -577,3 +636,4 @@ const ChannelList: React.FC<ChannelListProps> = ({
 };
 
 export default ChannelList;
+

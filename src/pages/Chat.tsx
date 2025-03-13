@@ -58,7 +58,29 @@ const Chat = () => {
       isPinned: true,
       isArchived: false,
       unreadCount: 3,
-      mentions: 1
+      mentions: 1,
+      members: [
+        {
+          id: "user1",
+          name: "Adrian Ionescu",
+          avatar: "https://i.pravatar.cc/150?img=1",
+        },
+        {
+          id: "user2",
+          name: "Maria Popescu",
+          avatar: "https://i.pravatar.cc/150?img=5",
+        },
+        {
+          id: "user3",
+          name: "Ion Vasilescu",
+          avatar: "https://i.pravatar.cc/150?img=3",
+        },
+        {
+          id: "user4",
+          name: "Elena Dumitrescu",
+          avatar: "https://i.pravatar.cc/150?img=4",
+        }
+      ]
     },
     {
       id: "channel2",
@@ -68,7 +90,24 @@ const Chat = () => {
       isPinned: true,
       isArchived: false,
       unreadCount: 0,
-      mentions: 0
+      mentions: 0,
+      members: [
+        {
+          id: "user1",
+          name: "Adrian Ionescu",
+          avatar: "https://i.pravatar.cc/150?img=1",
+        },
+        {
+          id: "user2",
+          name: "Maria Popescu",
+          avatar: "https://i.pravatar.cc/150?img=5",
+        },
+        {
+          id: "user3",
+          name: "Ion Vasilescu",
+          avatar: "https://i.pravatar.cc/150?img=3",
+        }
+      ]
     },
     {
       id: "channel3",
@@ -78,7 +117,24 @@ const Chat = () => {
       isPinned: false,
       isArchived: false,
       unreadCount: 5,
-      mentions: 0
+      mentions: 0,
+      members: [
+        {
+          id: "user1",
+          name: "Adrian Ionescu",
+          avatar: "https://i.pravatar.cc/150?img=1",
+        },
+        {
+          id: "user3",
+          name: "Ion Vasilescu",
+          avatar: "https://i.pravatar.cc/150?img=3",
+        },
+        {
+          id: "user4",
+          name: "Elena Dumitrescu",
+          avatar: "https://i.pravatar.cc/150?img=4",
+        }
+      ]
     },
     {
       id: "channel4",
@@ -88,17 +144,41 @@ const Chat = () => {
       isPinned: false,
       isArchived: false,
       unreadCount: 0,
-      mentions: 0
+      mentions: 0,
+      members: [
+        {
+          id: "user1",
+          name: "Adrian Ionescu",
+          avatar: "https://i.pravatar.cc/150?img=1",
+        },
+        {
+          id: "user2",
+          name: "Maria Popescu",
+          avatar: "https://i.pravatar.cc/150?img=5",
+        }
+      ]
     },
     {
       id: "channel5",
       name: "financiar",
       type: "channel" as const,
-      isPrivate: false,
+      isPrivate: true,
       isPinned: false,
       isArchived: true,
       unreadCount: 0,
-      mentions: 0
+      mentions: 0,
+      members: [
+        {
+          id: "user1",
+          name: "Adrian Ionescu",
+          avatar: "https://i.pravatar.cc/150?img=1",
+        },
+        {
+          id: "user4",
+          name: "Elena Dumitrescu",
+          avatar: "https://i.pravatar.cc/150?img=4",
+        }
+      ]
     }
   ];
 
@@ -717,4 +797,3 @@ const Chat = () => {
 };
 
 export default Chat;
-
