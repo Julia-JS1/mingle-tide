@@ -13,7 +13,7 @@ import {
   PaperclipIcon, 
   CheckSquare,
 } from 'lucide-react';
-import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export interface Attachment {
   id: string;
@@ -265,10 +265,10 @@ const ChatMessage: React.FC<MessageProps> = ({
         />
       )}
 
-      <TooltipPrimitive.Provider delayDuration={0}>
+      <TooltipProvider delayDuration={0}>
         {hasTaskTrigger && (
-          <TooltipPrimitive.Root>
-            <TooltipPrimitive.Trigger asChild>
+          <Tooltip>
+            <TooltipTrigger asChild>
               <Button 
                 size="icon" 
                 variant={taskCreated ? "secondary" : "default"}
@@ -283,13 +283,13 @@ const ChatMessage: React.FC<MessageProps> = ({
               >
                 <CheckSquare className="h-4 w-4" />
               </Button>
-            </TooltipPrimitive.Trigger>
-            <TooltipPrimitive.Content side="left" className="z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md">
+            </TooltipTrigger>
+            <TooltipContent side="left">
               <p>{taskCreated ? "Sarcină creată" : "Creează sarcină"}</p>
-            </TooltipPrimitive.Content>
-          </TooltipPrimitive.Root>
+            </TooltipContent>
+          </Tooltip>
         )}
-      </TooltipPrimitive.Provider>
+      </TooltipProvider>
 
       <TaskModal
         isOpen={isTaskModalOpen}
