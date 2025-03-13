@@ -75,8 +75,8 @@ const Chat = () => {
       name: "marketing",
       type: "channel" as const,
       isPrivate: false,
-      isPinned: false,
       isArchived: false,
+      isPinned: false,
       unreadCount: 5,
       mentions: 0
     },
@@ -639,8 +639,24 @@ const Chat = () => {
   return (
     <TooltipProvider>
       <div className="h-screen flex flex-col">
-        <div className="flex-grow flex overflow-hidden">
-          <div className="h-full w-64 border-r flex flex-col shadow-md bg-background/95 backdrop-blur-sm">
+        <div 
+          className="flex-grow flex overflow-hidden relative"
+        >
+          {/* Background Logo with high transparency */}
+          <div 
+            className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center"
+            style={{
+              opacity: 0.03, // Very high transparency
+            }}
+          >
+            <img 
+              src="/lovable-uploads/461a1973-2e20-48ba-a340-2f902bd27a9e.png" 
+              alt="iFlows Logo" 
+              className="w-4/5 max-w-3xl"
+            />
+          </div>
+
+          <div className="h-full w-64 border-r flex flex-col shadow-md bg-background/95 backdrop-blur-sm z-10">
             <div className="p-3 flex items-center justify-between">
               <h2 className="font-semibold text-lg">iFlows Chat</h2>
               <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-100">
@@ -681,7 +697,7 @@ const Chat = () => {
             )}
           </div>
 
-          <div className="flex-1 flex flex-col h-full bg-gradient-to-br from-background to-muted/30">
+          <div className="flex-1 flex flex-col h-full bg-gradient-to-br from-background to-muted/30 z-10">
             <div className="flex items-center justify-between p-4 border-b bg-background/70 backdrop-blur-sm shadow-sm">
               {selectedChannel?.type === 'channel' ? (
                 <>
@@ -828,28 +844,4 @@ const handleEditMessage = (messageId: string) => {
   toast.info("Editare mesaj");
 };
 
-const handleDeleteMessage = (messageId: string) => {
-  toast.success("Mesajul a fost șters.");
-};
-
-const handleCopyLink = (messageId: string) => {
-  toast.success("Link-ul a fost copiat în clipboard.");
-};
-
-const handleRemind = (messageId: string) => {
-  toast.info("Reminder setat");
-};
-
-const handleForward = (messageId: string) => {
-  toast.info("Funcționalitate de redirecționare");
-};
-
-const handleMarkUnread = (messageId: string) => {
-  toast.success("Mesajul a fost marcat ca necitit.");
-};
-
-const handleBookmark = (messageId: string) => {
-  toast.success("Mesajul a fost salvat în favoritele tale");
-};
-
-export default Chat;
+const handleDeleteMessage
