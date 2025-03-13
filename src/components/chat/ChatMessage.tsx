@@ -271,7 +271,7 @@ const ChatMessage: React.FC<MessageProps> = ({
               opacity-100 transition-opacity z-10`}
           >
             <div className="flex flex-col items-center bg-white dark:bg-slate-800 rounded-lg shadow-md p-1 gap-1">
-              <TooltipProvider>
+              <TooltipProvider delayDuration={100}>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button 

@@ -497,11 +497,12 @@ const MiniChat: React.FC<MiniChatProps> = ({
                     </div>
                   </div>
                 ) : (
-                  messages.map((message) => (
+                  messages.map((message, index) => (
                     <ChatMessage
                       key={message.id}
                       {...message}
                       isOwn={message.sender.id === currentUser.id}
+                      isLatestMessage={index === messages.length - 1}
                       onReply={handleReply}
                       onReact={handleReaction}
                       onCreateTask={handleCreateTask}
