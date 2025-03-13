@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -102,7 +101,6 @@ const ChatMessage: React.FC<MessageProps> = ({
   onMarkUnread,
 }) => {
   const [showActions, setShowActions] = useState(true); // Always show actions for better visibility
-  const [showReactionOptions, setShowReactionOptions] = useState(false);
 
   // Parse and format message content to highlight mentions and document references
   const renderContent = () => {
@@ -251,108 +249,150 @@ const ChatMessage: React.FC<MessageProps> = ({
         )}
       </div>
 
-      {/* NEW HOVER CARD FOR REACTIONS - matches the design in the image */}
-      <div className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} bottom-0 translate-y-1/2
-          flex items-center bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg shadow-md opacity-100 transition-opacity z-10`}>
-        <HoverCard>
-          <HoverCardTrigger asChild>
-            <Button 
-              variant="secondary" 
-              size="sm" 
-              className="text-xs px-3 py-1.5 h-auto"
-            >
-              Add reaction...
-            </Button>
-          </HoverCardTrigger>
-          <HoverCardContent className="p-1 w-auto bg-white border shadow-xl rounded-full flex items-center gap-1">
-            <Button 
-              size="icon" 
-              variant="ghost" 
-              className="h-10 w-10 rounded-full hover:bg-slate-100"
-              onClick={() => handleReaction("👍")}
-            >
-              <Target className="h-5 w-5" />
-            </Button>
-            <Button 
-              size="icon" 
-              variant="ghost" 
-              className="h-10 w-10 rounded-full hover:bg-slate-100"
-              onClick={() => handleReaction("😊")}
-            >
-              <Smile className="h-5 w-5" />
-            </Button>
-            <Button 
-              size="icon" 
-              variant="ghost" 
-              className="h-10 w-10 rounded-full hover:bg-slate-100"
-              onClick={() => onReply?.(id)}
-            >
-              <MessageSquare className="h-5 w-5" />
-            </Button>
-            <Button 
-              size="icon" 
-              variant="ghost" 
-              className="h-10 w-10 rounded-full hover:bg-slate-100"
-              onClick={() => onForward?.(id)}
-            >
-              <Forward className="h-5 w-5" />
-            </Button>
-            <Button 
-              size="icon" 
-              variant="ghost" 
-              className="h-10 w-10 rounded-full hover:bg-slate-100"
-              onClick={() => onCopyLink?.(id)}
-            >
-              <BookmarkPlus className="h-5 w-5" />
-            </Button>
-            <Button 
-              size="icon" 
-              variant="ghost" 
-              className="h-10 w-10 rounded-full hover:bg-slate-100"
-              onClick={() => {
-                if (onLink && documentRefs.length > 0) {
-                  onLink(id, documentRefs[0]);
-                }
-              }}
-            >
-              <Link className="h-5 w-5" />
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  size="icon" 
-                  variant="ghost" 
-                  className="h-10 w-10 rounded-full hover:bg-slate-100"
-                >
-                  <MoreVertical className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
+      {/* FIXED HOVER CARD FOR REACTIONS */}
+      <div 
+        className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} bottom-0 translate-y-1/2
+          opacity-0 group-hover:opacity-100 transition-opacity z-10`}
+      >
+        <div className="flex items-center bg-white dark:bg-slate-800 backdrop-blur-sm rounded-full shadow-md">
+          <Button 
+            size="icon" 
+            variant="ghost" 
+            className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+            onClick={() => handleReaction("👍")}
+          >
+            <ThumbsUp className="h-4 w-4" />
+          </Button>
+          <Button 
+            size="icon" 
+            variant="ghost" 
+            className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+            onClick={() => handleReaction("❤️")}
+          >
+            <Heart className="h-4 w-4" />
+          </Button>
+          <Button 
+            size="icon" 
+            variant="ghost" 
+            className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+            onClick={() => handleReaction("😊")}
+          >
+            <Smile className="h-4 w-4" />
+          </Button>
+          <Button 
+            size="icon" 
+            variant="ghost" 
+            className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+            onClick={() => onReply?.(id)}
+          >
+            <MessageSquare className="h-4 w-4" />
+          </Button>
+          <Button 
+            size="icon" 
+            variant="ghost" 
+            className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+            onClick={() => onForward?.(id)}
+          >
+            <Forward className="h-4 w-4" />
+          </Button>
+          <HoverCard openDelay={0} closeDelay={200}>
+            <HoverCardTrigger asChild>
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+              >
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </HoverCardTrigger>
+            <HoverCardContent align={isOwn ? "start" : "end"} className="p-2 w-[200px] rounded-xl">
+              <div className="grid grid-cols-3 gap-1">
+                {commonReactions.map(emoji => (
+                  <Button 
+                    key={emoji}
+                    size="sm"
+                    variant="ghost"
+                    className="h-10 w-10 p-0 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                    onClick={() => handleReaction(emoji)}
+                  >
+                    <span className="text-lg">{emoji}</span>
+                  </Button>
+                ))}
+              </div>
+              <div className="mt-2 space-y-1">
                 {isOwn && (
                   <>
-                    <DropdownMenuItem onClick={() => onEdit?.(id)}>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="w-full justify-start" 
+                      onClick={() => onEdit?.(id)}
+                    >
                       <Edit className="mr-2 h-4 w-4" />
                       <span>Editează</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onDelete?.(id)}>
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="w-full justify-start text-destructive" 
+                      onClick={() => onDelete?.(id)}
+                    >
                       <Trash2 className="mr-2 h-4 w-4" />
                       <span>Șterge</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
+                    </Button>
                   </>
                 )}
-                <DropdownMenuItem onClick={() => onRemind?.(id)}>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full justify-start" 
+                  onClick={() => onBookmark?.(id)}
+                >
+                  <BookmarkPlus className="mr-2 h-4 w-4" />
+                  <span>Salvează</span>
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full justify-start" 
+                  onClick={() => onCopyLink?.(id)}
+                >
+                  <Link className="mr-2 h-4 w-4" />
+                  <span>Copiază link</span>
+                </Button>
+                {documentRefs.length > 0 && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="w-full justify-start" 
+                    onClick={() => onLink?.(id, documentRefs[0])}
+                  >
+                    <Link className="mr-2 h-4 w-4" />
+                    <span>Asociază cu #{documentRefs[0]}</span>
+                  </Button>
+                )}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full justify-start" 
+                  onClick={() => onRemind?.(id)}
+                >
                   <Clock className="mr-2 h-4 w-4" />
                   <span>Amintește-mi</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onMarkUnread?.(id)}>
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full justify-start" 
+                  onClick={() => onMarkUnread?.(id)}
+                >
                   <Eye className="mr-2 h-4 w-4" />
                   <span>Marchează necitit</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </HoverCardContent>
-        </HoverCard>
+                </Button>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+        </div>
       </div>
 
       {/* Task creation button - made more visible and always showing when task phrases detected */}
