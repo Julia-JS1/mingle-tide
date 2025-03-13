@@ -73,7 +73,7 @@ export interface MessageProps {
   onEdit?: (messageId: string) => void;
   onDelete?: (messageId: string) => void;
   onCopyLink?: (messageId: string) => void;
-  onRemind?: (messageId: string) => void;
+  onRemind?: (messageId: string, reminderTime: string) => void;
   onForward?: (messageId: string) => void;
   onMarkUnread?: (messageId: string) => void;
   onBookmark?: (messageId: string) => void;
