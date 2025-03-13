@@ -239,6 +239,12 @@ const Chat = () => {
         documentRefs.push(randomDoc.id);
       }
       
+      if (i === 3 && sender.id !== currentUser.id) {
+        content = `@${currentUser.name} Stocul este insuficient pentru această comandă #CMD456`;
+        mentions.push(currentUser.name);
+        documentRefs.push('CMD456');
+      }
+      
       if (isTaskMessage) {
         const mentionedUser = participants.find((u: any) => u.id !== sender.id);
         if (mentionedUser) {

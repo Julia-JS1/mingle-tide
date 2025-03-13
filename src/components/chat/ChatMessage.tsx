@@ -19,7 +19,9 @@ import {
   Link, 
   Clock, 
   Forward, 
-  Eye
+  Eye,
+  Heart,
+  Smile
 } from 'lucide-react';
 
 export interface Attachment {
@@ -109,11 +111,11 @@ const ChatMessage: React.FC<MessageProps> = ({
       );
     });
 
-    // Process document references
+    // Process document references with improved visibility
     documentRefs.forEach(docRef => {
       formattedContent = formattedContent.replace(
         new RegExp(`#${docRef}\\b`, 'g'),
-        `<span class="text-iflows-primary font-medium cursor-pointer hover:underline">#${docRef}</span>`
+        `<span class="bg-iflows-primary/20 text-iflows-primary font-medium rounded px-1 py-0.5 cursor-pointer hover:underline">#${docRef}</span>`
       );
     });
 
@@ -154,6 +156,9 @@ const ChatMessage: React.FC<MessageProps> = ({
   const hasTaskTrigger = ["te rog să", "îmi poți", "poți să", "ai putea să"].some(
     phrase => content.toLowerCase().includes(phrase.toLowerCase())
   );
+
+  // Common reaction emojis
+  const commonReactions = ["👍", "❤️", "😊", "😂", "👏", "🎉", "🙏", "🔥"];
 
   return (
     <div 
@@ -224,7 +229,7 @@ const ChatMessage: React.FC<MessageProps> = ({
           )}
         </div>
 
-        {/* Reactions */}
+        {/* Reactions - improved visibility */}
         {Object.keys(reactions).length > 0 && (
           <div className="mt-1 flex flex-wrap gap-1">
             {Object.entries(reactions).map(([emoji, reaction]) => (
@@ -241,11 +246,42 @@ const ChatMessage: React.FC<MessageProps> = ({
         )}
       </div>
 
+      {/* Quick Reaction Buttons - NEW Always Visible */}
+      <div 
+        className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} top-1/2 -translate-y-1/2
+          flex items-center gap-1 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm p-1 rounded-lg shadow-md opacity-100 transition-opacity`}
+      >
+        <Button 
+          size="icon" 
+          variant="ghost" 
+          className="h-7 w-7 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary"
+          onClick={() => handleReaction("👍")}
+        >
+          <span className="text-lg">👍</span>
+        </Button>
+        <Button 
+          size="icon" 
+          variant="ghost" 
+          className="h-7 w-7 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary"
+          onClick={() => handleReaction("❤️")}
+        >
+          <span className="text-lg">❤️</span>
+        </Button>
+        <Button 
+          size="icon" 
+          variant="ghost" 
+          className="h-7 w-7 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary"
+          onClick={() => handleReaction("🎉")}
+        >
+          <span className="text-lg">🎉</span>
+        </Button>
+      </div>
+
       {/* Message actions - now always visible for better discoverability */}
       <div 
         className={`absolute ${isOwn ? 'left-2 -translate-x-full' : 'right-2 translate-x-full'} top-1/2 -translate-y-1/2
-          flex items-center gap-1 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-1 rounded-lg shadow-sm
-          ${isOwn ? 'flex-row-reverse' : ''}`}
+          flex flex-col items-center gap-1 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-1 rounded-lg shadow-md
+          ${showActions ? 'opacity-100' : 'opacity-0 pointer-events-none'} transition-opacity`}
       >
         <TooltipProvider>
           <Tooltip>
@@ -270,23 +306,31 @@ const ChatMessage: React.FC<MessageProps> = ({
           </Tooltip>
         </TooltipProvider>
 
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
+        {/* Larger, more obvious reaction button */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              size="icon" 
+              variant="outline"
+              className="h-8 w-8 rounded-full border-2 border-iflows-primary/30 bg-iflows-primary/5 text-iflows-primary hover:bg-iflows-primary/20 hover:border-iflows-primary transition-colors animate-pulse-slow"
+            >
+              <Smile className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align={isOwn ? "start" : "end"} className="p-2 grid grid-cols-4 gap-1 w-48">
+            {commonReactions.map(emoji => (
               <Button 
-                size="icon" 
+                key={emoji} 
                 variant="ghost" 
-                className="h-8 w-8 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors"
-                onClick={() => handleReaction("👍")}
+                size="icon" 
+                className="h-8 w-8 text-lg hover:bg-iflows-primary/10 hover:scale-110 transition-all"
+                onClick={() => handleReaction(emoji)}
               >
-                <ThumbsUp className="h-4 w-4" />
+                {emoji}
               </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Reacționează</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         {/* Create task button - made more visible and always showing when task phrases detected */}
         {hasTaskTrigger && (
@@ -339,32 +383,6 @@ const ChatMessage: React.FC<MessageProps> = ({
             </Tooltip>
           </TooltipProvider>
         )}
-
-        {/* Emoji reaction dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              size="icon" 
-              variant="ghost" 
-              className="h-8 w-8 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors"
-            >
-              <span className="text-lg">😊</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align={isOwn ? "start" : "end"} className="p-2 grid grid-cols-4 gap-1 w-48">
-            {["👍", "❤️", "😊", "😂", "😮", "😔", "👏", "🎉"].map(emoji => (
-              <Button 
-                key={emoji} 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-lg"
-                onClick={() => handleReaction(emoji)}
-              >
-                {emoji}
-              </Button>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
 
         {/* More options dropdown */}
         <DropdownMenu>
