@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -292,4 +291,31 @@
 
 .dark .shadow-strong {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Task phrases highlighting */
+.task-phrase {
+  @apply text-iflows-primary font-medium;
+}
+
+/* Mentions highlight */
+.mention {
+  @apply text-iflows-primary font-medium;
+}
+
+/* Document references highlight */
+.doc-reference {
+  @apply text-iflows-primary font-medium cursor-pointer hover:underline;
+}
+
+/* Make action buttons more visible on mobile */
+@media (max-width: 768px) {
+  .message-actions {
+    @apply opacity-80;
+  }
+}
+
+/* New hover effect for reaction badges */
+.reaction-badge {
+  @apply transition-transform hover:scale-110 cursor-pointer;
 }

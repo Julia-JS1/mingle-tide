@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import ChannelList from '@/components/chat/ChannelList';
@@ -9,8 +8,8 @@ import { MessageSquare, Bell, BellOff, Pin, Info, Search, Settings, Hash } from 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { toast } from 'sonner';
 
-// Definim interfața pentru mesaje pentru a include proprietățile pentru răspunsuri
 interface ChatMessageType {
   id: string;
   content: string;
@@ -43,7 +42,6 @@ interface ChatMessageType {
 }
 
 const Chat = () => {
-  // Mock current user
   const currentUser = {
     id: "user1",
     name: "Adrian Ionescu",
@@ -51,7 +49,6 @@ const Chat = () => {
     isAdmin: true
   };
 
-  // Mock channels
   const channels = [
     {
       id: "channel1",
@@ -105,7 +102,6 @@ const Chat = () => {
     }
   ];
 
-  // Mock direct messages
   const directMessages = [
     {
       id: "dm1",
@@ -149,7 +145,6 @@ const Chat = () => {
     }
   ];
 
-  // Mock documents
   const documents = [
     {
       id: "OF123",
@@ -168,7 +163,6 @@ const Chat = () => {
     }
   ];
 
-  // Mock users list
   const users = [
     {
       id: "user1",
@@ -192,44 +186,36 @@ const Chat = () => {
     }
   ];
 
-  // State
   const [selectedChannel, setSelectedChannel] = useState<any>(channels[0]);
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const [loading, setLoading] = useState(false);
   const [replyTo, setReplyTo] = useState<ChatMessageType | null>(null);
 
-  // Generate messages for selected channel
   const handleSelectChannel = (channel: any) => {
     setSelectedChannel(channel);
     setLoading(true);
     
-    // Clear previous messages
     setMessages([]);
     
-    // Simulate API call
     setTimeout(() => {
-      // Generate mock messages based on channel
       const mockMessages = generateMockMessages(channel, 15);
       setMessages(mockMessages);
       setLoading(false);
     }, 800);
   };
 
-  // Generate random mock messages
   const generateMockMessages = (channel: any, count: number) => {
     const mockMessages: ChatMessageType[] = [];
     
-    // Participants in the conversation
     const participants = channel.type === 'direct' 
       ? channel.users 
       : users.slice(0, 4);
     
-    // Generate messages
     const now = new Date();
     
     for (let i = 0; i < count; i++) {
       const sender = participants[Math.floor(Math.random() * participants.length)];
-      const timestamp = new Date(now.getTime() - (count - i) * 3 * 60000); // 3 minutes between messages
+      const timestamp = new Date(now.getTime() - (count - i) * 3 * 60000);
       const isReply = Math.random() > 0.7 && i > 0;
       const hasMention = Math.random() > 0.7;
       const hasDocRef = Math.random() > 0.7;
@@ -237,7 +223,6 @@ const Chat = () => {
       
       let content = getRandomMessage();
       
-      // Add mentions
       const mentions: string[] = [];
       if (hasMention) {
         const mentionedUser = participants.find((u: any) => u.id !== sender.id);
@@ -247,7 +232,6 @@ const Chat = () => {
         }
       }
       
-      // Add document references
       const documentRefs: string[] = [];
       if (hasDocRef) {
         const randomDoc = documents[Math.floor(Math.random() * documents.length)];
@@ -255,7 +239,6 @@ const Chat = () => {
         documentRefs.push(randomDoc.id);
       }
       
-      // Create a task message
       if (isTaskMessage) {
         const mentionedUser = participants.find((u: any) => u.id !== sender.id);
         if (mentionedUser) {
@@ -265,7 +248,6 @@ const Chat = () => {
         }
       }
       
-      // Get previous message for replies
       const replyToIndex = isReply ? Math.floor(Math.random() * mockMessages.length) : -1;
       const replyToMessage = replyToIndex >= 0 ? mockMessages[replyToIndex] : undefined;
       
@@ -306,7 +288,6 @@ const Chat = () => {
     return mockMessages;
   };
 
-  // Random messages for mock data
   const getRandomMessage = (): string => {
     const messages = [
       "Bună, cum pot să te ajut?",
@@ -333,11 +314,9 @@ const Chat = () => {
     return messages[Math.floor(Math.random() * messages.length)];
   };
 
-  // Handle sending a new message
   const handleSendMessage = (content: string, attachments: File[]) => {
     if (!selectedChannel || (!content.trim() && attachments.length === 0)) return;
     
-    // Create new message
     const newMessage: ChatMessageType = {
       id: `msg-${Date.now()}`,
       content: content.trim(),
@@ -353,13 +332,12 @@ const Chat = () => {
         name: file.name,
         type: file.type,
         size: file.size,
-        url: '#' // In real app, upload file and get URL
+        url: '#' 
       })),
       mentions: content.match(/@(\w+)/g)?.map(match => match.substring(1)) || [],
       documentRefs: content.match(/#([A-Za-z0-9]+)/g)?.map(match => match.substring(1)) || []
     };
     
-    // If replying to a message, add reply info
     if (replyTo) {
       newMessage.replyTo = replyTo.id;
       newMessage.replyToContent = replyTo.content;
@@ -370,7 +348,6 @@ const Chat = () => {
     setMessages(prev => [...prev, newMessage]);
   };
 
-  // Handle message reactions
   const handleReaction = (messageId: string, emoji: string) => {
     setMessages(prev => 
       prev.map(msg => 
@@ -394,17 +371,18 @@ const Chat = () => {
           : msg
       )
     );
+    
+    toast.success("Reacție adăugată!");
   };
 
-  // Handle replying to a message
   const handleReply = (messageId: string) => {
     const messageToReply = messages.find(msg => msg.id === messageId);
     if (messageToReply) {
       setReplyTo(messageToReply);
+      toast.info("Răspunzi la mesajul lui " + messageToReply.sender.name);
     }
   };
 
-  // Handle creating a task from a message
   const handleCreateTask = (messageId: string) => {
     setMessages(prev => 
       prev.map(msg => 
@@ -413,25 +391,67 @@ const Chat = () => {
           : msg
       )
     );
+    
+    const message = messages.find(msg => msg.id === messageId);
+    if (message) {
+      toast.success(`Sarcină creată din mesajul: "${message.content.substring(0, 30)}..."`, {
+        description: "Sarcina a fost adăugată în lista ta de activități."
+      });
+    }
   };
 
-  // Handle creating a new channel
+  const handleLinkToDocument = (messageId: string, docRef: string) => {
+    toast.success(`Mesajul a fost asociat cu documentul #${docRef}`, {
+      description: "Poți vedea acest mesaj și în secțiunea de comentarii a documentului."
+    });
+  };
+
+  const handleEditMessage = (messageId: string) => {
+    toast.info("Editare mesaj", {
+      description: "Funcționalitatea de editare va fi disponibilă în curând."
+    });
+  };
+
+  const handleDeleteMessage = (messageId: string) => {
+    setMessages(prev => prev.filter(msg => msg.id !== messageId));
+    toast.success("Mesajul a fost șters.");
+  };
+
+  const handleCopyLink = (messageId: string) => {
+    const link = `https://app.iflows.ro/chat/message/${messageId}`;
+    navigator.clipboard.writeText(link).then(() => {
+      toast.success("Link-ul a fost copiat în clipboard.");
+    });
+  };
+
+  const handleRemind = (messageId: string) => {
+    toast.info("Reminder setat", {
+      description: "Vei primi o notificare despre acest mesaj peste 1 oră."
+    });
+  };
+
+  const handleForward = (messageId: string) => {
+    toast.info("Funcționalitate de redirecționare", {
+      description: "Va fi disponibilă în curând."
+    });
+  };
+
+  const handleMarkUnread = (messageId: string) => {
+    toast.success("Mesajul a fost marcat ca necitit.");
+  };
+
   const handleCreateChannel = () => {
     console.log("Create channel");
-    // In a real app, show a dialog to create a new channel
   };
 
-  // Handle managing channels
   const handleManageChannels = () => {
     console.log("Manage channels");
-    // In a real app, navigate to channel management section
   };
 
   return (
     <TooltipProvider>
       <div className="h-screen flex flex-col">
         <div className="flex-grow flex overflow-hidden">
-          {/* Sidebar */}
           <div className="h-full w-64 border-r flex flex-col shadow-md bg-background/95 backdrop-blur-sm">
             <ChannelList
               currentUserId={currentUser.id}
@@ -445,44 +465,39 @@ const Chat = () => {
             />
           </div>
 
-          {/* Main chat area */}
           <div className="flex-1 flex flex-col h-full bg-gradient-to-br from-background to-muted/30">
-            {/* Channel header */}
             <div className="flex items-center justify-between p-4 border-b bg-background/70 backdrop-blur-sm shadow-sm">
-              <div className="flex items-center">
-                {selectedChannel?.type === 'channel' ? (
-                  <>
-                    <div className="bg-iflows-primary/10 p-1.5 rounded-md mr-3">
-                      <Hash className="h-5 w-5 text-iflows-primary" />
-                    </div>
-                    <h2 className="text-lg font-medium">{selectedChannel?.name}</h2>
-                    {selectedChannel?.isPrivate && (
-                      <div className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs font-medium">
-                        Privat
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div className="flex items-center">
-                    <div className="relative mr-3">
-                      <div className="h-9 w-9 rounded-full overflow-hidden shadow-sm border-2 border-background">
-                        <img 
-                          src={selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.avatar} 
-                          alt={selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.name} 
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                      {selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.isOnline && (
-                        <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-background"></div>
-                      )}
-                    </div>
-                    <h2 className="text-lg font-medium">
-                      {selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.name}
-                    </h2>
+              {selectedChannel?.type === 'channel' ? (
+                <>
+                  <div className="bg-iflows-primary/10 p-1.5 rounded-md mr-3">
+                    <Hash className="h-5 w-5 text-iflows-primary" />
                   </div>
-                )}
-              </div>
-
+                  <h2 className="text-lg font-medium">{selectedChannel?.name}</h2>
+                  {selectedChannel?.isPrivate && (
+                    <div className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs font-medium">
+                      Privat
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="flex items-center">
+                  <div className="relative mr-3">
+                    <div className="h-9 w-9 rounded-full overflow-hidden shadow-sm border-2 border-background">
+                      <img 
+                        src={selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.avatar} 
+                        alt={selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.name} 
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    {selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.isOnline && (
+                      <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-background"></div>
+                    )}
+                  </div>
+                  <h2 className="text-lg font-medium">
+                    {selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.name}
+                  </h2>
+                </div>
+              )}
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" className="rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors">
                   <Search className="h-4 w-4" />
@@ -499,7 +514,6 @@ const Chat = () => {
               </div>
             </div>
 
-            {/* Messages */}
             <ScrollArea className="flex-1 p-4">
               {loading ? (
                 <div className="flex items-center justify-center h-full">
@@ -530,13 +544,19 @@ const Chat = () => {
                       onReply={handleReply}
                       onReact={handleReaction}
                       onCreateTask={handleCreateTask}
+                      onLink={handleLinkToDocument}
+                      onEdit={handleEditMessage}
+                      onDelete={handleDeleteMessage}
+                      onCopyLink={handleCopyLink}
+                      onRemind={handleRemind}
+                      onForward={handleForward}
+                      onMarkUnread={handleMarkUnread}
                     />
                   ))}
                 </div>
               )}
             </ScrollArea>
 
-            {/* Input area */}
             <div className="border-t bg-background/80 backdrop-blur-sm shadow-[0_-2px_10px_rgba(0,0,0,0.03)]">
               <ChatInput
                 replyToMessage={replyTo ? {

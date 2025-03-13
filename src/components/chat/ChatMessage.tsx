@@ -164,11 +164,11 @@ const ChatMessage: React.FC<MessageProps> = ({
           {edited && <span className="text-xs text-muted-foreground">(editat)</span>}
         </div>
 
-        {/* Message content */}
+        {/* Message content - changed background for own messages */}
         <div 
           className={`mt-1 rounded-lg px-4 py-2.5 shadow-sm
             ${isOwn 
-              ? 'bg-gradient-to-r from-iflows-primary to-iflows-secondary text-white' 
+              ? 'bg-sky-500 text-white' 
               : 'bg-muted/70 backdrop-blur-sm text-foreground'
             }`}
         >
@@ -219,11 +219,11 @@ const ChatMessage: React.FC<MessageProps> = ({
         )}
       </div>
 
-      {/* Message actions */}
+      {/* Message actions - make them visible always for mobile and more accessible */}
       <div 
         className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} top-1/2 -translate-y-1/2
-          flex items-center gap-1 opacity-0 transition-opacity duration-200
-          ${showActions ? 'opacity-100' : ''} ${isOwn ? 'flex-row-reverse' : ''}`}
+          flex items-center gap-1 transition-opacity duration-200
+          ${showActions || 'md:opacity-50 hover:opacity-100'} ${isOwn ? 'flex-row-reverse' : ''}`}
       >
         <TooltipProvider>
           <Tooltip>
@@ -261,7 +261,7 @@ const ChatMessage: React.FC<MessageProps> = ({
           </Tooltip>
         </TooltipProvider>
 
-        {/* Create task button (conditionally shown) */}
+        {/* Create task button - made more visible and always showing when task phrases detected */}
         {content.toLowerCase().includes("te rog să") && (
           <TooltipProvider>
             <Tooltip>
@@ -269,7 +269,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                 <Button 
                   size="icon" 
                   variant="ghost" 
-                  className="h-8 w-8 rounded-full text-iflows-primary hover:bg-iflows-primary/10 transition-colors"
+                  className="h-8 w-8 rounded-full bg-iflows-primary/10 text-iflows-primary hover:bg-iflows-primary/20 transition-colors"
                   onClick={() => onCreateTask?.(id)}
                 >
                   <CheckSquare className="h-4 w-4" />
