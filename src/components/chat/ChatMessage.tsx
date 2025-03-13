@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { formatDistanceToNow } from 'date-fns';
 import { ro } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
+import { toast } from "sonner";
 import { 
   MessageSquare, 
   ThumbsUp, 
@@ -94,7 +95,7 @@ const ChatMessage: React.FC<MessageProps> = ({
   onForward,
   onMarkUnread,
 }) => {
-  const [showActions, setShowActions] = useState(false);
+  const [showActions, setShowActions] = useState(true); // Always show actions for better visibility
 
   // Parse and format message content to highlight mentions and document references
   const renderContent = () => {
@@ -133,11 +134,32 @@ const ChatMessage: React.FC<MessageProps> = ({
   // Format message time
   const formattedTime = formatDistanceToNow(timestamp, { addSuffix: true, locale: ro });
 
+  // Helper function for handling reactions with visual feedback
+  const handleReaction = (emoji: string) => {
+    if (onReact) {
+      onReact(id, emoji);
+      toast.success(`Ai reacționat cu ${emoji} la mesajul lui ${sender.name}`);
+    }
+  };
+
+  // Helper function for task creation with visual feedback
+  const handleCreateTask = () => {
+    if (onCreateTask) {
+      onCreateTask(id);
+      toast.success("Sarcină creată cu succes!");
+    }
+  };
+
+  // Check if this message contains task trigger phrases
+  const hasTaskTrigger = ["te rog să", "îmi poți", "poți să", "ai putea să"].some(
+    phrase => content.toLowerCase().includes(phrase.toLowerCase())
+  );
+
   return (
     <div 
       className={`group relative flex gap-3 py-3 transition-all duration-200 ${isOwn ? 'justify-end' : 'justify-start'} message-animation`}
       onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
+      onMouseLeave={() => setShowActions(true)} // Keep actions visible even on mouse leave
     >
       {!isOwn && (
         <div className="flex-shrink-0 mt-1">
@@ -164,11 +186,11 @@ const ChatMessage: React.FC<MessageProps> = ({
           {edited && <span className="text-xs text-muted-foreground">(editat)</span>}
         </div>
 
-        {/* Message content - changed background for own messages */}
+        {/* Message content - using a more visible color scheme for own messages */}
         <div 
           className={`mt-1 rounded-lg px-4 py-2.5 shadow-sm
             ${isOwn 
-              ? 'bg-sky-500 text-white' 
+              ? 'bg-slate-200 dark:bg-slate-800 text-foreground' 
               : 'bg-muted/70 backdrop-blur-sm text-foreground'
             }`}
         >
@@ -177,7 +199,7 @@ const ChatMessage: React.FC<MessageProps> = ({
           {/* Task created badge */}
           {taskCreated && (
             <div className="mt-2">
-              <Badge variant="outline" className="bg-iflows-primary/10 text-iflows-primary border-iflows-primary/20">
+              <Badge variant="outline" className="bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800/30">
                 <CheckSquare className="mr-1 h-3 w-3" />
                 Sarcină creată
               </Badge>
@@ -191,7 +213,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                 <div 
                   key={file.id}
                   className={`flex items-center gap-2 rounded-md p-2 text-sm
-                    ${isOwn ? 'bg-iflows-secondary/30' : 'bg-background/80'}`}
+                    ${isOwn ? 'bg-white/60 dark:bg-slate-700/60' : 'bg-white/60 dark:bg-slate-800/60'}`}
                 >
                   <PaperclipIcon className="h-4 w-4" />
                   <span className="flex-1 truncate">{file.name}</span>
@@ -209,7 +231,7 @@ const ChatMessage: React.FC<MessageProps> = ({
               <Badge 
                 key={emoji} 
                 variant="outline" 
-                className="bg-background/80 hover:bg-muted cursor-pointer transition-colors shadow-sm"
+                className="reaction-badge bg-white dark:bg-slate-800 hover:bg-muted shadow-sm"
                 onClick={() => onReact?.(id, emoji)}
               >
                 {emoji} {reaction.count}
@@ -219,11 +241,11 @@ const ChatMessage: React.FC<MessageProps> = ({
         )}
       </div>
 
-      {/* Message actions - make them visible always for mobile and more accessible */}
+      {/* Message actions - now always visible for better discoverability */}
       <div 
-        className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} top-1/2 -translate-y-1/2
-          flex items-center gap-1 transition-opacity duration-200
-          ${showActions || 'md:opacity-50 hover:opacity-100'} ${isOwn ? 'flex-row-reverse' : ''}`}
+        className={`absolute ${isOwn ? 'left-2 -translate-x-full' : 'right-2 translate-x-full'} top-1/2 -translate-y-1/2
+          flex items-center gap-1 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-1 rounded-lg shadow-sm
+          ${isOwn ? 'flex-row-reverse' : ''}`}
       >
         <TooltipProvider>
           <Tooltip>
@@ -232,7 +254,12 @@ const ChatMessage: React.FC<MessageProps> = ({
                 size="icon" 
                 variant="ghost" 
                 className="h-8 w-8 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors"
-                onClick={() => onReply?.(id)}
+                onClick={() => {
+                  if (onReply) {
+                    onReply(id);
+                    toast.info("Răspunzi la acest mesaj");
+                  }
+                }}
               >
                 <MessageSquare className="h-4 w-4" />
               </Button>
@@ -250,7 +277,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                 size="icon" 
                 variant="ghost" 
                 className="h-8 w-8 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors"
-                onClick={() => onReact?.(id, "👍")}
+                onClick={() => handleReaction("👍")}
               >
                 <ThumbsUp className="h-4 w-4" />
               </Button>
@@ -262,21 +289,26 @@ const ChatMessage: React.FC<MessageProps> = ({
         </TooltipProvider>
 
         {/* Create task button - made more visible and always showing when task phrases detected */}
-        {content.toLowerCase().includes("te rog să") && (
+        {hasTaskTrigger && (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button 
                   size="icon" 
-                  variant="ghost" 
-                  className="h-8 w-8 rounded-full bg-iflows-primary/10 text-iflows-primary hover:bg-iflows-primary/20 transition-colors"
-                  onClick={() => onCreateTask?.(id)}
+                  variant={taskCreated ? "secondary" : "default"}
+                  className={`h-8 w-8 rounded-full transition-colors ${
+                    taskCreated 
+                      ? "bg-green-600 text-white hover:bg-green-700" 
+                      : "bg-iflows-primary text-white hover:bg-iflows-secondary animate-pulse-slow"
+                  }`}
+                  onClick={handleCreateTask}
+                  disabled={taskCreated}
                 >
                   <CheckSquare className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Crează sarcină</p>
+                <p>{taskCreated ? "Sarcină creată" : "Crează sarcină"}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -291,9 +323,14 @@ const ChatMessage: React.FC<MessageProps> = ({
                   size="icon" 
                   variant="ghost" 
                   className="h-8 w-8 rounded-full text-iflows-primary hover:bg-iflows-primary/10 transition-colors"
-                  onClick={() => onLink?.(id, documentRefs[0])}
+                  onClick={() => {
+                    if (onLink) {
+                      onLink(id, documentRefs[0]);
+                      toast.info(`Mesaj asociat cu documentul #${documentRefs[0]}`);
+                    }
+                  }}
                 >
-                  <PaperclipIcon className="h-4 w-4" />
+                  <Link className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -302,6 +339,32 @@ const ChatMessage: React.FC<MessageProps> = ({
             </Tooltip>
           </TooltipProvider>
         )}
+
+        {/* Emoji reaction dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              className="h-8 w-8 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors"
+            >
+              <span className="text-lg">😊</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align={isOwn ? "start" : "end"} className="p-2 grid grid-cols-4 gap-1 w-48">
+            {["👍", "❤️", "😊", "😂", "😮", "😔", "👏", "🎉"].map(emoji => (
+              <Button 
+                key={emoji} 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-lg"
+                onClick={() => handleReaction(emoji)}
+              >
+                {emoji}
+              </Button>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         {/* More options dropdown */}
         <DropdownMenu>
@@ -317,30 +380,60 @@ const ChatMessage: React.FC<MessageProps> = ({
           <DropdownMenuContent align={isOwn ? "start" : "end"} className="w-48">
             {isOwn && (
               <>
-                <DropdownMenuItem onClick={() => onEdit?.(id)}>
+                <DropdownMenuItem onClick={() => {
+                  if (onEdit) {
+                    onEdit(id);
+                    toast.info("Editezi mesajul");
+                  }
+                }}>
                   <Edit className="mr-2 h-4 w-4" />
                   <span>Editează</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onDelete?.(id)}>
+                <DropdownMenuItem onClick={() => {
+                  if (onDelete) {
+                    onDelete(id);
+                    toast.success("Mesaj șters");
+                  }
+                }}>
                   <Trash2 className="mr-2 h-4 w-4" />
                   <span>Șterge</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
               </>
             )}
-            <DropdownMenuItem onClick={() => onCopyLink?.(id)}>
+            <DropdownMenuItem onClick={() => {
+              if (onCopyLink) {
+                onCopyLink(id);
+                toast.success("Link copiat în clipboard!");
+              }
+            }}>
               <Link className="mr-2 h-4 w-4" />
               <span>Copiază link</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onRemind?.(id)}>
+            <DropdownMenuItem onClick={() => {
+              if (onRemind) {
+                onRemind(id);
+                toast.success("Vei primi o notificare pentru acest mesaj");
+              }
+            }}>
               <Clock className="mr-2 h-4 w-4" />
               <span>Amintește-mi</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onForward?.(id)}>
+            <DropdownMenuItem onClick={() => {
+              if (onForward) {
+                onForward(id);
+                toast.info("Selectează unde vrei să redirecționezi mesajul");
+              }
+            }}>
               <Forward className="mr-2 h-4 w-4" />
               <span>Redirecționează</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onMarkUnread?.(id)}>
+            <DropdownMenuItem onClick={() => {
+              if (onMarkUnread) {
+                onMarkUnread(id);
+                toast.success("Mesaj marcat ca necitit");
+              }
+            }}>
               <Eye className="mr-2 h-4 w-4" />
               <span>Marchează necitit</span>
             </DropdownMenuItem>

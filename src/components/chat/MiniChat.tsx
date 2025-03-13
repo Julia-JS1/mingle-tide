@@ -5,6 +5,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { toast } from "sonner";
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import { cn } from '@/lib/utils';
@@ -298,12 +299,18 @@ const MiniChat: React.FC<MiniChatProps> = ({
           : msg
       )
     );
+    
+    const targetMessage = messages.find(m => m.id === messageId);
+    if (targetMessage) {
+      toast.success(`Ai reacționat cu ${emoji} la mesajul lui ${targetMessage.sender.name}`);
+    }
   };
 
   const handleReply = (messageId: string) => {
     const messageToReply = messages.find(msg => msg.id === messageId);
     if (messageToReply) {
       setReplyTo(messageToReply);
+      toast.info("Răspunzi la acest mesaj");
     }
   };
 
@@ -315,6 +322,37 @@ const MiniChat: React.FC<MiniChatProps> = ({
           : msg
       )
     );
+    
+    toast.success("Sarcină creată cu succes!");
+  };
+  
+  const handleLink = (messageId: string, docRef: string) => {
+    toast.info(`Mesaj asociat cu documentul #${docRef}`);
+  };
+  
+  const handleCopyLink = (messageId: string) => {
+    toast.success("Link copiat în clipboard!");
+  };
+  
+  const handleRemind = (messageId: string) => {
+    toast.success("Vei primi o notificare pentru acest mesaj");
+  };
+  
+  const handleForward = (messageId: string) => {
+    toast.info("Selectează unde vrei să redirecționezi mesajul");
+  };
+  
+  const handleMarkUnread = (messageId: string) => {
+    toast.success("Mesaj marcat ca necitit");
+  };
+  
+  const handleEdit = (messageId: string) => {
+    toast.info("Editezi mesajul");
+  };
+  
+  const handleDelete = (messageId: string) => {
+    setMessages(prev => prev.filter(msg => msg.id !== messageId));
+    toast.success("Mesaj șters");
   };
 
   const clearReplyTo = () => setReplyTo(null);
@@ -467,6 +505,13 @@ const MiniChat: React.FC<MiniChatProps> = ({
                       onReply={handleReply}
                       onReact={handleReaction}
                       onCreateTask={handleCreateTask}
+                      onLink={handleLink}
+                      onCopyLink={handleCopyLink}
+                      onRemind={handleRemind}
+                      onForward={handleForward}
+                      onMarkUnread={handleMarkUnread}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
                     />
                   ))
                 )}
