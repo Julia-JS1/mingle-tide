@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import ChannelList from '@/components/chat/ChannelList';
@@ -9,8 +8,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageSquare, Bell, Pin, Info, Search, Hash, Settings, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
-import { ro } from 'date-fns/locale';
 import TaskModal, { TaskData } from '@/components/chat/TaskModal';
 
 interface ChatMessageType {
