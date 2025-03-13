@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import ChannelList from '@/components/chat/ChannelList';
@@ -263,9 +264,9 @@ const Chat = () => {
             id: "msg-4",
             content: "Echipa, am programat o ședință pentru discutarea noilor funcționalități ale platformei. Vă rog să fiți disponibili mâine la ora 10:00.",
             sender: {
-              id: "team",
-              name: "Echipa",
-              avatar: "https://i.pravatar.cc/150?img=6",
+              id: "user2",
+              name: "Maria Popescu",
+              avatar: "https://i.pravatar.cc/150?img=5",
             },
             timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
             isRead: true,
