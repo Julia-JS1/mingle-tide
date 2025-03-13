@@ -22,6 +22,7 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export interface Attachment {
   id: string;
@@ -170,6 +171,26 @@ const ChatMessage: React.FC<MessageProps> = ({
     }
   };
 
+  const handleReply = () => {
+    if (onReply) {
+      onReply(id);
+      setIsOptionsOpen(false);
+      toast.info(`Răspuns la mesajul lui ${sender.name}`);
+    }
+  };
+
+  const handleForward = () => {
+    if (onForward) {
+      onForward(id);
+      setIsOptionsOpen(false);
+      toast.info("Mesaj redirecționat");
+    }
+  };
+
+  const handleMoreOptions = () => {
+    setIsOptionsOpen(!isOptionsOpen);
+  };
+
   const hasTaskTrigger = ["te rog să", "îmi poți", "poți să", "ai putea să", "solicită"].some(
     phrase => content.toLowerCase().includes(phrase.toLowerCase())
   );
@@ -189,8 +210,10 @@ const ChatMessage: React.FC<MessageProps> = ({
         setShowReactions(!isOwn);
       }}
       onMouseLeave={() => {
-        setShowActions(false);
-        setShowReactions(false);
+        if (!isOptionsOpen) {
+          setShowActions(false);
+          setShowReactions(false);
+        }
       }}
     >
       {!isOwn && (
@@ -251,92 +274,156 @@ const ChatMessage: React.FC<MessageProps> = ({
             )}
           </div>
           
-          {/* WhatsApp-style expand arrow button */}
-          <Collapsible 
-            open={isOptionsOpen} 
-            onOpenChange={setIsOptionsOpen}
-            className="absolute right-1 top-1/2 -translate-y-1/2"
+          <div 
+            className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 transition-opacity ${showActions || isOptionsOpen ? 'opacity-100' : 'opacity-0'}`}
           >
-            <CollapsibleTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className={`h-6 w-6 rounded-full hover:bg-slate-200/80 dark:hover:bg-slate-700/80 transition-all
-                  ${isOptionsOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
-                `}
-              >
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="absolute right-0 top-6 z-50 w-auto animate-in slide-in-from-top-5 fade-in-20">
-              <div className="flex items-center gap-1 p-1 rounded-lg bg-white dark:bg-slate-800 shadow-md border border-slate-200 dark:border-slate-700">
-                <TooltipProvider delayDuration={200}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                        onClick={() => onReply?.(id)}
-                      >
-                        <Reply className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                      <p>Răspunde</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                        onClick={() => onForward?.(id)}
-                      >
-                        <Forward className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                      <p>Redirecționează</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                        onClick={() => setShowReactions(prev => !prev)}
-                      >
-                        <Smile className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                      <p>Reacționează</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                      >
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                      <p>Mai multe opțiuni</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
+            <Collapsible 
+              open={isOptionsOpen} 
+              onOpenChange={setIsOptionsOpen}
+            >
+              <CollapsibleTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6 rounded-full bg-white dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 shadow-sm border border-slate-200 dark:border-slate-700"
+                >
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="absolute right-0 top-8 z-50 w-auto">
+                <div className="flex items-center gap-1 p-1 rounded-lg bg-white dark:bg-slate-800 shadow-md border border-slate-200 dark:border-slate-700">
+                  <TooltipProvider delayDuration={200}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                          onClick={handleReply}
+                        >
+                          <Reply className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p>Răspunde</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                          onClick={handleForward}
+                        >
+                          <Forward className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p>Redirecționează</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                          onClick={() => setShowReactions(prev => !prev)}
+                        >
+                          <Smile className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p>Reacționează</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" side="right" className="w-56">
+                        <DropdownMenuItem onClick={() => onBookmark?.(id)}>
+                          <BookmarkPlus className="mr-2 h-4 w-4" />
+                          <span>Salvează</span>
+                        </DropdownMenuItem>
+                        
+                        <DropdownMenuItem onClick={() => onCreateTask?.(id)} disabled={taskCreated}>
+                          <CheckSquare className="mr-2 h-4 w-4" />
+                          <span>{taskCreated ? "Sarcină creată" : "Creează sarcină"}</span>
+                        </DropdownMenuItem>
+                        
+                        <DropdownMenuSeparator />
+                        
+                        <div className="p-2 grid grid-cols-4 gap-1">
+                          {commonReactions.map(emoji => (
+                            <Button 
+                              key={emoji}
+                              size="sm"
+                              variant="ghost"
+                              className="h-10 w-10 p-0 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                              onClick={() => handleReaction(emoji)}
+                            >
+                              <span className="text-lg">{emoji}</span>
+                            </Button>
+                          ))}
+                        </div>
+                        <DropdownMenuSeparator />
+                        
+                        {isOwn && (
+                          <>
+                            <DropdownMenuItem onClick={() => onEdit?.(id)}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              <span>Editează</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              className="text-destructive" 
+                              onClick={() => onDelete?.(id)}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              <span>Șterge</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                          </>
+                        )}
+                        
+                        <DropdownMenuItem onClick={() => onCopyLink?.(id)}>
+                          <Link className="mr-2 h-4 w-4" />
+                          <span>Copiază link</span>
+                        </DropdownMenuItem>
+                        
+                        {documentRefs && documentRefs.length > 0 && (
+                          <DropdownMenuItem onClick={() => onLink?.(id, documentRefs[0])}>
+                            <Link className="mr-2 h-4 w-4" />
+                            <span>Asociază cu #{documentRefs[0]}</span>
+                          </DropdownMenuItem>
+                        )}
+                        
+                        <DropdownMenuItem onClick={() => onRemind?.(id)}>
+                          <Clock className="mr-2 h-4 w-4" />
+                          <span>Amintește-mi</span>
+                        </DropdownMenuItem>
+                        
+                        <DropdownMenuItem onClick={() => onMarkUnread?.(id)}>
+                          <Eye className="mr-2 h-4 w-4" />
+                          <span>Marchează ca necitit</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TooltipProvider>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
         </div>
 
         {shouldShowCreateTaskButton && !taskCreated && (
@@ -379,7 +466,6 @@ const ChatMessage: React.FC<MessageProps> = ({
         </div>
       </div>
 
-      {/* Emoji reaction panel */}
       {!isOwn && showReactions && (
         <div className="absolute -top-[40px] left-12 z-50">
           <div className="bg-white dark:bg-slate-800 rounded-full shadow-md p-1.5 flex items-center space-x-1 border border-slate-200 dark:border-slate-700">
