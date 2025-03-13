@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { 
   Send, 
   PaperclipIcon, 
@@ -283,95 +283,87 @@ const ChatInput: React.FC<ChatInputProps> = ({
         />
         
         <div className="absolute bottom-3 right-3 flex items-center gap-1">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  className="h-7 w-7 text-muted-foreground hover:text-iflows-primary hover:bg-iflows-primary/10 rounded-full transition-colors"
-                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                >
-                  <Smile className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <p>Adaugă emoji</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-iflows-primary hover:bg-iflows-primary/10 rounded-full transition-colors"
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              >
+                <Smile className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p>Adaugă emoji</p>
+            </TooltipContent>
+          </Tooltip>
           
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  className="h-7 w-7 text-muted-foreground hover:text-iflows-primary hover:bg-iflows-primary/10 rounded-full transition-colors"
-                  onClick={handleFileClick}
-                >
-                  <PaperclipIcon className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <p>Atașează fișier</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-iflows-primary hover:bg-iflows-primary/10 rounded-full transition-colors"
+                onClick={handleFileClick}
+              >
+                <PaperclipIcon className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p>Atașează fișier</p>
+            </TooltipContent>
+          </Tooltip>
           
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  className="h-7 w-7 text-muted-foreground hover:text-iflows-primary hover:bg-iflows-primary/10 rounded-full transition-colors"
-                  onClick={() => {
-                    setMessage(prev => prev + '@');
-                    setTimeout(() => {
-                      if (textareaRef.current) {
-                        textareaRef.current.focus();
-                        setCurrentCursorPosition(textareaRef.current.selectionStart);
-                        setShowMentionDropdown(true);
-                      }
-                    }, 0);
-                  }}
-                >
-                  <AtSign className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <p>Menționează pe cineva</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-iflows-primary hover:bg-iflows-primary/10 rounded-full transition-colors"
+                onClick={() => {
+                  setMessage(prev => prev + '@');
+                  setTimeout(() => {
+                    if (textareaRef.current) {
+                      textareaRef.current.focus();
+                      setCurrentCursorPosition(textareaRef.current.selectionStart);
+                      setShowMentionDropdown(true);
+                    }
+                  }, 0);
+                }}
+              >
+                <AtSign className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p>Menționează pe cineva</p>
+            </TooltipContent>
+          </Tooltip>
           
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  className="h-7 w-7 text-muted-foreground hover:text-iflows-primary hover:bg-iflows-primary/10 rounded-full transition-colors"
-                  onClick={() => {
-                    setMessage(prev => prev + '#');
-                    setTimeout(() => {
-                      if (textareaRef.current) {
-                        textareaRef.current.focus();
-                        setCurrentCursorPosition(textareaRef.current.selectionStart);
-                        setShowDocumentDropdown(true);
-                      }
-                    }, 0);
-                  }}
-                >
-                  <Hash className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <p>Referință document</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-iflows-primary hover:bg-iflows-primary/10 rounded-full transition-colors"
+                onClick={() => {
+                  setMessage(prev => prev + '#');
+                  setTimeout(() => {
+                    if (textareaRef.current) {
+                      textareaRef.current.focus();
+                      setCurrentCursorPosition(textareaRef.current.selectionStart);
+                      setShowDocumentDropdown(true);
+                    }
+                  }, 0);
+                }}
+              >
+                <Hash className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p>Referință document</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
         
         <Button 

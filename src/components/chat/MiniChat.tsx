@@ -359,7 +359,7 @@ const MiniChat: React.FC<MiniChatProps> = ({
   const clearReplyTo = () => setReplyTo(null);
 
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={0}>
       <div 
         className={cn(
           "fixed bottom-4 right-4 z-50 flex flex-col rounded-lg shadow-strong",

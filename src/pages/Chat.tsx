@@ -641,7 +641,7 @@ const Chat = () => {
   };
 
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={0}>
       <div className="h-screen flex flex-col">
         <div 
           className="flex-grow flex overflow-hidden relative"
