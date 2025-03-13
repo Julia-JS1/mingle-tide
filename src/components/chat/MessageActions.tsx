@@ -1,6 +1,8 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { 
   MessageSquare, 
@@ -56,10 +58,17 @@ const MessageActions: React.FC<MessageActionsProps> = ({
   onBookmark,
   position = 'left'
 }) => {
+  const [isReminderOpen, setIsReminderOpen] = useState(false);
+  
   const commonReactions = ["👍", "❤️", "😊", "😂", "👏", "🎉", "🙏", "🔥"];
 
   const handleReaction = (emoji: string) => {
     onReact(messageId, emoji);
+  };
+  
+  const handleRemind = (time: string) => {
+    onRemind(messageId);
+    setIsReminderOpen(false);
   };
 
   // Determine position classes based on the position prop
@@ -68,6 +77,14 @@ const MessageActions: React.FC<MessageActionsProps> = ({
     : 'right-0 translate-x-[calc(100%+0.5rem)]';
 
   const isRightSide = position === 'right';
+  
+  const reminderOptions = [
+    { label: 'Peste 30 minute', value: '30m' },
+    { label: 'Peste 1 oră', value: '1h' },
+    { label: 'Peste 3 ore', value: '3h' },
+    { label: 'Mâine dimineață', value: 'tomorrow' },
+    { label: 'Săptămâna viitoare', value: 'nextweek' },
+  ];
 
   return (
     <div 
@@ -185,10 +202,31 @@ const MessageActions: React.FC<MessageActionsProps> = ({
                   </DropdownMenuItem>
                 )}
                 
-                <DropdownMenuItem onClick={() => onRemind(messageId)}>
-                  <Clock className="mr-2 h-4 w-4" />
-                  <span>Amintește-mi</span>
-                </DropdownMenuItem>
+                <Popover open={isReminderOpen} onOpenChange={setIsReminderOpen}>
+                  <PopoverTrigger asChild>
+                    <DropdownMenuItem onClick={(e) => {
+                      e.preventDefault();
+                      setIsReminderOpen(true);
+                    }}>
+                      <Clock className="mr-2 h-4 w-4" />
+                      <span>Amintește-mi</span>
+                    </DropdownMenuItem>
+                  </PopoverTrigger>
+                  <PopoverContent align="end" className="w-56 p-2" sideOffset={5}>
+                    <div className="text-sm font-medium mb-2">Setează o notificare</div>
+                    <div className="space-y-1">
+                      {reminderOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          className="w-full text-left px-2 py-1.5 text-sm rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                          onClick={() => handleRemind(option.value)}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 
                 <DropdownMenuItem onClick={() => onMarkUnread(messageId)}>
                   <Eye className="mr-2 h-4 w-4" />
@@ -332,10 +370,33 @@ const MessageActions: React.FC<MessageActionsProps> = ({
                       <span>Asociază cu #{documentRefs[0]}</span>
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuItem onClick={() => onRemind(messageId)}>
-                    <Clock className="mr-2 h-4 w-4" />
-                    <span>Amintește-mi</span>
-                  </DropdownMenuItem>
+                  
+                  <Popover open={isReminderOpen} onOpenChange={setIsReminderOpen}>
+                    <PopoverTrigger asChild>
+                      <DropdownMenuItem onClick={(e) => {
+                        e.preventDefault();
+                        setIsReminderOpen(true);
+                      }}>
+                        <Clock className="mr-2 h-4 w-4" />
+                        <span>Amintește-mi</span>
+                      </DropdownMenuItem>
+                    </PopoverTrigger>
+                    <PopoverContent align="end" className="w-56 p-2" sideOffset={5}>
+                      <div className="text-sm font-medium mb-2">Setează o notificare</div>
+                      <div className="space-y-1">
+                        {reminderOptions.map((option) => (
+                          <button
+                            key={option.value}
+                            className="w-full text-left px-2 py-1.5 text-sm rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                            onClick={() => handleRemind(option.value)}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                  
                   <DropdownMenuItem onClick={() => onMarkUnread(messageId)}>
                     <Eye className="mr-2 h-4 w-4" />
                     <span>Marchează ca necitit</span>
