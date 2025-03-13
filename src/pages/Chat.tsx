@@ -602,7 +602,19 @@ const Chat = () => {
       isPinned: false,
       isArchived: false,
       unreadCount: 0,
-      mentions: 0
+      mentions: 0,
+      members: [
+        {
+          id: "user1",
+          name: "Adrian Ionescu",
+          avatar: "https://i.pravatar.cc/150?img=1",
+        },
+        {
+          id: "user2",
+          name: "Maria Popescu",
+          avatar: "https://i.pravatar.cc/150?img=5",
+        }
+      ]
     };
     
     channels.push(newChannel);

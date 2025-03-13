@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import MiniChat from '@/components/chat/MiniChat';
 import { Link } from 'react-router-dom';
@@ -21,7 +20,10 @@ const ChatLauncher: React.FC<ChatLauncherProps> = ({ currentUser }) => {
       name: "general",
       type: "channel" as const,
       isPrivate: false,
+      isPinned: true,
+      isArchived: false,
       unreadCount: 3,
+      mentions: 2,
       members: [
         {
           id: "user1",
@@ -45,7 +47,10 @@ const ChatLauncher: React.FC<ChatLauncherProps> = ({ currentUser }) => {
       name: "ui-team",
       type: "channel" as const,
       isPrivate: true,
+      isPinned: false,
+      isArchived: false,
       unreadCount: 0,
+      mentions: 0,
       members: [
         {
           id: "user1",
@@ -64,7 +69,22 @@ const ChatLauncher: React.FC<ChatLauncherProps> = ({ currentUser }) => {
       name: "marketing",
       type: "channel" as const,
       isPrivate: false,
-      unreadCount: 5
+      isPinned: false,
+      isArchived: false,
+      unreadCount: 5,
+      mentions: 1,
+      members: [
+        {
+          id: "user1",
+          name: "Adrian Ionescu",
+          avatar: "https://i.pravatar.cc/150?img=1",
+        },
+        {
+          id: "user3",
+          name: "Ion Vasilescu",
+          avatar: "https://i.pravatar.cc/150?img=3",
+        }
+      ]
     }
   ];
 
@@ -175,3 +195,4 @@ const ChatLauncher: React.FC<ChatLauncherProps> = ({ currentUser }) => {
 };
 
 export default ChatLauncher;
+
