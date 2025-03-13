@@ -213,7 +213,134 @@ const Chat = () => {
     const fetchMessages = async () => {
       setLoading(true);
       setTimeout(() => {
-        const exampleMessages = getSpecificMessages();
+        const exampleMessages = [
+          {
+            id: "msg-1",
+            content: "@Maria Popescu, te rog să verifici comanda #CMD456 și să confirmi că produsele sunt disponibile pentru livrare până vineri.",
+            sender: {
+              id: "user1",
+              name: "Adrian Ionescu",
+              avatar: "https://i.pravatar.cc/150?img=1",
+            },
+            timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+            isRead: true,
+            mentions: ["Maria Popescu"],
+            documentRefs: ["CMD456"],
+            attachments: []
+          },
+          {
+            id: "msg-2",
+            content: "@Elena Dumitrescu, te rog să soliciți la furnizor 20 de unități #PROD123 pentru comanda #CMD456.",
+            sender: {
+              id: "user1",
+              name: "Adrian Ionescu",
+              avatar: "https://i.pravatar.cc/150?img=1",
+            },
+            timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
+            isRead: true,
+            mentions: ["Elena Dumitrescu"],
+            documentRefs: ["PROD123", "CMD456"],
+            attachments: []
+          },
+          {
+            id: "msg-3",
+            content: "Am verificat comanda #CMD456 și toate produsele sunt disponibile. Putem livra până vineri fără probleme.",
+            sender: {
+              id: "user4",
+              name: "Elena Dumitrescu",
+              avatar: "https://i.pravatar.cc/150?img=4",
+            },
+            timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
+            isRead: true,
+            replyTo: "msg-1",
+            replyToContent: "@Maria Popescu, te rog s...",
+            replyToSender: "Adrian Ionescu",
+            mentions: [],
+            documentRefs: ["CMD456"],
+            attachments: []
+          },
+          {
+            id: "msg-4",
+            content: "Echipa, am programat o ședință pentru discutarea noilor funcționalități ale platformei. Vă rog să fiți disponibili mâine la ora 10:00.",
+            sender: {
+              id: "team",
+              name: "Echipa",
+              avatar: "https://i.pravatar.cc/150?img=6",
+            },
+            timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
+            isRead: true,
+            mentions: [],
+            documentRefs: [],
+            attachments: [{
+              id: "attach-1",
+              name: "agenda_sedinta.pdf",
+              type: "application/pdf",
+              size: 299 * 1024,
+              url: "#"
+            }],
+            reactions: {
+              '👍': {
+                emoji: '👍',
+                count: 3,
+                users: ['user1', 'user2', 'user3']
+              },
+              '💬': {
+                emoji: '💬',
+                count: 1,
+                users: ['user4']
+              }
+            }
+          },
+          {
+            id: "msg-5",
+            content: "@Ion Vasilescu, te rog să pregătești raportul de vânzări pentru ședința de mâine.",
+            sender: {
+              id: "user1",
+              name: "Adrian Ionescu",
+              avatar: "https://i.pravatar.cc/150?img=1",
+            },
+            timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+            isRead: true,
+            mentions: ["Ion Vasilescu"],
+            documentRefs: [],
+            taskCreated: true,
+            attachments: []
+          },
+          {
+            id: "msg-6",
+            content: "Am creat task-ul și voi avea raportul gata până mâine dimineață.",
+            sender: {
+              id: "user3",
+              name: "Ion Vasilescu",
+              avatar: "https://i.pravatar.cc/150?img=3",
+            },
+            timestamp: new Date(Date.now() - 1.9 * 60 * 60 * 1000), // just after the previous message
+            isRead: true,
+            replyTo: "msg-5",
+            replyToContent: "@Ion Vasilescu, te rog să...",
+            replyToSender: "Adrian Ionescu",
+            mentions: [],
+            documentRefs: [],
+            attachments: []
+          },
+          {
+            id: "msg-7",
+            content: "Am adăugat 20 de unități de #PROD123 în comandă. @Maria Popescu poți să verifici și să confirmi?",
+            sender: {
+              id: "user4",
+              name: "Elena Dumitrescu",
+              avatar: "https://i.pravatar.cc/150?img=4",
+            },
+            timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hour ago
+            isRead: true,
+            replyTo: "msg-2",
+            replyToContent: "@Elena Dumitrescu, te rog...",
+            replyToSender: "Adrian Ionescu",
+            mentions: ["Maria Popescu"],
+            documentRefs: ["PROD123"],
+            attachments: []
+          }
+        ];
         setMessages(exampleMessages);
         setLoading(false);
       }, 1000);
@@ -225,117 +352,6 @@ const Chat = () => {
   const handleSelectChannel = (channel: any) => {
     setSelectedChannel(channel);
     setReplyTo(null);
-  };
-
-  const getSpecificMessages = (): ChatMessageType[] => {
-    const now = new Date();
-    const day = 24 * 60 * 60 * 1000;
-    const hour = 60 * 60 * 1000;
-    
-    return [
-      {
-        id: "msg-1",
-        content: "te rog să verifici comanda #CMD456 și să confirmi că produsele sunt disponibile pentru livrare până vineri.",
-        sender: users[1], // Maria Popescu
-        timestamp: new Date(now.getTime() - day), // 1 zi în urmă
-        isRead: true,
-        mentions: ["Adrian Ionescu"],
-        documentRefs: ["CMD456"],
-        attachments: []
-      },
-      {
-        id: "msg-2",
-        content: "te rog să soliciți la furnizor 20 de unități #PROD123 pentru comanda #CMD456.",
-        sender: users[0], // Adrian Ionescu
-        timestamp: new Date(now.getTime() - 12 * hour), // circa 12 ore în urmă
-        isRead: true,
-        mentions: ["Elena Dumitrescu"],
-        documentRefs: ["PROD123", "CMD456"],
-        attachments: []
-      },
-      {
-        id: "msg-3",
-        content: "Am verificat comanda #CMD456 și toate produsele sunt disponibile. Putem livra până vineri fără probleme.",
-        sender: users[3], // Elena Dumitrescu
-        timestamp: new Date(now.getTime() - 6 * hour), // circa 6 ore în urmă
-        isRead: true,
-        replyTo: "msg-1",
-        replyToContent: "@Adrian Ionescu, te rog s...",
-        replyToSender: "Maria Popescu",
-        mentions: ["Adrian Ionescu"],
-        documentRefs: ["CMD456"],
-        attachments: []
-      },
-      {
-        id: "msg-4",
-        content: "Echipa, am programat o ședință pentru discutarea noilor funcționalități ale platformei. Vă rog să fiți disponibili mâine la ora 10:00.",
-        sender: {
-          id: "team",
-          name: "Echipa",
-          avatar: "https://i.pravatar.cc/150?img=6",
-        },
-        timestamp: new Date(now.getTime() - 3 * hour), // circa 3 ore în urmă
-        isRead: true,
-        mentions: [],
-        documentRefs: [],
-        attachments: [{
-          id: "attach-1",
-          name: "agenda_sedinta.pdf",
-          type: "application/pdf",
-          size: 299 * 1024,
-          url: "#"
-        }],
-        reactions: {
-          '👍': {
-            emoji: '👍',
-            count: 3,
-            users: ['user1', 'user2', 'user3']
-          },
-          '💬': {
-            emoji: '💬',
-            count: 1,
-            users: ['user4']
-          }
-        }
-      },
-      {
-        id: "msg-5",
-        content: "te rog să pregătești raportul de vânzări pentru ședința de mâine.",
-        sender: users[0], // Adrian Ionescu
-        timestamp: new Date(now.getTime() - 2 * hour), // circa 2 ore în urmă
-        isRead: true,
-        mentions: ["Ion Vasilescu"],
-        documentRefs: [],
-        taskCreated: true,
-        attachments: []
-      },
-      {
-        id: "msg-6",
-        content: "Am creat task-ul și voi avea raportul gata până mâine dimineață.",
-        sender: users[2], // Ion Vasilescu
-        timestamp: new Date(now.getTime() - 2 * hour), // circa 2 ore în urmă
-        isRead: true,
-        replyTo: "msg-5",
-        replyToContent: "@Ion Vasilescu, te rog să...",
-        replyToSender: "Adrian Ionescu",
-        mentions: [],
-        documentRefs: [],
-        attachments: []
-      },
-      {
-        id: "msg-7",
-        content: "Am adăugat 20 de unități de #PROD123 în comandă. @Maria Popescu poți să verifici și să confirmi?",
-        sender: users[3], // Elena Dumitrescu
-        timestamp: new Date(now.getTime() - 1 * hour), // circa 1 oră în urmă
-        isRead: true,
-        replyTo: "msg-2",
-        replyToContent: "@Elena Dumitrescu, te rog...",
-        replyToSender: "Adrian Ionescu",
-        mentions: ["Maria Popescu"],
-        documentRefs: ["PROD123"],
-        attachments: []
-      }
-    ];
   };
 
   const handleSendMessage = (content: string, attachments: File[]) => {

@@ -110,7 +110,6 @@
     display: none;
   }
 
-  /* Custom styled scrollbar for all webkit browsers */
   .scrollbar-styled::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -298,14 +297,14 @@
   @apply text-iflows-primary font-medium;
 }
 
-/* Mentions highlight */
+/* Mentions highlight - updated to match the screenshot */
 .mention {
-  @apply text-iflows-primary font-medium;
+  @apply bg-blue-100 text-blue-800 px-1 py-0.5 rounded font-medium;
 }
 
-/* Document references highlight */
+/* Document references highlight - updated to match the screenshot */
 .doc-reference {
-  @apply text-iflows-primary font-medium cursor-pointer hover:underline;
+  @apply bg-purple-100 text-purple-800 px-1 py-0.5 rounded font-medium cursor-pointer hover:underline;
 }
 
 /* Make action buttons more visible on mobile */
