@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import ChannelList from '@/components/chat/ChannelList';
@@ -642,11 +643,11 @@ const Chat = () => {
         <div 
           className="flex-grow flex overflow-hidden relative"
         >
-          {/* Background Logo with high transparency */}
+          {/* Background Logo with adjusted transparency */}
           <div 
             className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center"
             style={{
-              opacity: 0.03, // Very high transparency
+              opacity: 0.15, // Increased opacity from 0.03 to 0.15 to make it more visible
             }}
           >
             <img 
