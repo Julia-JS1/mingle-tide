@@ -312,7 +312,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                   size="icon" 
                   variant="ghost" 
                   className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                  onClick={() => handleCreateTask(id)}
+                  onClick={() => handleCreateTask()}
                 >
                   <CheckSquare className="h-4 w-4" />
                 </Button>
