@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tooltip } from '@/components/ui/tooltip';
+import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { 
   Search, 
   Hash, 
@@ -72,58 +71,48 @@ const ChannelList: React.FC<ChannelListProps> = ({
   const [showChannels, setShowChannels] = useState(true);
   const [showDirectMessages, setShowDirectMessages] = useState(true);
   
-  // Filter and sort channels
   const filteredChannels = channels
     .filter(channel => 
       !searchQuery || 
       channel.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .sort((a, b) => {
-      // Sort by pinned first
       if (a.isPinned && !b.isPinned) return -1;
       if (!a.isPinned && b.isPinned) return 1;
       
-      // Then by unread messages
       if (a.unreadCount > 0 && b.unreadCount === 0) return -1;
       if (a.unreadCount === 0 && b.unreadCount > 0) return 1;
       
-      // Then alphabetically
       return a.name.localeCompare(b.name);
     });
-  
-  // Separate pinned channels for visual grouping
+
   const pinnedChannels = filteredChannels.filter(channel => channel.isPinned);
   const unpinnedChannels = filteredChannels.filter(channel => !channel.isPinned && !channel.isArchived);
   const archivedChannels = filteredChannels.filter(channel => channel.isArchived);
-  
-  // Filter and sort direct messages
+
   const filteredDirectMessages = directMessages
     .filter(dm => {
       if (!searchQuery) return true;
       
-      // Filter by user names
       return dm.users.some(user => 
         user.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     })
     .sort((a, b) => {
-      // Sort by unread messages first
       if (a.unreadCount > 0 && b.unreadCount === 0) return -1;
       if (a.unreadCount === 0 && b.unreadCount > 0) return 1;
       
-      // Then alphabetically by the other user's name
       const aName = a.users.find(u => u.id !== currentUserId)?.name || '';
       const bName = b.users.find(u => u.id !== currentUserId)?.name || '';
       return aName.localeCompare(bName);
     });
-  
+
   const getDMPartnerInfo = (dm: DirectMessage) => {
     return dm.users.find(user => user.id !== currentUserId);
   };
 
   return (
     <div className={cn("flex h-full flex-col", className)}>
-      {/* Search bar */}
       <div className="p-3">
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -138,7 +127,6 @@ const ChannelList: React.FC<ChannelListProps> = ({
       
       <ScrollArea className="flex-1">
         <div className="p-2">
-          {/* Channels section */}
           <div className="mb-4">
             <div 
               className="flex items-center justify-between px-2 py-1 cursor-pointer"
@@ -150,50 +138,53 @@ const ChannelList: React.FC<ChannelListProps> = ({
               </div>
               {isAdmin && (
                 <div className="flex items-center gap-1">
-                  <Tooltip>
-                    <Tooltip.Trigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 rounded-full"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onCreateChannel?.();
-                        }}
-                      >
-                        <Plus className="h-3.5 w-3.5" />
-                      </Button>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content side="top">
-                      <p>Crează un canal nou</p>
-                    </Tooltip.Content>
-                  </Tooltip>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 rounded-full"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onCreateChannel?.();
+                          }}
+                        >
+                          <Plus className="h-3.5 w-3.5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        <p>Crează un canal nou</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   
-                  <Tooltip>
-                    <Tooltip.Trigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 rounded-full"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onManageChannels?.();
-                        }}
-                      >
-                        <Settings className="h-3.5 w-3.5" />
-                      </Button>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content side="top">
-                      <p>Gestionează canalele</p>
-                    </Tooltip.Content>
-                  </Tooltip>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 rounded-full"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onManageChannels?.();
+                          }}
+                        >
+                          <Settings className="h-3.5 w-3.5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        <p>Gestionează canalele</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               )}
             </div>
             
             {showChannels && (
               <div className="mt-1 space-y-0.5">
-                {/* Pinned channels first */}
                 {pinnedChannels.length > 0 && (
                   <div className="mb-2">
                     <div className="px-2 py-1 text-xs font-medium text-muted-foreground">
@@ -243,7 +234,6 @@ const ChannelList: React.FC<ChannelListProps> = ({
                   </div>
                 )}
                 
-                {/* Regular channels */}
                 {unpinnedChannels.length > 0 && (
                   <div>
                     {pinnedChannels.length > 0 && (
@@ -291,7 +281,6 @@ const ChannelList: React.FC<ChannelListProps> = ({
                   </div>
                 )}
                 
-                {/* Archived channels */}
                 {archivedChannels.length > 0 && (
                   <div className="mt-2">
                     <div className="px-2 py-1 text-xs font-medium text-muted-foreground flex items-center">
@@ -319,7 +308,6 @@ const ChannelList: React.FC<ChannelListProps> = ({
                   </div>
                 )}
                 
-                {/* Empty state for channels */}
                 {filteredChannels.length === 0 && (
                   <div className="px-2 py-3 text-sm text-muted-foreground text-center">
                     {searchQuery 
@@ -331,7 +319,6 @@ const ChannelList: React.FC<ChannelListProps> = ({
             )}
           </div>
           
-          {/* Direct messages section */}
           <div>
             <div 
               className="flex items-center justify-between px-2 py-1 cursor-pointer"
@@ -342,24 +329,26 @@ const ChannelList: React.FC<ChannelListProps> = ({
                 Conversații directe
               </div>
               
-              <Tooltip>
-                <Tooltip.Trigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 rounded-full"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // Add function to create new DM
-                    }}
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                  </Button>
-                </Tooltip.Trigger>
-                <Tooltip.Content side="top">
-                  <p>Conversație nouă</p>
-                </Tooltip.Content>
-              </Tooltip>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 rounded-full"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Add function to create new DM
+                      }}
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p>Conversație nouă</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             
             {showDirectMessages && (
@@ -418,7 +407,6 @@ const ChannelList: React.FC<ChannelListProps> = ({
                   );
                 })}
                 
-                {/* Empty state for direct messages */}
                 {filteredDirectMessages.length === 0 && (
                   <div className="px-2 py-3 text-sm text-muted-foreground text-center">
                     {searchQuery 

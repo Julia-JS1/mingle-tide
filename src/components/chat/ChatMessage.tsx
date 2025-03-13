@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Tooltip } from '@/components/ui/tooltip';
+import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { formatDistanceToNow } from 'date-fns';
 import { ro } from 'date-fns/locale';
@@ -225,74 +225,82 @@ const ChatMessage: React.FC<MessageProps> = ({
           flex items-center gap-1 opacity-0 transition-opacity duration-200
           ${showActions ? 'opacity-100' : ''} ${isOwn ? 'flex-row-reverse' : ''}`}
       >
-        <Tooltip>
-          <Tooltip.Trigger asChild>
-            <Button 
-              size="icon" 
-              variant="ghost" 
-              className="h-8 w-8 rounded-full"
-              onClick={() => onReply?.(id)}
-            >
-              <MessageSquare className="h-4 w-4" />
-            </Button>
-          </Tooltip.Trigger>
-          <Tooltip.Content>
-            <p>Răspunde</p>
-          </Tooltip.Content>
-        </Tooltip>
-
-        <Tooltip>
-          <Tooltip.Trigger asChild>
-            <Button 
-              size="icon" 
-              variant="ghost" 
-              className="h-8 w-8 rounded-full"
-              onClick={() => onReact?.(id, "👍")}
-            >
-              <ThumbsUp className="h-4 w-4" />
-            </Button>
-          </Tooltip.Trigger>
-          <Tooltip.Content>
-            <p>Reacționează</p>
-          </Tooltip.Content>
-        </Tooltip>
-
-        {/* Create task button (conditionally shown) */}
-        {content.toLowerCase().includes("te rog să") && (
+        <TooltipProvider>
           <Tooltip>
-            <Tooltip.Trigger asChild>
+            <TooltipTrigger asChild>
               <Button 
                 size="icon" 
                 variant="ghost" 
-                className="h-8 w-8 rounded-full text-iflows-primary"
-                onClick={() => onCreateTask?.(id)}
+                className="h-8 w-8 rounded-full"
+                onClick={() => onReply?.(id)}
               >
-                <CheckSquare className="h-4 w-4" />
+                <MessageSquare className="h-4 w-4" />
               </Button>
-            </Tooltip.Trigger>
-            <Tooltip.Content>
-              <p>Crează sarcină</p>
-            </Tooltip.Content>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Răspunde</p>
+            </TooltipContent>
           </Tooltip>
+        </TooltipProvider>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="h-8 w-8 rounded-full"
+                onClick={() => onReact?.(id, "👍")}
+              >
+                <ThumbsUp className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Reacționează</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        {/* Create task button (conditionally shown) */}
+        {content.toLowerCase().includes("te rog să") && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-8 w-8 rounded-full text-iflows-primary"
+                  onClick={() => onCreateTask?.(id)}
+                >
+                  <CheckSquare className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Crează sarcină</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
 
         {/* Document linking button (conditionally shown) */}
         {documentRefs.length > 0 && (
-          <Tooltip>
-            <Tooltip.Trigger asChild>
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="h-8 w-8 rounded-full text-iflows-primary"
-                onClick={() => onLink?.(id, documentRefs[0])}
-              >
-                <PaperclipIcon className="h-4 w-4" />
-              </Button>
-            </Tooltip.Trigger>
-            <Tooltip.Content>
-              <p>Asociază cu document</p>
-            </Tooltip.Content>
-          </Tooltip>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-8 w-8 rounded-full text-iflows-primary"
+                  onClick={() => onLink?.(id, documentRefs[0])}
+                >
+                  <PaperclipIcon className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Asociază cu document</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
 
         {/* More options dropdown */}
