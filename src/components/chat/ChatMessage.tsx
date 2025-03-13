@@ -18,6 +18,12 @@ import {
   Reply,
   Forward,
   ChevronDown,
+  BookmarkPlus,
+  Edit,
+  Trash2,
+  Link,
+  Clock,
+  Eye
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
