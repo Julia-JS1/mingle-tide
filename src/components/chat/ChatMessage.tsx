@@ -102,7 +102,7 @@ const ChatMessage: React.FC<MessageProps> = ({
   onMarkUnread,
   onBookmark,
 }) => {
-  const [showActions, setShowActions] = useState(true);
+  const [showActions, setShowActions] = useState(false);
 
   const renderContent = () => {
     let formattedContent = content;
@@ -160,7 +160,7 @@ const ChatMessage: React.FC<MessageProps> = ({
     <div 
       className={`group relative flex gap-3 py-3 transition-all duration-200 ${isOwn ? 'justify-end' : 'justify-start'} message-animation`}
       onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(true)}
+      onMouseLeave={() => setShowActions(false)}
     >
       {!isOwn && (
         <div className="flex-shrink-0 mt-1">
@@ -236,150 +236,162 @@ const ChatMessage: React.FC<MessageProps> = ({
         )}
       </div>
 
-      <div 
-        className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} bottom-0 translate-y-1/2
-          opacity-0 group-hover:opacity-100 transition-opacity z-10`}
-      >
-        <div className="flex items-center bg-white dark:bg-slate-800 backdrop-blur-sm rounded-full shadow-md">
-          <Button 
-            size="icon" 
-            variant="ghost" 
-            className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-            onClick={() => handleReaction("👍")}
-          >
-            <ThumbsUp className="h-4 w-4" />
-          </Button>
-          <Button 
-            size="icon" 
-            variant="ghost" 
-            className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-            onClick={() => handleReaction("❤️")}
-          >
-            <Heart className="h-4 w-4" />
-          </Button>
-          <Button 
-            size="icon" 
-            variant="ghost" 
-            className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-            onClick={() => handleReaction("😊")}
-          >
-            <Smile className="h-4 w-4" />
-          </Button>
-          <Button 
-            size="icon" 
-            variant="ghost" 
-            className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-            onClick={() => onReply?.(id)}
-          >
-            <MessageSquare className="h-4 w-4" />
-          </Button>
-          <Button 
-            size="icon" 
-            variant="ghost" 
-            className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-            onClick={() => onForward?.(id)}
-          >
-            <Forward className="h-4 w-4" />
-          </Button>
-          <HoverCard openDelay={0} closeDelay={200}>
-            <HoverCardTrigger asChild>
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-              >
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </HoverCardTrigger>
-            <HoverCardContent align={isOwn ? "start" : "end"} className="p-2 w-[200px] rounded-xl">
-              <div className="grid grid-cols-3 gap-1">
-                {commonReactions.map(emoji => (
-                  <Button 
-                    key={emoji}
-                    size="sm"
-                    variant="ghost"
-                    className="h-10 w-10 p-0 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                    onClick={() => handleReaction(emoji)}
-                  >
-                    <span className="text-lg">{emoji}</span>
-                  </Button>
-                ))}
-              </div>
-              <div className="mt-2 space-y-1">
-                {isOwn && (
-                  <>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="w-full justify-start" 
-                      onClick={() => onEdit?.(id)}
-                    >
-                      <Edit className="mr-2 h-4 w-4" />
-                      <span>Editează</span>
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="w-full justify-start text-destructive" 
-                      onClick={() => onDelete?.(id)}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      <span>Șterge</span>
-                    </Button>
-                  </>
-                )}
+      {showActions && (
+        <div 
+          className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} bottom-3
+            opacity-100 transition-opacity z-10`}
+        >
+          <div className="flex items-center bg-white dark:bg-slate-800 rounded-full shadow-md p-1 gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
                 <Button 
+                  size="icon" 
                   variant="ghost" 
-                  size="sm" 
-                  className="w-full justify-start" 
+                  className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                  onClick={() => handleReaction("👍")}
+                >
+                  <ThumbsUp className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Like</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                  onClick={() => onReply?.(id)}
+                >
+                  <MessageSquare className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Reply</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                  onClick={() => onForward?.(id)}
+                >
+                  <Forward className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Forward</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
                   onClick={() => onBookmark?.(id)}
                 >
-                  <BookmarkPlus className="mr-2 h-4 w-4" />
-                  <span>Salvează</span>
+                  <BookmarkPlus className="h-4 w-4" />
                 </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Save</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
                 <Button 
+                  size="icon" 
                   variant="ghost" 
-                  size="sm" 
-                  className="w-full justify-start" 
-                  onClick={() => onCopyLink?.(id)}
+                  className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                  onClick={() => handleCreateTask(id)}
                 >
-                  <Link className="mr-2 h-4 w-4" />
-                  <span>Copiază link</span>
+                  <CheckSquare className="h-4 w-4" />
                 </Button>
-                {documentRefs.length > 0 && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="w-full justify-start" 
-                    onClick={() => onLink?.(id, documentRefs[0])}
-                  >
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Create task</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                >
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align={isOwn ? "start" : "end"} className="w-56">
+                <div className="p-2 grid grid-cols-4 gap-1">
+                  {["👍", "❤️", "😊", "😂", "👏", "🎉", "🙏", "🔥"].map(emoji => (
+                    <Button 
+                      key={emoji}
+                      size="sm"
+                      variant="ghost"
+                      className="h-10 w-10 p-0 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                      onClick={() => handleReaction(emoji)}
+                    >
+                      <span className="text-lg">{emoji}</span>
+                    </Button>
+                  ))}
+                </div>
+                <DropdownMenuSeparator />
+                <div className="space-y-1 p-1">
+                  {isOwn && (
+                    <>
+                      <DropdownMenuItem onClick={() => onEdit?.(id)}>
+                        <Edit className="mr-2 h-4 w-4" />
+                        <span>Edit</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        className="text-destructive" 
+                        onClick={() => onDelete?.(id)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        <span>Delete</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
+                  <DropdownMenuItem onClick={() => onBookmark?.(id)}>
+                    <BookmarkPlus className="mr-2 h-4 w-4" />
+                    <span>Save</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onCopyLink?.(id)}>
                     <Link className="mr-2 h-4 w-4" />
-                    <span>Asociază cu #{documentRefs[0]}</span>
-                  </Button>
-                )}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full justify-start" 
-                  onClick={() => onRemind?.(id)}
-                >
-                  <Clock className="mr-2 h-4 w-4" />
-                  <span>Amintește-mi</span>
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full justify-start" 
-                  onClick={() => onMarkUnread?.(id)}
-                >
-                  <Eye className="mr-2 h-4 w-4" />
-                  <span>Marchează necitit</span>
-                </Button>
-              </div>
-            </HoverCardContent>
-          </HoverCard>
+                    <span>Copy link</span>
+                  </DropdownMenuItem>
+                  {documentRefs.length > 0 && (
+                    <DropdownMenuItem onClick={() => onLink?.(id, documentRefs[0])}>
+                      <Link className="mr-2 h-4 w-4" />
+                      <span>Link to #{documentRefs[0]}</span>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={() => onRemind?.(id)}>
+                    <Clock className="mr-2 h-4 w-4" />
+                    <span>Remind me</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onMarkUnread?.(id)}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    <span>Mark as unread</span>
+                  </DropdownMenuItem>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
-      </div>
+      )}
 
       {hasTaskTrigger && (
         <TooltipProvider>
@@ -401,7 +413,7 @@ const ChatMessage: React.FC<MessageProps> = ({
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{taskCreated ? "Sarcină creată" : "Crează sarcină"}</p>
+              <p>{taskCreated ? "Task created" : "Create task"}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
