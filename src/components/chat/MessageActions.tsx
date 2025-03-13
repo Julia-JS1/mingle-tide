@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { 
   MessageSquare, 
@@ -36,20 +36,6 @@ interface MessageActionsProps {
   onBookmark: (messageId: string) => void;
 }
 
-const TooltipContent = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
-  <TooltipPrimitive.Content
-    ref={ref}
-    sideOffset={sideOffset}
-    side="left"
-    className="z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md"
-    {...props}
-  />
-))
-TooltipContent.displayName = TooltipPrimitive.Content.displayName;
-
 const MessageActions: React.FC<MessageActionsProps> = ({
   isOwn,
   messageId,
@@ -79,9 +65,9 @@ const MessageActions: React.FC<MessageActionsProps> = ({
         opacity-100 transition-opacity z-10`}
     >
       <div className="flex flex-col items-center bg-white dark:bg-slate-800 rounded-lg shadow-md p-1 gap-1">
-        <TooltipPrimitive.Provider delayDuration={0}>
-          <TooltipPrimitive.Root>
-            <TooltipPrimitive.Trigger asChild>
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
               <Button 
                 size="icon" 
                 variant="ghost" 
@@ -90,14 +76,14 @@ const MessageActions: React.FC<MessageActionsProps> = ({
               >
                 <ThumbsUp className="h-4 w-4" />
               </Button>
-            </TooltipPrimitive.Trigger>
-            <TooltipContent>
+            </TooltipTrigger>
+            <TooltipContent side="left">
               <p>Apreciez</p>
             </TooltipContent>
-          </TooltipPrimitive.Root>
+          </Tooltip>
 
-          <TooltipPrimitive.Root>
-            <TooltipPrimitive.Trigger asChild>
+          <Tooltip>
+            <TooltipTrigger asChild>
               <Button 
                 size="icon" 
                 variant="ghost" 
@@ -106,14 +92,14 @@ const MessageActions: React.FC<MessageActionsProps> = ({
               >
                 <MessageSquare className="h-4 w-4" />
               </Button>
-            </TooltipPrimitive.Trigger>
-            <TooltipContent>
+            </TooltipTrigger>
+            <TooltipContent side="left">
               <p>Răspunde</p>
             </TooltipContent>
-          </TooltipPrimitive.Root>
+          </Tooltip>
 
-          <TooltipPrimitive.Root>
-            <TooltipPrimitive.Trigger asChild>
+          <Tooltip>
+            <TooltipTrigger asChild>
               <Button 
                 size="icon" 
                 variant="ghost" 
@@ -122,14 +108,14 @@ const MessageActions: React.FC<MessageActionsProps> = ({
               >
                 <Forward className="h-4 w-4" />
               </Button>
-            </TooltipPrimitive.Trigger>
-            <TooltipContent>
+            </TooltipTrigger>
+            <TooltipContent side="left">
               <p>Redirecționează</p>
             </TooltipContent>
-          </TooltipPrimitive.Root>
+          </Tooltip>
 
-          <TooltipPrimitive.Root>
-            <TooltipPrimitive.Trigger asChild>
+          <Tooltip>
+            <TooltipTrigger asChild>
               <Button 
                 size="icon" 
                 variant="ghost" 
@@ -138,14 +124,14 @@ const MessageActions: React.FC<MessageActionsProps> = ({
               >
                 <BookmarkPlus className="h-4 w-4" />
               </Button>
-            </TooltipPrimitive.Trigger>
-            <TooltipContent>
+            </TooltipTrigger>
+            <TooltipContent side="left">
               <p>Salvează</p>
             </TooltipContent>
-          </TooltipPrimitive.Root>
+          </Tooltip>
 
-          <TooltipPrimitive.Root>
-            <TooltipPrimitive.Trigger asChild>
+          <Tooltip>
+            <TooltipTrigger asChild>
               <Button 
                 size="icon" 
                 variant="ghost" 
@@ -155,15 +141,15 @@ const MessageActions: React.FC<MessageActionsProps> = ({
               >
                 <CheckSquare className="h-4 w-4" />
               </Button>
-            </TooltipPrimitive.Trigger>
-            <TooltipContent>
+            </TooltipTrigger>
+            <TooltipContent side="left">
               <p>{taskCreated ? "Sarcină creată" : "Creează sarcină"}</p>
             </TooltipContent>
-          </TooltipPrimitive.Root>
+          </Tooltip>
 
           <DropdownMenu>
-            <TooltipPrimitive.Root>
-              <TooltipPrimitive.Trigger asChild>
+            <Tooltip>
+              <TooltipTrigger asChild>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     size="icon" 
@@ -173,11 +159,11 @@ const MessageActions: React.FC<MessageActionsProps> = ({
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-              </TooltipPrimitive.Trigger>
-              <TooltipContent>
+              </TooltipTrigger>
+              <TooltipContent side="left">
                 <p>Mai multe</p>
               </TooltipContent>
-            </TooltipPrimitive.Root>
+            </Tooltip>
             <DropdownMenuContent align={isOwn ? "start" : "end"} className="w-56">
               <div className="p-2 grid grid-cols-4 gap-1">
                 {commonReactions.map(emoji => (
@@ -235,7 +221,7 @@ const MessageActions: React.FC<MessageActionsProps> = ({
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
-        </TooltipPrimitive.Provider>
+        </TooltipProvider>
       </div>
     </div>
   );
