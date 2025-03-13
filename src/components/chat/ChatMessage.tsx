@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -93,7 +94,7 @@ const ChatMessage: React.FC<MessageProps> = ({
   mentions = [],
   documentRefs = [],
   taskCreated = false,
-  isLatestMessage = false,
+  isLatestMessage = true, // Changed default to true for testing purposes
   onReply,
   onReact,
   onCreateTask,
@@ -262,13 +263,13 @@ const ChatMessage: React.FC<MessageProps> = ({
           )}
         </div>
 
-        {showActions && isLatestMessage && (
-          <div 
-            className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} top-1/2 -translate-y-1/2
-              opacity-100 transition-opacity z-10`}
-          >
-            <div className="flex flex-col items-center bg-white dark:bg-slate-800 rounded-lg shadow-md p-1 gap-1">
-              <TooltipProvider delayDuration={100}>
+        {showActions && (
+          <TooltipProvider delayDuration={0}>
+            <div 
+              className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} top-1/2 -translate-y-1/2
+                opacity-100 transition-opacity z-10`}
+            >
+              <div className="flex flex-col items-center bg-white dark:bg-slate-800 rounded-lg shadow-md p-1 gap-1">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button 
@@ -423,13 +424,13 @@ const ChatMessage: React.FC<MessageProps> = ({
                     </div>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </TooltipProvider>
+              </div>
             </div>
-          </div>
+          </TooltipProvider>
         )}
 
         {hasTaskTrigger && (
-          <TooltipProvider>
+          <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button 
