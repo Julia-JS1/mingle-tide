@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import ChannelList from '@/components/chat/ChannelList';
@@ -404,16 +403,8 @@ const Chat = () => {
     toast.success(`Mesajul a fost asociat cu documentul #${documentId}`);
   };
 
-  const handleEditMessage = (messageId: string, newContent: string) => {
-    setMessages(prev => 
-      prev.map(msg => 
-        msg.id === messageId 
-          ? { ...msg, content: newContent, edited: true }
-          : msg
-      )
-    );
-    
-    toast.success("Mesaj editat cu succes");
+  const handleEditMessage = (messageId: string) => {
+    toast.info("Editezi mesajul");
   };
 
   const handleDeleteMessage = (messageId: string) => {
