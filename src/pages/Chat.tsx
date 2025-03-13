@@ -5,10 +5,42 @@ import ChannelList from '@/components/chat/ChannelList';
 import ChatMessage from '@/components/chat/ChatMessage';
 import ChatInput from '@/components/chat/ChatInput';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageSquare, Bell, BellOff, Pin, Info, Search, Settings } from 'lucide-react';
+import { MessageSquare, Bell, BellOff, Pin, Info, Search, Settings, Hash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+
+// Definim interfața pentru mesaje pentru a include proprietățile pentru răspunsuri
+interface ChatMessageType {
+  id: string;
+  content: string;
+  sender: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
+  timestamp: Date;
+  isRead: boolean;
+  attachments?: {
+    id: string;
+    name: string;
+    type: string;
+    size: number;
+    url: string;
+  }[];
+  reactions?: Record<string, {
+    emoji: string;
+    count: number;
+    users: string[];
+  }>;
+  replyTo?: string;
+  replyToContent?: string;
+  replyToSender?: string;
+  mentions: string[];
+  documentRefs: string[];
+  taskCreated?: boolean;
+  edited?: boolean;
+}
 
 const Chat = () => {
   // Mock current user
@@ -162,9 +194,9 @@ const Chat = () => {
 
   // State
   const [selectedChannel, setSelectedChannel] = useState<any>(channels[0]);
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const [loading, setLoading] = useState(false);
-  const [replyTo, setReplyTo] = useState<any>(null);
+  const [replyTo, setReplyTo] = useState<ChatMessageType | null>(null);
 
   // Generate messages for selected channel
   const handleSelectChannel = (channel: any) => {
@@ -185,7 +217,7 @@ const Chat = () => {
 
   // Generate random mock messages
   const generateMockMessages = (channel: any, count: number) => {
-    const mockMessages: any[] = [];
+    const mockMessages: ChatMessageType[] = [];
     
     // Participants in the conversation
     const participants = channel.type === 'direct' 
@@ -237,7 +269,7 @@ const Chat = () => {
       const replyToIndex = isReply ? Math.floor(Math.random() * mockMessages.length) : -1;
       const replyToMessage = replyToIndex >= 0 ? mockMessages[replyToIndex] : undefined;
       
-      const message = {
+      const message: ChatMessageType = {
         id: `msg-${Date.now()}-${i}`,
         content,
         sender,
@@ -306,7 +338,7 @@ const Chat = () => {
     if (!selectedChannel || (!content.trim() && attachments.length === 0)) return;
     
     // Create new message
-    const newMessage = {
+    const newMessage: ChatMessageType = {
       id: `msg-${Date.now()}`,
       content: content.trim(),
       sender: {
