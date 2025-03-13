@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import ChannelList from '@/components/chat/ChannelList';
@@ -76,8 +75,8 @@ const Chat = () => {
       name: "marketing",
       type: "channel" as const,
       isPrivate: false,
-      isArchived: false,
       isPinned: false,
+      isArchived: false,
       unreadCount: 5,
       mentions: 0
     },
@@ -643,11 +642,10 @@ const Chat = () => {
         <div 
           className="flex-grow flex overflow-hidden relative"
         >
-          {/* Background Logo with adjusted transparency */}
           <div 
             className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center"
             style={{
-              opacity: 0.15, // Increased opacity from 0.03 to 0.15 to make it more visible
+              opacity: 0.15,
             }}
           >
             <img 
@@ -663,16 +661,6 @@ const Chat = () => {
               <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-100">
                 <Settings className="h-4 w-4" />
               </Button>
-            </div>
-            
-            <div className="px-3 pb-2">
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
-                <Input 
-                  placeholder="Caută în mesaje" 
-                  className="pl-8 bg-muted/50 border-0 focus-visible:ring-1"
-                />
-              </div>
             </div>
             
             <ChannelList
