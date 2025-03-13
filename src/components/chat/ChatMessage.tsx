@@ -29,6 +29,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export interface Attachment {
   id: string;
@@ -114,8 +115,17 @@ const ChatMessage: React.FC<MessageProps> = ({
   const [showActions, setShowActions] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+  const [isReminderOpen, setIsReminderOpen] = useState(false);
 
   const commonReactions = ["👍", "❤️", "😊", "😂", "👏", "🎉", "🙏", "🔥"];
+  
+  const reminderOptions = [
+    { label: 'Peste 30 minute', value: '30m' },
+    { label: 'Peste 1 oră', value: '1h' },
+    { label: 'Peste 3 ore', value: '3h' },
+    { label: 'Mâine dimineață', value: 'tomorrow' },
+    { label: 'Săptămâna viitoare', value: 'nextweek' },
+  ];
 
   const renderContent = () => {
     let formattedContent = content;
@@ -196,10 +206,29 @@ const ChatMessage: React.FC<MessageProps> = ({
     setIsOptionsOpen(!isOptionsOpen);
   };
 
+  const handleRemind = (time: string) => {
+    if (onRemind) {
+      onRemind(id, time);
+      setIsReminderOpen(false);
+      toast.success(`Vei primi o notificare ${getReminderLabel(time)}`);
+    }
+  };
+
+  const getReminderLabel = (time: string): string => {
+    switch(time) {
+      case '30m': return 'peste 30 minute';
+      case '1h': return 'peste 1 oră';
+      case '3h': return 'peste 3 ore';
+      case 'tomorrow': return 'mâine dimineață';
+      case 'nextweek': return 'săptămâna viitoare';
+      default: return 'la timpul specificat';
+    }
+  };
+
   const hasTaskTrigger = ["te rog să", "îmi poți", "poți să", "ai putea să", "solicită"].some(
     phrase => content.toLowerCase().includes(phrase.toLowerCase())
   );
-
+  
   const isAvailabilityConfirmation = content.toLowerCase().includes("toate produsele sunt disponibile");
   
   const hasMention = mentions.length > 0;
@@ -394,10 +423,33 @@ const ChatMessage: React.FC<MessageProps> = ({
                           </DropdownMenuItem>
                         )}
                         
-                        <DropdownMenuItem onClick={() => onRemind?.(id)}>
-                          <Clock className="mr-2 h-4 w-4" />
-                          <span>Amintește-mi</span>
-                        </DropdownMenuItem>
+                        <Popover open={isReminderOpen} onOpenChange={setIsReminderOpen}>
+                          <PopoverTrigger asChild>
+                            <DropdownMenuItem onClick={(e) => {
+                              e.preventDefault();
+                              setIsReminderOpen(true);
+                            }}>
+                              <Clock className="mr-2 h-4 w-4" />
+                              <span>Amintește-mi</span>
+                            </DropdownMenuItem>
+                          </PopoverTrigger>
+                          <PopoverContent align="end" className="w-56 p-2" sideOffset={5}>
+                            <div className="text-sm font-medium mb-2">Setează o notificare</div>
+                            <div className="space-y-1">
+                              {reminderOptions.map((option) => (
+                                <button
+                                  key={option.value}
+                                  className="w-full text-left px-2 py-1.5 text-sm rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                  onClick={() => handleRemind(option.value)}
+                                >
+                                  {option.label}
+                                </button>
+                              ))}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                        
+                        <DropdownMenuSeparator />
                         
                         <DropdownMenuItem onClick={() => onMarkUnread?.(id)}>
                           <Eye className="mr-2 h-4 w-4" />

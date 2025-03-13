@@ -349,8 +349,31 @@ const MiniChat: React.FC<MiniChatProps> = ({
     toast.success("Link copiat în clipboard!");
   };
   
-  const handleRemind = (messageId: string) => {
-    toast.success("Vei primi o notificare pentru acest mesaj");
+  const handleRemind = (messageId: string, reminderTime: string) => {
+    let reminderLabel = '';
+    
+    switch(reminderTime) {
+      case '30m':
+        reminderLabel = 'peste 30 minute';
+        break;
+      case '1h':
+        reminderLabel = 'peste 1 oră';
+        break;
+      case '3h':
+        reminderLabel = 'peste 3 ore';
+        break;
+      case 'tomorrow':
+        reminderLabel = 'mâine dimineață';
+        break;
+      case 'nextweek':
+        reminderLabel = 'săptămâna viitoare';
+        break;
+      default:
+        reminderLabel = 'la timpul specificat';
+    }
+    
+    toast.success(`Vei primi o notificare pentru acest mesaj ${reminderLabel}`);
+    console.log(`Setting reminder for message ${messageId} to trigger ${reminderTime}`);
   };
   
   const handleForward = (messageId: string) => {
@@ -575,3 +598,5 @@ const MiniChat: React.FC<MiniChatProps> = ({
 };
 
 export default MiniChat;
+
+
