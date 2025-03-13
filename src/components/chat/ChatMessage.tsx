@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow, format } from 'date-fns';
 import { ro } from 'date-fns/locale';
 import { toast } from "sonner";
+import { useNavigate } from 'react-router-dom';
 import TaskModal, { TaskData } from './TaskModal';
 import MessageActions from './MessageActions';
 import { 
@@ -116,6 +117,7 @@ const ChatMessage: React.FC<MessageProps> = ({
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const [isReminderOpen, setIsReminderOpen] = useState(false);
+  const navigate = useNavigate();
 
   const commonReactions = ["👍", "❤️", "😊", "😂", "👏", "🎉", "🙏", "🔥"];
   
@@ -126,6 +128,24 @@ const ChatMessage: React.FC<MessageProps> = ({
     { label: 'Mâine dimineață', value: 'tomorrow' },
     { label: 'Săptămâna viitoare', value: 'nextweek' },
   ];
+
+  const handleDocRefClick = (docRef: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    if (event.metaKey || event.ctrlKey) {
+      if (docRef.startsWith('CMD')) {
+        navigate(`/commands/${docRef}`);
+        toast.info(`Navigare la comanda #${docRef}`);
+      } else if (docRef.startsWith('PROD')) {
+        navigate(`/products/${docRef}`);
+        toast.info(`Navigare la produsul #${docRef}`);
+      } else if (docRef.startsWith('OF')) {
+        navigate(`/offers/${docRef}`);
+        toast.info(`Navigare la oferta #${docRef}`);
+      }
+    }
+  };
 
   const renderContent = () => {
     let formattedContent = content;
@@ -140,7 +160,7 @@ const ChatMessage: React.FC<MessageProps> = ({
     documentRefs.forEach(docRef => {
       formattedContent = formattedContent.replace(
         new RegExp(`#${docRef}\\b`, 'g'),
-        `<span class="bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-400 px-1 py-0.5 rounded font-medium">#${docRef}</span>`
+        `<span class="bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-400 px-1 py-0.5 rounded font-medium cursor-pointer hover:bg-purple-200 dark:hover:bg-purple-800/60" data-docref="${docRef}">#${docRef}</span>`
       );
     });
 
@@ -154,7 +174,18 @@ const ChatMessage: React.FC<MessageProps> = ({
       }
     });
 
-    return <div dangerouslySetInnerHTML={{ __html: formattedContent }} />;
+    return (
+      <div 
+        dangerouslySetInnerHTML={{ __html: formattedContent }} 
+        onClick={(e) => {
+          const target = e.target as HTMLElement;
+          const docRef = target.getAttribute('data-docref');
+          if (docRef) {
+            handleDocRefClick(docRef, e);
+          }
+        }}
+      />
+    );
   };
 
   const formattedTime = formatDistanceToNow(timestamp, { addSuffix: true, locale: ro });
@@ -542,3 +573,4 @@ const ChatMessage: React.FC<MessageProps> = ({
 };
 
 export default ChatMessage;
+
