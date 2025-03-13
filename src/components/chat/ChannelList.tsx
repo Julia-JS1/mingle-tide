@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { 
   Search, 
   Hash, 
@@ -75,6 +76,8 @@ const ChannelList: React.FC<ChannelListProps> = ({
   const [showDirectMessages, setShowDirectMessages] = useState(true);
   const [isChannelModalOpen, setIsChannelModalOpen] = useState(false);
   const [isManageChannelsOpen, setIsManageChannelsOpen] = useState(false);
+  const [isNewDmDialogOpen, setIsNewDmDialogOpen] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState<{id: string, name: string}[]>([]);
   
   const sampleUsers = [
     { id: "1", name: "Ana Popescu" },
@@ -139,6 +142,36 @@ const ChannelList: React.FC<ChannelListProps> = ({
       onManageChannels();
     }
     console.info("Manage channels");
+  };
+
+  const handleCreateDirectMessage = () => {
+    setIsNewDmDialogOpen(true);
+  };
+
+  const handleStartDirectMessage = () => {
+    if (selectedUsers.length === 0) {
+      toast.error("Selectează cel puțin un utilizator pentru conversație");
+      return;
+    }
+
+    const usersString = selectedUsers.map(u => u.name).join(", ");
+    
+    toast.success(`Conversație nouă creată cu ${usersString}`, {
+      description: "Poți începe să trimiți mesaje acum"
+    });
+    
+    setIsNewDmDialogOpen(false);
+    setSelectedUsers([]);
+
+    console.info("Create direct message with", selectedUsers);
+  };
+
+  const toggleUserSelection = (user: {id: string, name: string}) => {
+    if (selectedUsers.some(u => u.id === user.id)) {
+      setSelectedUsers(selectedUsers.filter(u => u.id !== user.id));
+    } else {
+      setSelectedUsers([...selectedUsers, user]);
+    }
   };
 
   return (
@@ -375,7 +408,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
                       className="h-7 w-7 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary"
                       onClick={(e) => {
                         e.stopPropagation();
-                        // Add function to create new DM
+                        handleCreateDirectMessage();
                       }}
                     >
                       <Plus className="h-3.5 w-3.5" />
@@ -470,6 +503,75 @@ const ChannelList: React.FC<ChannelListProps> = ({
         channels={channels}
         isAdmin={isAdmin}
       />
+
+      <Dialog open={isNewDmDialogOpen} onOpenChange={setIsNewDmDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Conversație directă nouă</DialogTitle>
+            <DialogDescription>
+              Selectează utilizatorii cu care dorești să începi o conversație
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <div className="relative mb-4">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <Input
+                placeholder="Caută utilizatori..."
+                className="pl-9"
+              />
+            </div>
+            
+            <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+              {sampleUsers.map((user) => (
+                <div 
+                  key={user.id}
+                  className={cn(
+                    "flex items-center p-2 rounded-md cursor-pointer transition-colors",
+                    selectedUsers.some(u => u.id === user.id)
+                      ? "bg-iflows-primary/10 text-iflows-primary"
+                      : "hover:bg-muted"
+                  )}
+                  onClick={() => toggleUserSelection(user)}
+                >
+                  <div className="relative h-8 w-8 rounded-full overflow-hidden bg-muted border border-muted mr-3 flex-shrink-0">
+                    <User className="h-4 w-4 m-2" />
+                  </div>
+                  <span className="font-medium">{user.name}</span>
+                  {selectedUsers.some(u => u.id === user.id) && (
+                    <div className="ml-auto bg-iflows-primary text-white rounded-full p-0.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <DialogFooter className="sm:justify-end">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setIsNewDmDialogOpen(false);
+                setSelectedUsers([]);
+              }}
+            >
+              Anulează
+            </Button>
+            <Button 
+              variant="default" 
+              onClick={handleStartDirectMessage}
+              disabled={selectedUsers.length === 0}
+            >
+              Începe conversația
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
