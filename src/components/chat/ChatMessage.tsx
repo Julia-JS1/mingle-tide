@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -24,7 +25,8 @@ import {
   Smile,
   Target,
   Share,
-  BookmarkPlus
+  BookmarkPlus,
+  Plus
 } from 'lucide-react';
 
 export interface Attachment {
@@ -219,6 +221,21 @@ const ChatMessage: React.FC<MessageProps> = ({
             </div>
           )}
         </div>
+
+        {/* Add Create Task button below message for task triggers */}
+        {hasTaskTrigger && !taskCreated && (
+          <div className="mt-2">
+            <Button 
+              size="sm"
+              variant="outline"
+              className="bg-iflows-primary/10 text-iflows-primary hover:bg-iflows-primary/20 border-iflows-primary/20"
+              onClick={handleCreateTask}
+            >
+              <Plus className="mr-1.5 h-3.5 w-3.5" />
+              Creează sarcină
+            </Button>
+          </div>
+        )}
 
         {Object.keys(reactions).length > 0 && (
           <div className="mt-1 flex flex-wrap gap-1">
