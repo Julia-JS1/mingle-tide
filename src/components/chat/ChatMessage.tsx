@@ -14,9 +14,14 @@ import {
   Plus,
   MessageCircleReply,
   Smile,
+  MoreVertical,
+  Reply,
+  Forward,
+  ChevronDown,
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 export interface Attachment {
   id: string;
@@ -102,6 +107,7 @@ const ChatMessage: React.FC<MessageProps> = ({
   const [showActions, setShowActions] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [showReactions, setShowReactions] = useState(false);
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
   const commonReactions = ["👍", "❤️", "😊", "😂", "👏", "🎉", "🙏", "🔥"];
 
@@ -169,7 +175,7 @@ const ChatMessage: React.FC<MessageProps> = ({
   );
 
   const isAvailabilityConfirmation = content.toLowerCase().includes("toate produsele sunt disponibile");
-
+  
   const hasMention = mentions.length > 0;
   const hasDocRef = documentRefs.length > 0;
   
@@ -210,38 +216,127 @@ const ChatMessage: React.FC<MessageProps> = ({
           {edited && <span className="text-xs text-muted-foreground">(editat)</span>}
         </div>
 
-        <div 
-          className={`mt-1 rounded-lg px-4 py-2.5 shadow-sm
-            ${isOwn 
-              ? 'bg-blue-50 dark:bg-blue-900/20 text-foreground' 
-              : 'bg-white dark:bg-slate-800/70 text-foreground shadow-sm border border-slate-200 dark:border-slate-700/50'
-            }`}
-        >
-          {renderContent()}
-          
-          {taskCreated && (
-            <div className="mt-2">
-              <Badge variant="outline" className="bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800/30">
-                <CheckSquare className="mr-1 h-3 w-3" />
-                Sarcină creată
-              </Badge>
-            </div>
-          )}
+        <div className="relative">
+          <div 
+            className={`mt-1 rounded-lg px-4 py-2.5 shadow-sm
+              ${isOwn 
+                ? 'bg-blue-50 dark:bg-blue-900/20 text-foreground' 
+                : 'bg-white dark:bg-slate-800/70 text-foreground shadow-sm border border-slate-200 dark:border-slate-700/50'
+              }`}
+          >
+            {renderContent()}
+            
+            {taskCreated && (
+              <div className="mt-2">
+                <Badge variant="outline" className="bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800/30">
+                  <CheckSquare className="mr-1 h-3 w-3" />
+                  Sarcină creată
+                </Badge>
+              </div>
+            )}
 
-          {attachments && attachments.length > 0 && (
-            <div className="mt-2 space-y-1">
-              {attachments.map((file) => (
-                <div 
-                  key={file.id}
-                  className={`flex items-center gap-2 rounded-md p-2 text-sm bg-slate-100 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600/50`}
-                >
-                  <PaperclipIcon className="h-4 w-4" />
-                  <span className="flex-1 truncate">{file.name}</span>
-                  <span className="text-xs opacity-70">{(file.size / 1024).toFixed(0)} KB</span>
-                </div>
-              ))}
-            </div>
-          )}
+            {attachments && attachments.length > 0 && (
+              <div className="mt-2 space-y-1">
+                {attachments.map((file) => (
+                  <div 
+                    key={file.id}
+                    className={`flex items-center gap-2 rounded-md p-2 text-sm bg-slate-100 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600/50`}
+                  >
+                    <PaperclipIcon className="h-4 w-4" />
+                    <span className="flex-1 truncate">{file.name}</span>
+                    <span className="text-xs opacity-70">{(file.size / 1024).toFixed(0)} KB</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {/* WhatsApp-style expand arrow button */}
+          <Collapsible 
+            open={isOptionsOpen} 
+            onOpenChange={setIsOptionsOpen}
+            className="absolute right-1 top-1/2 -translate-y-1/2"
+          >
+            <CollapsibleTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className={`h-6 w-6 rounded-full hover:bg-slate-200/80 dark:hover:bg-slate-700/80 transition-all
+                  ${isOptionsOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
+                `}
+              >
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="absolute right-0 top-6 z-50 w-auto animate-in slide-in-from-top-5 fade-in-20">
+              <div className="flex items-center gap-1 p-1 rounded-lg bg-white dark:bg-slate-800 shadow-md border border-slate-200 dark:border-slate-700">
+                <TooltipProvider delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                        onClick={() => onReply?.(id)}
+                      >
+                        <Reply className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      <p>Răspunde</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                        onClick={() => onForward?.(id)}
+                      >
+                        <Forward className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      <p>Redirecționează</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                        onClick={() => setShowReactions(prev => !prev)}
+                      >
+                        <Smile className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      <p>Reacționează</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                      >
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      <p>Mai multe opțiuni</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         </div>
 
         {shouldShowCreateTaskButton && !taskCreated && (
@@ -284,50 +379,7 @@ const ChatMessage: React.FC<MessageProps> = ({
         </div>
       </div>
 
-      {/* Left side actions menu */}
-      {showActions && (
-        <MessageActions
-          isOwn={isOwn}
-          messageId={id}
-          documentRefs={documentRefs}
-          taskCreated={taskCreated}
-          onReply={onReply || (() => {})}
-          onReact={onReact || (() => {})}
-          onCreateTask={onCreateTask || (() => {})}
-          onLink={onLink || (() => {})}
-          onEdit={onEdit || (() => {})}
-          onDelete={onDelete || (() => {})}
-          onCopyLink={onCopyLink || (() => {})}
-          onRemind={onRemind || (() => {})}
-          onForward={onForward || (() => {})}
-          onMarkUnread={onMarkUnread || (() => {})}
-          onBookmark={onBookmark || (() => {})}
-          position="left"
-        />
-      )}
-
-      {/* Right side actions menu */}
-      {showActions && (
-        <MessageActions
-          isOwn={isOwn}
-          messageId={id}
-          documentRefs={documentRefs}
-          taskCreated={taskCreated}
-          onReply={onReply || (() => {})}
-          onReact={onReact || (() => {})}
-          onCreateTask={onCreateTask || (() => {})}
-          onLink={onLink || (() => {})}
-          onEdit={onEdit || (() => {})}
-          onDelete={onDelete || (() => {})}
-          onCopyLink={onCopyLink || (() => {})}
-          onRemind={onRemind || (() => {})}
-          onForward={onForward || (() => {})}
-          onMarkUnread={onMarkUnread || (() => {})}
-          onBookmark={onBookmark || (() => {})}
-          position="right"
-        />
-      )}
-
+      {/* Emoji reaction panel */}
       {!isOwn && showReactions && (
         <div className="absolute -top-[40px] left-12 z-50">
           <div className="bg-white dark:bg-slate-800 rounded-full shadow-md p-1.5 flex items-center space-x-1 border border-slate-200 dark:border-slate-700">
