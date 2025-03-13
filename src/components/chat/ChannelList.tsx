@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -18,6 +17,8 @@ import {
   Archive
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import ChannelModal, { ChannelData } from './ChannelModal';
+import { toast } from 'sonner';
 
 interface Channel {
   id: string;
@@ -51,7 +52,7 @@ interface ChannelListProps {
   directMessages: DirectMessage[];
   selectedChannelId?: string;
   onSelectChannel: (channel: ChannelOrDM) => void;
-  onCreateChannel?: () => void;
+  onCreateChannel?: (channelData: ChannelData) => void;
   onManageChannels?: () => void;
   isAdmin: boolean;
   className?: string;
@@ -71,6 +72,15 @@ const ChannelList: React.FC<ChannelListProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [showChannels, setShowChannels] = useState(true);
   const [showDirectMessages, setShowDirectMessages] = useState(true);
+  const [isChannelModalOpen, setIsChannelModalOpen] = useState(false);
+  
+  const sampleUsers = [
+    { id: "1", name: "Ana Popescu" },
+    { id: "2", name: "Mihai Ionescu" },
+    { id: "3", name: "Elena Dragomir" },
+    { id: "4", name: "Alexandru Dumitrescu" },
+    { id: "5", name: "Maria Stan" },
+  ];
   
   const filteredChannels = channels
     .filter(channel => 
@@ -111,6 +121,15 @@ const ChannelList: React.FC<ChannelListProps> = ({
   const getDMPartnerInfo = (dm: DirectMessage) => {
     return dm.users.find(user => user.id !== currentUserId);
   };
+  
+  const handleCreateChannel = (channelData: ChannelData) => {
+    if (onCreateChannel) {
+      onCreateChannel(channelData);
+    } else {
+      toast.success(`Canal nou creat: ${channelData.name}`);
+      console.info("Create channel", channelData);
+    }
+  };
 
   return (
     <div className={cn("flex h-full flex-col", className)}>
@@ -150,7 +169,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
                           className="h-7 w-7 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary"
                           onClick={(e) => {
                             e.stopPropagation();
-                            onCreateChannel?.();
+                            setIsChannelModalOpen(true);
                           }}
                         >
                           <Plus className="h-3.5 w-3.5" />
@@ -427,6 +446,13 @@ const ChannelList: React.FC<ChannelListProps> = ({
           </div>
         </div>
       </ScrollArea>
+      
+      <ChannelModal 
+        isOpen={isChannelModalOpen}
+        onClose={() => setIsChannelModalOpen(false)}
+        onSave={handleCreateChannel}
+        availableUsers={sampleUsers}
+      />
     </div>
   );
 };
