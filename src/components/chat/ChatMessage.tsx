@@ -284,6 +284,7 @@ const ChatMessage: React.FC<MessageProps> = ({
         </div>
       </div>
 
+      {/* Left side actions menu */}
       {showActions && (
         <MessageActions
           isOwn={isOwn}
@@ -301,6 +302,29 @@ const ChatMessage: React.FC<MessageProps> = ({
           onForward={onForward || (() => {})}
           onMarkUnread={onMarkUnread || (() => {})}
           onBookmark={onBookmark || (() => {})}
+          position="left"
+        />
+      )}
+
+      {/* Right side actions menu */}
+      {showActions && (
+        <MessageActions
+          isOwn={isOwn}
+          messageId={id}
+          documentRefs={documentRefs}
+          taskCreated={taskCreated}
+          onReply={onReply || (() => {})}
+          onReact={onReact || (() => {})}
+          onCreateTask={onCreateTask || (() => {})}
+          onLink={onLink || (() => {})}
+          onEdit={onEdit || (() => {})}
+          onDelete={onDelete || (() => {})}
+          onCopyLink={onCopyLink || (() => {})}
+          onRemind={onRemind || (() => {})}
+          onForward={onForward || (() => {})}
+          onMarkUnread={onMarkUnread || (() => {})}
+          onBookmark={onBookmark || (() => {})}
+          position="right"
         />
       )}
 

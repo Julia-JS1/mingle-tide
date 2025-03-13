@@ -15,7 +15,9 @@ import {
   Forward, 
   Eye,
   BookmarkPlus,
-  Share
+  Share,
+  Reply,
+  MessageCircleReply
 } from 'lucide-react';
 
 interface MessageActionsProps {
@@ -34,6 +36,7 @@ interface MessageActionsProps {
   onForward: (messageId: string) => void;
   onMarkUnread: (messageId: string) => void;
   onBookmark: (messageId: string) => void;
+  position?: 'left' | 'right';
 }
 
 const MessageActions: React.FC<MessageActionsProps> = ({
@@ -51,7 +54,8 @@ const MessageActions: React.FC<MessageActionsProps> = ({
   onRemind,
   onForward,
   onMarkUnread,
-  onBookmark
+  onBookmark,
+  position = 'left'
 }) => {
   const commonReactions = ["👍", "❤️", "😊", "😂", "👏", "🎉", "🙏", "🔥"];
 
@@ -59,127 +63,115 @@ const MessageActions: React.FC<MessageActionsProps> = ({
     onReact(messageId, emoji);
   };
 
+  // Determine position classes based on the position prop
+  const positionClasses = position === 'left'
+    ? `${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'}`
+    : 'right-0 translate-x-[calc(100%+0.5rem)]';
+
+  const isRightSide = position === 'right';
+
   return (
     <div 
-      className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} top-1/2 -translate-y-1/2
+      className={`absolute ${positionClasses} top-1/2 -translate-y-1/2
         opacity-100 transition-opacity z-10`}
     >
-      <div className="flex flex-col items-center bg-white dark:bg-slate-800 rounded-lg shadow-md p-1 gap-1">
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                onClick={() => handleReaction("👍")}
-              >
-                <ThumbsUp className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left">
-              <p>Apreciez</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                onClick={() => onReply(messageId)}
-              >
-                <MessageSquare className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left">
-              <p>Răspunde</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                onClick={() => onForward(messageId)}
-              >
-                <Forward className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left">
-              <p>Redirecționează</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                onClick={() => onBookmark(messageId)}
-              >
-                <BookmarkPlus className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left">
-              <p>Salvează</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                onClick={() => onCreateTask(messageId)}
-                disabled={taskCreated}
-              >
-                <CheckSquare className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left">
-              <p>{taskCreated ? "Sarcină creată" : "Creează sarcină"}</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <DropdownMenu>
+      {isRightSide ? (
+        // Right side compact actions menu
+        <div className="flex items-center bg-white dark:bg-slate-800 rounded-lg shadow-md p-1 gap-1">
+          <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger asChild>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    size="icon" 
-                    variant="ghost" 
-                    className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                  >
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                  onClick={() => onReply(messageId)}
+                >
+                  <Reply className="h-4 w-4" />
+                </Button>
               </TooltipTrigger>
               <TooltipContent side="left">
-                <p>Mai multe</p>
+                <p>Răspunde</p>
               </TooltipContent>
             </Tooltip>
-            <DropdownMenuContent align={isOwn ? "start" : "end"} className="w-56">
-              <div className="p-2 grid grid-cols-4 gap-1">
-                {commonReactions.map(emoji => (
-                  <Button 
-                    key={emoji}
-                    size="sm"
-                    variant="ghost"
-                    className="h-10 w-10 p-0 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                    onClick={() => handleReaction(emoji)}
-                  >
-                    <span className="text-lg">{emoji}</span>
-                  </Button>
-                ))}
-              </div>
-              <DropdownMenuSeparator />
-              <div className="space-y-1 p-1">
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                  onClick={() => handleReaction("👍")}
+                >
+                  <ThumbsUp className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="left">
+                <p>Apreciez</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                  onClick={() => onForward(messageId)}
+                >
+                  <Forward className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="left">
+                <p>Redirecționează</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <DropdownMenu>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      size="icon" 
+                      variant="ghost" 
+                      className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent side="left">
+                  <p>Mai multe</p>
+                </TooltipContent>
+              </Tooltip>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem onClick={() => onBookmark(messageId)}>
+                  <BookmarkPlus className="mr-2 h-4 w-4" />
+                  <span>Salvează</span>
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem onClick={() => onCreateTask(messageId)} disabled={taskCreated}>
+                  <CheckSquare className="mr-2 h-4 w-4" />
+                  <span>{taskCreated ? "Sarcină creată" : "Creează sarcină"}</span>
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator />
+                
+                <div className="p-2 grid grid-cols-4 gap-1">
+                  {commonReactions.map(emoji => (
+                    <Button 
+                      key={emoji}
+                      size="sm"
+                      variant="ghost"
+                      className="h-10 w-10 p-0 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                      onClick={() => handleReaction(emoji)}
+                    >
+                      <span className="text-lg">{emoji}</span>
+                    </Button>
+                  ))}
+                </div>
+                <DropdownMenuSeparator />
+                
                 {isOwn && (
                   <>
                     <DropdownMenuItem onClick={() => onEdit(messageId)}>
@@ -196,33 +188,194 @@ const MessageActions: React.FC<MessageActionsProps> = ({
                     <DropdownMenuSeparator />
                   </>
                 )}
-                <DropdownMenuItem onClick={() => onBookmark(messageId)}>
-                  <BookmarkPlus className="mr-2 h-4 w-4" />
-                  <span>Salvează</span>
-                </DropdownMenuItem>
+                
                 <DropdownMenuItem onClick={() => onCopyLink(messageId)}>
                   <Link className="mr-2 h-4 w-4" />
                   <span>Copiază link</span>
                 </DropdownMenuItem>
+                
                 {documentRefs && documentRefs.length > 0 && (
                   <DropdownMenuItem onClick={() => onLink(messageId, documentRefs[0])}>
                     <Link className="mr-2 h-4 w-4" />
                     <span>Asociază cu #{documentRefs[0]}</span>
                   </DropdownMenuItem>
                 )}
+                
                 <DropdownMenuItem onClick={() => onRemind(messageId)}>
                   <Clock className="mr-2 h-4 w-4" />
                   <span>Amintește-mi</span>
                 </DropdownMenuItem>
+                
                 <DropdownMenuItem onClick={() => onMarkUnread(messageId)}>
                   <Eye className="mr-2 h-4 w-4" />
                   <span>Marchează ca necitit</span>
                 </DropdownMenuItem>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </TooltipProvider>
-      </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </TooltipProvider>
+        </div>
+      ) : (
+        // Original left side vertical actions menu
+        <div className="flex flex-col items-center bg-white dark:bg-slate-800 rounded-lg shadow-md p-1 gap-1">
+          <TooltipProvider delayDuration={0}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                  onClick={() => handleReaction("👍")}
+                >
+                  <ThumbsUp className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="left">
+                <p>Apreciez</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                  onClick={() => onReply(messageId)}
+                >
+                  <MessageSquare className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="left">
+                <p>Răspunde</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                  onClick={() => onForward(messageId)}
+                >
+                  <Forward className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="left">
+                <p>Redirecționează</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                  onClick={() => onBookmark(messageId)}
+                >
+                  <BookmarkPlus className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="left">
+                <p>Salvează</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                  onClick={() => onCreateTask(messageId)}
+                  disabled={taskCreated}
+                >
+                  <CheckSquare className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="left">
+                <p>{taskCreated ? "Sarcină creată" : "Creează sarcină"}</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <DropdownMenu>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      size="icon" 
+                      variant="ghost" 
+                      className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent side="left">
+                  <p>Mai multe</p>
+                </TooltipContent>
+              </Tooltip>
+              <DropdownMenuContent align={isOwn ? "start" : "end"} className="w-56">
+                <div className="p-2 grid grid-cols-4 gap-1">
+                  {commonReactions.map(emoji => (
+                    <Button 
+                      key={emoji}
+                      size="sm"
+                      variant="ghost"
+                      className="h-10 w-10 p-0 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+                      onClick={() => handleReaction(emoji)}
+                    >
+                      <span className="text-lg">{emoji}</span>
+                    </Button>
+                  ))}
+                </div>
+                <DropdownMenuSeparator />
+                <div className="space-y-1 p-1">
+                  {isOwn && (
+                    <>
+                      <DropdownMenuItem onClick={() => onEdit(messageId)}>
+                        <Edit className="mr-2 h-4 w-4" />
+                        <span>Editează</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        className="text-destructive" 
+                        onClick={() => onDelete(messageId)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        <span>Șterge</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
+                  <DropdownMenuItem onClick={() => onBookmark(messageId)}>
+                    <BookmarkPlus className="mr-2 h-4 w-4" />
+                    <span>Salvează</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onCopyLink(messageId)}>
+                    <Link className="mr-2 h-4 w-4" />
+                    <span>Copiază link</span>
+                  </DropdownMenuItem>
+                  {documentRefs && documentRefs.length > 0 && (
+                    <DropdownMenuItem onClick={() => onLink(messageId, documentRefs[0])}>
+                      <Link className="mr-2 h-4 w-4" />
+                      <span>Asociază cu #{documentRefs[0]}</span>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={() => onRemind(messageId)}>
+                    <Clock className="mr-2 h-4 w-4" />
+                    <span>Amintește-mi</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onMarkUnread(messageId)}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    <span>Marchează ca necitit</span>
+                  </DropdownMenuItem>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </TooltipProvider>
+        </div>
+      )}
     </div>
   );
 };
