@@ -113,7 +113,6 @@ const ChatMessage: React.FC<MessageProps> = ({
 }) => {
   const [showActions, setShowActions] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [showReactions, setShowReactions] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
   const commonReactions = ["👍", "❤️", "😊", "😂", "👏", "🎉", "🙏", "🔥"];
@@ -211,14 +210,10 @@ const ChatMessage: React.FC<MessageProps> = ({
   return (
     <div 
       className={`group relative flex gap-3 py-3 transition-all duration-200 ${isOwn ? 'justify-end' : 'justify-start'} message-animation`}
-      onMouseEnter={() => {
-        setShowActions(true);
-        setShowReactions(!isOwn);
-      }}
+      onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => {
         if (!isOptionsOpen) {
           setShowActions(false);
-          setShowReactions(false);
         }
       }}
     >
@@ -305,7 +300,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                           variant="ghost" 
                           size="icon" 
                           className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                          onClick={handleReply}
+                          onClick={() => onReply?.(id)}
                         >
                           <Reply className="h-4 w-4" />
                         </Button>
@@ -321,7 +316,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                           variant="ghost" 
                           size="icon" 
                           className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                          onClick={handleForward}
+                          onClick={() => onForward?.(id)}
                         >
                           <Forward className="h-4 w-4" />
                         </Button>
@@ -337,7 +332,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                           variant="ghost" 
                           size="icon" 
                           className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                          onClick={() => setShowReactions(prev => !prev)}
+                          onClick={() => handleReaction("👍")}
                         >
                           <Smile className="h-4 w-4" />
                         </Button>
@@ -357,7 +352,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" side="right" className="w-56">
+                      <DropdownMenuContent align="end" side="right" className="w-56 bg-white dark:bg-slate-800 z-50">
                         <DropdownMenuItem onClick={() => onBookmark?.(id)}>
                           <BookmarkPlus className="mr-2 h-4 w-4" />
                           <span>Salvează</span>
@@ -368,25 +363,9 @@ const ChatMessage: React.FC<MessageProps> = ({
                           <span>{taskCreated ? "Sarcină creată" : "Creează sarcină"}</span>
                         </DropdownMenuItem>
                         
-                        <DropdownMenuSeparator />
-                        
-                        <div className="p-2 grid grid-cols-4 gap-1">
-                          {commonReactions.map(emoji => (
-                            <Button 
-                              key={emoji}
-                              size="sm"
-                              variant="ghost"
-                              className="h-10 w-10 p-0 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                              onClick={() => handleReaction(emoji)}
-                            >
-                              <span className="text-lg">{emoji}</span>
-                            </Button>
-                          ))}
-                        </div>
-                        <DropdownMenuSeparator />
-                        
                         {isOwn && (
                           <>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => onEdit?.(id)}>
                               <Edit className="mr-2 h-4 w-4" />
                               <span>Editează</span>
@@ -398,9 +377,10 @@ const ChatMessage: React.FC<MessageProps> = ({
                               <Trash2 className="mr-2 h-4 w-4" />
                               <span>Șterge</span>
                             </DropdownMenuItem>
-                            <DropdownMenuSeparator />
                           </>
                         )}
+                        
+                        <DropdownMenuSeparator />
                         
                         <DropdownMenuItem onClick={() => onCopyLink?.(id)}>
                           <Link className="mr-2 h-4 w-4" />
@@ -471,22 +451,6 @@ const ChatMessage: React.FC<MessageProps> = ({
           )}
         </div>
       </div>
-
-      {!isOwn && showReactions && (
-        <div className="absolute -top-[40px] left-12 z-50">
-          <div className="bg-white dark:bg-slate-800 rounded-full shadow-md p-1.5 flex items-center space-x-1 border border-slate-200 dark:border-slate-700">
-            {commonReactions.map(emoji => (
-              <button
-                key={emoji}
-                className="hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full p-1.5 transition-colors"
-                onClick={() => handleReaction(emoji)}
-              >
-                <span className="text-lg">{emoji}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       <TooltipProvider delayDuration={0}>
         {hasTaskTrigger && !taskCreated && !isAvailabilityConfirmation && (

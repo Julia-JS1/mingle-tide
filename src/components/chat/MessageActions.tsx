@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
@@ -144,7 +143,7 @@ const MessageActions: React.FC<MessageActionsProps> = ({
                   <p>Mai multe</p>
                 </TooltipContent>
               </Tooltip>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-slate-800 z-50">
                 <DropdownMenuItem onClick={() => onBookmark(messageId)}>
                   <BookmarkPlus className="mr-2 h-4 w-4" />
                   <span>Salvează</span>
@@ -155,21 +154,6 @@ const MessageActions: React.FC<MessageActionsProps> = ({
                   <span>{taskCreated ? "Sarcină creată" : "Creează sarcină"}</span>
                 </DropdownMenuItem>
                 
-                <DropdownMenuSeparator />
-                
-                <div className="p-2 grid grid-cols-4 gap-1">
-                  {commonReactions.map(emoji => (
-                    <Button 
-                      key={emoji}
-                      size="sm"
-                      variant="ghost"
-                      className="h-10 w-10 p-0 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                      onClick={() => handleReaction(emoji)}
-                    >
-                      <span className="text-lg">{emoji}</span>
-                    </Button>
-                  ))}
-                </div>
                 <DropdownMenuSeparator />
                 
                 {isOwn && (
@@ -215,7 +199,7 @@ const MessageActions: React.FC<MessageActionsProps> = ({
           </TooltipProvider>
         </div>
       ) : (
-        // Original left side vertical actions menu
+        // Left side vertical actions menu - keeping the same structure but simplified
         <div className="flex flex-col items-center bg-white dark:bg-slate-800 rounded-lg shadow-md p-1 gap-1">
           <TooltipProvider delayDuration={0}>
             <Tooltip>
@@ -242,7 +226,7 @@ const MessageActions: React.FC<MessageActionsProps> = ({
                   className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
                   onClick={() => onReply(messageId)}
                 >
-                  <MessageSquare className="h-4 w-4" />
+                  <Reply className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="left">
@@ -316,21 +300,7 @@ const MessageActions: React.FC<MessageActionsProps> = ({
                   <p>Mai multe</p>
                 </TooltipContent>
               </Tooltip>
-              <DropdownMenuContent align={isOwn ? "start" : "end"} className="w-56">
-                <div className="p-2 grid grid-cols-4 gap-1">
-                  {commonReactions.map(emoji => (
-                    <Button 
-                      key={emoji}
-                      size="sm"
-                      variant="ghost"
-                      className="h-10 w-10 p-0 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                      onClick={() => handleReaction(emoji)}
-                    >
-                      <span className="text-lg">{emoji}</span>
-                    </Button>
-                  ))}
-                </div>
-                <DropdownMenuSeparator />
+              <DropdownMenuContent align={isOwn ? "start" : "end"} className="w-56 bg-white dark:bg-slate-800 z-50">
                 <div className="space-y-1 p-1">
                   {isOwn && (
                     <>
