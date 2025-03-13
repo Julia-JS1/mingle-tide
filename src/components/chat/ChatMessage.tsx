@@ -238,10 +238,10 @@ const ChatMessage: React.FC<MessageProps> = ({
 
       {showActions && (
         <div 
-          className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} bottom-3
+          className={`absolute ${isOwn ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} top-1/2 -translate-y-1/2
             opacity-100 transition-opacity z-10`}
         >
-          <div className="flex items-center bg-white dark:bg-slate-800 rounded-full shadow-md p-1 gap-1">
+          <div className="flex flex-col items-center bg-white dark:bg-slate-800 rounded-lg shadow-md p-1 gap-1">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button 
@@ -312,7 +312,7 @@ const ChatMessage: React.FC<MessageProps> = ({
                   size="icon" 
                   variant="ghost" 
                   className="h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-                  onClick={() => handleCreateTask()}
+                  onClick={handleCreateTask}
                 >
                   <CheckSquare className="h-4 w-4" />
                 </Button>
@@ -334,7 +334,7 @@ const ChatMessage: React.FC<MessageProps> = ({
               </DropdownMenuTrigger>
               <DropdownMenuContent align={isOwn ? "start" : "end"} className="w-56">
                 <div className="p-2 grid grid-cols-4 gap-1">
-                  {["👍", "❤️", "😊", "😂", "👏", "🎉", "🙏", "🔥"].map(emoji => (
+                  {commonReactions.map(emoji => (
                     <Button 
                       key={emoji}
                       size="sm"
