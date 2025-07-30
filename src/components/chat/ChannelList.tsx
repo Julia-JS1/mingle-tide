@@ -628,15 +628,9 @@ const ChannelList: React.FC<ChannelListProps> = ({
                     </div>
                     
                     <div className="flex items-center gap-1">
-                      {conv.unreadCount > 0 && (
+                      {(conv.unreadCount > 0 || conv.mentions > 0) && (
                         <Badge variant="destructive" className="px-1 min-w-5 h-5">
-                          {conv.unreadCount}
-                        </Badge>
-                      )}
-                      
-                      {conv.mentions > 0 && (
-                        <Badge variant="destructive" className="px-1 min-w-5 h-5">
-                          {conv.mentions}
+                          {conv.mentions > 0 ? conv.mentions : conv.unreadCount}
                         </Badge>
                       )}
                     </div>
