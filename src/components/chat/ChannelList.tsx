@@ -628,19 +628,15 @@ const ChannelList: React.FC<ChannelListProps> = ({
                     </div>
                     
                     <div className="flex items-center gap-1">
-                      <Badge className={cn(
-                        "text-xs",
-                        conv.status === 'active' ? "bg-green-500/10 text-green-700" : 
-                        conv.status === 'waiting' ? "bg-yellow-500/10 text-yellow-700" :
-                        "bg-gray-500/10 text-gray-700"
-                      )}>
-                        {conv.status === 'active' ? 'Activ' : 
-                         conv.status === 'waiting' ? 'În așteptare' : 'Rezolvat'}
-                      </Badge>
-                      
                       {conv.unreadCount > 0 && (
                         <Badge variant="destructive" className="px-1 min-w-5 h-5">
                           {conv.unreadCount}
+                        </Badge>
+                      )}
+                      
+                      {conv.mentions > 0 && (
+                        <Badge variant="destructive" className="px-1 min-w-5 h-5">
+                          {conv.mentions}
                         </Badge>
                       )}
                     </div>

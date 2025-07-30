@@ -376,15 +376,20 @@ const SupportChat: React.FC<SupportChatProps> = ({
           </div>
           
           <div className="flex items-center space-x-2">
-            {getStatusBadge(conversation.status)}
-            {conversation.status === 'active' && (
+            {hasUserInteractions && !conversation.isOperatorTransferred && (
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleMarkAsResolved}
+                onClick={handleTransferToOperator}
               >
-                <Check className="mr-2 h-4 w-4" />
-                Marchează ca rezolvat
+                <UserCheck className="mr-2 h-4 w-4" />
+                Transferă la operator
+                {!isOperatorAvailable && (
+                  <Badge variant="secondary" className="ml-2">
+                    <Clock className="mr-1 h-3 w-3" />
+                    În afara programului
+                  </Badge>
+                )}
               </Button>
             )}
           </div>
@@ -469,60 +474,37 @@ const SupportChat: React.FC<SupportChatProps> = ({
         </div>
       </ScrollArea>
 
-      {/* Transfer Button (shown after first interaction) */}
-      {hasUserInteractions && !conversation.isOperatorTransferred && conversation.status === 'active' && (
-        <div className="px-4 pb-2">
-          <Button
-            variant="outline"
-            onClick={handleTransferToOperator}
-            className="w-full"
-          >
-            <UserCheck className="mr-2 h-4 w-4" />
-            Transferă la operator
-            {!isOperatorAvailable && (
-              <Badge variant="secondary" className="ml-2">
-                <Clock className="mr-1 h-3 w-3" />
-                În afara programului
-              </Badge>
-            )}
-          </Button>
-        </div>
-      )}
 
       {/* Input Area */}
-      {conversation.status === 'active' && (
-        <div className="border-t p-4 space-y-3">
-          <div className="flex space-x-2">
-            <div className="flex-1">
-              <Textarea
-                placeholder="Scrieți mesajul dumneavoastră..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSendMessage();
-                  }
-                }}
-                className="min-h-[80px] resize-none"
-              />
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <Button variant="ghost" size="icon">
-              <Paperclip className="h-4 w-4" />
-            </Button>
-            
-            <Button onClick={handleSendMessage} disabled={!message.trim()}>
-              <Send className="mr-2 h-4 w-4" />
-              Trimite
-            </Button>
+      <div className="border-t p-4 space-y-3">
+        <div className="flex space-x-2">
+          <div className="flex-1">
+            <Textarea
+              placeholder="Scrieți mesajul dumneavoastră..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+              className="min-h-[80px] resize-none"
+            />
           </div>
         </div>
-      )}
-
-      {/* Feedback Section */}
+        
+        <div className="flex items-center justify-between">
+          <Button variant="ghost" size="icon">
+            <Paperclip className="h-4 w-4" />
+          </Button>
+          
+          <Button onClick={handleSendMessage} disabled={!message.trim()}>
+            <Send className="mr-2 h-4 w-4" />
+            Trimite
+          </Button>
+        </div>
+      </div>
       {showFeedback && conversation.status === 'resolved' && (
         <div className="border-t p-4 bg-muted/30">
           <Card>
