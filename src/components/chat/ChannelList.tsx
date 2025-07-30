@@ -84,6 +84,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [showChannels, setShowChannels] = useState(true);
   const [showDirectMessages, setShowDirectMessages] = useState(true);
+  const [showSupport, setShowSupport] = useState(true);
   const [isChannelModalOpen, setIsChannelModalOpen] = useState(false);
   const [isManageChannelsOpen, setIsManageChannelsOpen] = useState(false);
   const [isNewDmDialogOpen, setIsNewDmDialogOpen] = useState(false);
@@ -95,6 +96,12 @@ const ChannelList: React.FC<ChannelListProps> = ({
     { id: "3", name: "Elena Dragomir" },
     { id: "4", name: "Alexandru Dumitrescu" },
     { id: "5", name: "Maria Stan" },
+  ];
+  
+  // Mock support conversations data
+  const supportConversations = [
+    { id: 'support-1', title: 'Problemă cu sincronizarea', status: 'resolved', unreadCount: 0 },
+    { id: 'support-2', title: 'Întrebări despre facturare', status: 'active', unreadCount: 1 },
   ];
   
   const channelsWithMembers = channels.map(channel => {
@@ -551,25 +558,76 @@ const ChannelList: React.FC<ChannelListProps> = ({
           
           {/* Support Section */}
           <div>
-            <div className="px-3 py-2">
+            <div 
+              className="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-muted/50 rounded-md transition-colors"
+              onClick={() => setShowSupport(!showSupport)}
+            >
               <div className="flex items-center text-sm font-medium">
-                <Users className="h-4 w-4 mr-1.5 text-iflows-primary" />
+                {showSupport ? <ChevronDown className="h-4 w-4 mr-1.5 text-iflows-primary" /> : <ChevronRight className="h-4 w-4 mr-1.5 text-iflows-primary" />}
                 Suport
               </div>
+              
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.location.href = '/support';
+                      }}
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p>Conversație nouă de suport</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             
-            <div className="mt-1 space-y-0.5 pl-2">
-              <Link
-                to="/support"
-                className="w-full flex items-center px-2 py-2 rounded-md text-sm transition-all hover:bg-iflows-primary/10"
-              >
-                <Bot className="h-4 w-4 mr-2 text-iflows-primary" />
-                <span>Conversații suport</span>
-                <Badge variant="secondary" className="ml-auto text-xs">
-                  AI + Operator
-                </Badge>
-              </Link>
-            </div>
+            {showSupport && (
+              <div className="mt-1 space-y-0.5 pl-2">
+                {supportConversations.map((conv) => (
+                  <Link
+                    key={conv.id}
+                    to="/support"
+                    className="w-full flex items-center justify-between px-2 py-2 rounded-md text-sm transition-all hover:bg-iflows-primary/10"
+                  >
+                    <div className="flex items-center">
+                      <Bot className="h-4 w-4 mr-2 text-iflows-primary" />
+                      <span className="truncate">{conv.title}</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-1">
+                      <Badge className={cn(
+                        "text-xs",
+                        conv.status === 'active' ? "bg-green-500/10 text-green-700" : "bg-gray-500/10 text-gray-700"
+                      )}>
+                        {conv.status === 'active' ? 'Activ' : 'Rezolvat'}
+                      </Badge>
+                      
+                      {conv.unreadCount > 0 && (
+                        <Badge variant="destructive" className="px-1 min-w-5 h-5">
+                          {conv.unreadCount}
+                        </Badge>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+                
+                <Link
+                  to="/support"
+                  className="w-full flex items-center px-2 py-2 rounded-md text-sm transition-all hover:bg-iflows-primary/10 text-muted-foreground"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  <span>Crează conversație nouă</span>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </ScrollArea>
