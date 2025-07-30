@@ -3,6 +3,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import ChannelList from '@/components/chat/ChannelList';
 import ChatMessage from '@/components/chat/ChatMessage';
 import ChatInput from '@/components/chat/ChatInput';
+import SupportChat from '@/components/chat/SupportChat';
 import ChannelManagementDrawer from '@/components/chat/ChannelManagementDrawer';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageSquare, Bell, Pin, Info, Search, Hash, Settings, Archive } from 'lucide-react';
@@ -182,24 +183,150 @@ const Chat = () => {
     }
   ];
 
+
   const supportConversations = [
     {
       id: 'support-1',
-      title: 'Problemă cu sincronizarea',
+      title: 'Problemă cu sincronizarea datelor',
       type: 'support' as const,
       status: 'resolved' as const,
       unreadCount: 0,
       mentions: 0,
-      isOperatorTransferred: true
+      isOperatorTransferred: true,
+      messages: [
+        {
+          id: 'support-msg-1',
+          content: 'Bună! Sunt Asistentul AI iFlows. Cu ce vă pot ajuta azi?',
+          sender: {
+            id: 'ai-assistant',
+            name: 'iFlows AI Assistant',
+            type: 'ai' as const
+          },
+          timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        },
+        {
+          id: 'support-msg-2',
+          content: 'Am o problemă cu sincronizarea datelor. Când fac modificări în aplicație, nu se salvează corect și am pierdut niște informații importante.',
+          sender: {
+            id: 'current-user',
+            name: 'Tu',
+            type: 'user' as const
+          },
+          timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 + 120000),
+        },
+        {
+          id: 'support-msg-3',
+          content: 'Înțeleg problema dumneavoastră cu sincronizarea. Aceasta poate fi o problemă serioasă. Vă transfer la un specialist din echipa noastră tehnică pentru a rezolva urgent această situație.',
+          sender: {
+            id: 'ai-assistant',
+            name: 'iFlows AI Assistant',
+            type: 'ai' as const
+          },
+          timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 + 180000),
+        },
+        {
+          id: 'support-msg-4',
+          content: 'Un coleg de la Suport va prelua conversația în scurt timp.',
+          sender: {
+            id: 'system',
+            name: 'Sistem',
+            type: 'ai' as const
+          },
+          timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 + 240000),
+        },
+        {
+          id: 'support-msg-5',
+          content: 'Bună ziua! Sunt Mihai din echipa tehnică iFlows. Am analizat problema cu sincronizarea datelor și am identificat cauza. A fost un bug în modulul de salvare automată. Am aplicat un patch și am recuperat datele pierdute.',
+          sender: {
+            id: 'operator-1',
+            name: 'Mihai Ionescu',
+            type: 'operator' as const,
+            avatar: 'https://i.pravatar.cc/150?img=8'
+          },
+          timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+        },
+        {
+          id: 'support-msg-6',
+          content: 'Excelent! Mulțumesc foarte mult. Văd că acum funcționează perfect. Apreciez foarte mult rapiditatea cu care ați rezolvat problema.',
+          sender: {
+            id: 'current-user',
+            name: 'Tu',
+            type: 'user' as const
+          },
+          timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000 + 300000),
+        }
+      ]
     },
     {
       id: 'support-2', 
       title: 'Întrebări despre facturare',
       type: 'support' as const,
       status: 'active' as const,
+      unreadCount: 2,
+      mentions: 1,
+      isOperatorTransferred: false,
+      messages: [
+        {
+          id: 'support-msg-7',
+          content: 'Bună! Sunt Asistentul AI iFlows. Cu ce vă pot ajuta azi?',
+          sender: {
+            id: 'ai-assistant',
+            name: 'iFlows AI Assistant',
+            type: 'ai' as const
+          },
+          timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000),
+        },
+        {
+          id: 'support-msg-8',
+          content: 'Vreau să știu cum pot schimba planul de facturare pentru compania noastră. Avem nevoie de mai multe funcționalități.',
+          sender: {
+            id: 'current-user',
+            name: 'Tu',
+            type: 'user' as const
+          },
+          timestamp: new Date(Date.now() - 2.5 * 60 * 60 * 1000),
+        },
+        {
+          id: 'support-msg-9',
+          content: 'Puteți schimba planul din secțiunea Setări > Facturare din contul dumneavoastră. Aveți acces la această secțiune ca administrator? De asemenea, vă pot prezenta opțiunile disponibile pentru planurile enterprise.',
+          sender: {
+            id: 'ai-assistant',
+            name: 'iFlows AI Assistant',
+            type: 'ai' as const
+          },
+          timestamp: new Date(Date.now() - 30 * 60 * 1000),
+        }
+      ]
+    },
+    {
+      id: 'support-3',
+      title: 'Configurare cont nou utilizator',
+      type: 'support' as const,
+      status: 'active' as const,
+      unreadCount: 0,
+      mentions: 0,
+      isOperatorTransferred: true,
+      messages: []
+    },
+    {
+      id: 'support-4',
+      title: 'Raportare bug în modulul vânzări',
+      type: 'support' as const,
+      status: 'waiting' as const,
       unreadCount: 1,
       mentions: 0,
-      isOperatorTransferred: false
+      isOperatorTransferred: false,
+      messages: []
+    },
+    {
+      id: 'support-5',
+      title: 'Solicitare funcționalitate nouă',
+      type: 'support' as const,
+      status: 'resolved' as const,
+      unreadCount: 0,
+      mentions: 0,
+      isOperatorTransferred: true,
+      messages: []
     }
   ];
 
