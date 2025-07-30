@@ -771,8 +771,50 @@ const Chat = () => {
     toast.success(`Canal nou creat: #${channelData.name}`);
   };
 
+  const handleCreateSupportConversation = () => {
+    const newSupportConversation = {
+      id: `support-${Date.now()}`,
+      title: 'Conversație nouă de suport',
+      type: 'support' as const,
+      status: 'active' as const,
+      unreadCount: 0,
+      mentions: 0,
+      isOperatorTransferred: false,
+      messages: [
+        {
+          id: `welcome-${Date.now()}`,
+          content: 'Bună! Sunt Asistentul AI iFlows. Cu ce vă pot ajuta azi?',
+          sender: {
+            id: 'ai-assistant',
+            name: 'iFlows AI Assistant',
+            type: 'ai' as const
+          },
+          timestamp: new Date()
+        }
+      ]
+    };
+    
+    setSelectedChannel(newSupportConversation);
+    toast.success('Conversație nouă de suport creată');
+  };
+
   const handleManageChannels = () => {
     setIsManageChannelsOpen(true);
+  };
+
+  const handleUpdateSupportConversation = (updatedConversation: any) => {
+    setSelectedChannel(updatedConversation);
+    toast.success('Conversația a fost actualizată');
+  };
+
+  const getChannelName = (channel: any) => {
+    if (channel.type === 'direct') {
+      const partner = channel.users.find((user: any) => user.id !== currentUser.id);
+      return partner?.name || 'Direct Message';
+    } else if (channel.type === 'support') {
+      return channel.title;
+    }
+    return channel.name;
   };
 
   return (
@@ -806,10 +848,12 @@ const Chat = () => {
               currentUserId={currentUser.id}
               channels={channels}
               directMessages={directMessages}
+              supportConversations={supportConversations}
               selectedChannelId={selectedChannel?.id}
               onSelectChannel={handleSelectChannel}
               onCreateChannel={handleCreateChannel}
               onManageChannels={handleManageChannels}
+              onCreateSupportConversation={handleCreateSupportConversation}
               isAdmin={currentUser.isAdmin}
             />
             
@@ -826,53 +870,60 @@ const Chat = () => {
           </div>
 
           <div className="flex-1 flex flex-col h-full bg-gradient-to-br from-background to-muted/30 z-10">
-            <div className="flex items-center justify-between p-4 border-b bg-background/70 backdrop-blur-sm shadow-sm">
-              {selectedChannel?.type === 'channel' ? (
-                <>
-                  <div className="bg-iflows-primary/10 p-1.5 rounded-md mr-3">
-                    <Hash className="h-5 w-5 text-iflows-primary" />
-                  </div>
-                  <h2 className="text-lg font-medium">{selectedChannel?.name}</h2>
-                  {selectedChannel?.isPrivate && (
-                    <div className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs font-medium">
-                      Privat
+            {selectedChannel?.type === 'support' ? (
+              <SupportChat
+                conversation={selectedChannel}
+                onUpdateConversation={handleUpdateSupportConversation}
+              />
+            ) : (
+              <>
+                <div className="flex items-center justify-between p-4 border-b bg-background/70 backdrop-blur-sm shadow-sm">
+                  {selectedChannel?.type === 'channel' ? (
+                    <>
+                      <div className="bg-iflows-primary/10 p-1.5 rounded-md mr-3">
+                        <Hash className="h-5 w-5 text-iflows-primary" />
+                      </div>
+                      <h2 className="text-lg font-medium">{selectedChannel?.name}</h2>
+                      {selectedChannel?.isPrivate && (
+                        <div className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs font-medium">
+                          Privat
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="flex items-center">
+                      <div className="relative mr-3">
+                        <div className="h-9 w-9 rounded-full overflow-hidden shadow-sm border-2 border-background">
+                          <img 
+                            src={selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.avatar} 
+                            alt={selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.name} 
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        {selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.isOnline && (
+                          <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-background"></div>
+                        )}
+                      </div>
+                      <h2 className="text-lg font-medium">
+                        {selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.name}
+                      </h2>
                     </div>
                   )}
-                </>
-              ) : (
-                <div className="flex items-center">
-                  <div className="relative mr-3">
-                    <div className="h-9 w-9 rounded-full overflow-hidden shadow-sm border-2 border-background">
-                      <img 
-                        src={selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.avatar} 
-                        alt={selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.name} 
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                    {selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.isOnline && (
-                      <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-background"></div>
-                    )}
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors">
+                      <Search className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors">
+                      <Bell className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors">
+                      <Pin className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors">
+                      <Info className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <h2 className="text-lg font-medium">
-                    {selectedChannel?.users?.find((u: any) => u.id !== currentUser.id)?.name}
-                  </h2>
                 </div>
-              )}
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors">
-                  <Search className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors">
-                  <Bell className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors">
-                  <Pin className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary transition-colors">
-                  <Info className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
 
             <ScrollArea className="flex-1 p-4">
               {loading ? (
@@ -934,7 +985,9 @@ const Chat = () => {
                 isLoading={loading}
               />
             </div>
-          </div>
+          </>
+        )}
+      </div>
         </div>
       </div>
       
