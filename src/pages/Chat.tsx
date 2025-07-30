@@ -182,6 +182,27 @@ const Chat = () => {
     }
   ];
 
+  const supportConversations = [
+    {
+      id: 'support-1',
+      title: 'Problemă cu sincronizarea',
+      type: 'support' as const,
+      status: 'resolved' as const,
+      unreadCount: 0,
+      mentions: 0,
+      isOperatorTransferred: true
+    },
+    {
+      id: 'support-2', 
+      title: 'Întrebări despre facturare',
+      type: 'support' as const,
+      status: 'active' as const,
+      unreadCount: 1,
+      mentions: 0,
+      isOperatorTransferred: false
+    }
+  ];
+
   const directMessages = [
     {
       id: "dm1",

@@ -56,16 +56,28 @@ interface DirectMessage {
   mentions: number;
 }
 
-type ChannelOrDM = Channel | DirectMessage;
+interface SupportConversation {
+  id: string;
+  title: string;
+  type: 'support';
+  status: 'active' | 'resolved' | 'waiting';
+  unreadCount: number;
+  mentions: number;
+  isOperatorTransferred: boolean;
+}
+
+type ChannelOrDM = Channel | DirectMessage | SupportConversation;
 
 interface ChannelListProps {
   currentUserId: string;
   channels: Channel[];
   directMessages: DirectMessage[];
+  supportConversations?: SupportConversation[];
   selectedChannelId?: string;
   onSelectChannel: (channel: ChannelOrDM) => void;
   onCreateChannel?: (channelData: ChannelData) => void;
   onManageChannels?: () => void;
+  onCreateSupportConversation?: () => void;
   isAdmin: boolean;
   className?: string;
 }
@@ -74,10 +86,12 @@ const ChannelList: React.FC<ChannelListProps> = ({
   currentUserId,
   channels,
   directMessages,
+  supportConversations = [],
   selectedChannelId,
   onSelectChannel,
   onCreateChannel,
   onManageChannels,
+  onCreateSupportConversation,
   isAdmin,
   className,
 }) => {
@@ -98,11 +112,11 @@ const ChannelList: React.FC<ChannelListProps> = ({
     { id: "5", name: "Maria Stan" },
   ];
   
-  // Mock support conversations data
-  const supportConversations = [
-    { id: 'support-1', title: 'Problemă cu sincronizarea', status: 'resolved', unreadCount: 0 },
-    { id: 'support-2', title: 'Întrebări despre facturare', status: 'active', unreadCount: 1 },
-  ];
+  const handleCreateSupportConversation = () => {
+    if (onCreateSupportConversation) {
+      onCreateSupportConversation();
+    }
+  };
   
   const channelsWithMembers = channels.map(channel => {
     if (channel.isPrivate && !channel.members) {
@@ -576,7 +590,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
                       className="h-7 w-7 rounded-full hover:bg-iflows-primary/10 hover:text-iflows-primary"
                       onClick={(e) => {
                         e.stopPropagation();
-                        window.location.href = '/support';
+                        handleCreateSupportConversation();
                       }}
                     >
                       <Plus className="h-3.5 w-3.5" />
@@ -592,10 +606,15 @@ const ChannelList: React.FC<ChannelListProps> = ({
             {showSupport && (
               <div className="mt-1 space-y-0.5 pl-2">
                 {supportConversations.map((conv) => (
-                  <Link
+                  <button
                     key={conv.id}
-                    to="/support"
-                    className="w-full flex items-center justify-between px-2 py-2 rounded-md text-sm transition-all hover:bg-iflows-primary/10"
+                    className={cn(
+                      "w-full flex items-center justify-between px-2 py-2 rounded-md text-sm transition-all",
+                      selectedChannelId === conv.id
+                        ? "bg-iflows-primary text-white font-medium shadow-sm"
+                        : "hover:bg-iflows-primary/10"
+                    )}
+                    onClick={() => onSelectChannel(conv)}
                   >
                     <div className="flex items-center">
                       <Bot className="h-4 w-4 mr-2 text-iflows-primary" />
@@ -616,16 +635,16 @@ const ChannelList: React.FC<ChannelListProps> = ({
                         </Badge>
                       )}
                     </div>
-                  </Link>
+                  </button>
                 ))}
                 
-                <Link
-                  to="/support"
+                <button
                   className="w-full flex items-center px-2 py-2 rounded-md text-sm transition-all hover:bg-iflows-primary/10 text-muted-foreground"
+                  onClick={handleCreateSupportConversation}
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   <span>Crează conversație nouă</span>
-                </Link>
+                </button>
               </div>
             )}
           </div>
