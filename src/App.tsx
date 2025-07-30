@@ -8,6 +8,7 @@ import NotFound from "@/pages/NotFound";
 import CommandDetail from "@/pages/CommandDetail";
 import ProductDetail from "@/pages/ProductDetail";
 import OfferDetail from "@/pages/OfferDetail";
+import Support from "@/pages/Support";
 import "./App.css";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/chat" element={<Chat />} />
+          <Route path="/support" element={<Support />} />
           <Route path="/commands/:commandId" element={<CommandDetail />} />
           <Route path="/products/:productId" element={<ProductDetail />} />
           <Route path="/offers/:offerId" element={<OfferDetail />} />

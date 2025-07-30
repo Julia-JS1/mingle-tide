@@ -18,12 +18,14 @@ import {
   ChevronDown,
   Pin,
   Archive,
-  Users
+  Users,
+  Bot
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ChannelModal, { ChannelData } from './ChannelModal';
 import ChannelManagementDrawer from './ChannelManagementDrawer';
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 
 interface Channel {
   id: string;
@@ -448,7 +450,7 @@ const ChannelList: React.FC<ChannelListProps> = ({
             )}
           </div>
           
-          <div>
+          <div className="mb-4">
             <div 
               className="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-muted/50 rounded-md transition-colors"
               onClick={() => setShowDirectMessages(!showDirectMessages)}
@@ -545,6 +547,29 @@ const ChannelList: React.FC<ChannelListProps> = ({
                 )}
               </div>
             )}
+          </div>
+          
+          {/* Support Section */}
+          <div>
+            <div className="px-3 py-2">
+              <div className="flex items-center text-sm font-medium">
+                <Users className="h-4 w-4 mr-1.5 text-iflows-primary" />
+                Suport
+              </div>
+            </div>
+            
+            <div className="mt-1 space-y-0.5 pl-2">
+              <Link
+                to="/support"
+                className="w-full flex items-center px-2 py-2 rounded-md text-sm transition-all hover:bg-iflows-primary/10"
+              >
+                <Bot className="h-4 w-4 mr-2 text-iflows-primary" />
+                <span>Conversații suport</span>
+                <Badge variant="secondary" className="ml-auto text-xs">
+                  AI + Operator
+                </Badge>
+              </Link>
+            </div>
           </div>
         </div>
       </ScrollArea>
