@@ -86,7 +86,13 @@ const ChannelList: React.FC<ChannelListProps> = ({
   currentUserId,
   channels,
   directMessages,
-  supportConversations = [],
+  supportConversations = [
+    { id: 'support-1', title: 'Problemă cu sincronizarea datelor', status: 'resolved', unreadCount: 0, mentions: 0, isOperatorTransferred: true },
+    { id: 'support-2', title: 'Întrebări despre facturare', status: 'active', unreadCount: 2, mentions: 1, isOperatorTransferred: false },
+    { id: 'support-3', title: 'Configurare cont nou utilizator', status: 'active', unreadCount: 0, mentions: 0, isOperatorTransferred: true },
+    { id: 'support-4', title: 'Raportare bug în modulul vânzări', status: 'waiting', unreadCount: 1, mentions: 0, isOperatorTransferred: false },
+    { id: 'support-5', title: 'Solicitare funcționalitate nouă', status: 'resolved', unreadCount: 0, mentions: 0, isOperatorTransferred: true }
+  ],
   selectedChannelId,
   onSelectChannel,
   onCreateChannel,
@@ -624,9 +630,12 @@ const ChannelList: React.FC<ChannelListProps> = ({
                     <div className="flex items-center gap-1">
                       <Badge className={cn(
                         "text-xs",
-                        conv.status === 'active' ? "bg-green-500/10 text-green-700" : "bg-gray-500/10 text-gray-700"
+                        conv.status === 'active' ? "bg-green-500/10 text-green-700" : 
+                        conv.status === 'waiting' ? "bg-yellow-500/10 text-yellow-700" :
+                        "bg-gray-500/10 text-gray-700"
                       )}>
-                        {conv.status === 'active' ? 'Activ' : 'Rezolvat'}
+                        {conv.status === 'active' ? 'Activ' : 
+                         conv.status === 'waiting' ? 'În așteptare' : 'Rezolvat'}
                       </Badge>
                       
                       {conv.unreadCount > 0 && (
@@ -637,14 +646,6 @@ const ChannelList: React.FC<ChannelListProps> = ({
                     </div>
                   </button>
                 ))}
-                
-                <button
-                  className="w-full flex items-center px-2 py-2 rounded-md text-sm transition-all hover:bg-iflows-primary/10 text-muted-foreground"
-                  onClick={handleCreateSupportConversation}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  <span>Crează conversație nouă</span>
-                </button>
               </div>
             )}
           </div>
