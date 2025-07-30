@@ -623,7 +623,6 @@ const ChannelList: React.FC<ChannelListProps> = ({
                     onClick={() => onSelectChannel(conv)}
                   >
                     <div className="flex items-center">
-                      <Bot className="h-4 w-4 mr-2 text-iflows-primary" />
                       <span className="truncate">{conv.title}</span>
                     </div>
                     
