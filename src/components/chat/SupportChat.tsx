@@ -76,6 +76,10 @@ const SupportChat: React.FC<SupportChatProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
+  // Calculăm numărul de interacțiuni bazat pe mesajele utilizatorului
+  const userMessageCount = conversation?.messages?.filter(msg => msg.sender.type === 'user').length || 0;
+  const hasUserInteractions = userMessageCount > 0 || interactionCount > 0;
+
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -466,7 +470,7 @@ const SupportChat: React.FC<SupportChatProps> = ({
       </ScrollArea>
 
       {/* Transfer Button (shown after first interaction) */}
-      {interactionCount > 0 && !conversation.isOperatorTransferred && conversation.status === 'active' && (
+      {hasUserInteractions && !conversation.isOperatorTransferred && conversation.status === 'active' && (
         <div className="px-4 pb-2">
           <Button
             variant="outline"
